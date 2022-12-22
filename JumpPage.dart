@@ -537,7 +537,7 @@ class _UserPageState extends State<UserPage> {
   }
 
   //延遲取得資料庫資料，因為會有非同步的情況
-  _delayText() {
+  Future _delayText() async {
     Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
         personal_id = PersonalMenu[0].id.toString();
@@ -635,7 +635,9 @@ class _UserPageState extends State<UserPage> {
                           Container(
                             child: Column(
                               children: [
-                                const SizedBox(height: 20,),
+                                const SizedBox(
+                                  height: 20,
+                                ),
                                 Container(
                                   alignment: Alignment.center,
                                   width: 250,
@@ -651,7 +653,8 @@ class _UserPageState extends State<UserPage> {
                                       personal_gender == "男"
                                           ? pic("男")
                                           : pic("女"),
-                                      height: MediaQuery.of(context).size.height,
+                                      height:
+                                          MediaQuery.of(context).size.height,
                                       width: MediaQuery.of(context).size.width,
                                       fit: BoxFit.cover,
                                     ),
@@ -1362,9 +1365,11 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
 class DrawerClassPage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
   String personal_name;
+  String personal_gender;
 
   DrawerClassPage(
     this.personal_name,
+    this.personal_gender,
     this.DataMenu,
   );
 
@@ -1375,13 +1380,23 @@ class DrawerClassPage extends StatefulWidget {
 class _DrawerClassPageState extends State<DrawerClassPage> {
   var db = new Mysql();
   String personal_name = "";
+  String personal_gender = "";
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+
+  pic() {
+    if (personal_gender == "男")
+      return 'lib/images/mpatient.jpg';
+     else // (personal_gender == "女")
+      return 'lib/images/wpatient.jpg';
+  }
 
   @override
   void initState() {
     personal_name = widget.personal_name;
     print("personal_name:$personal_name");
+    personal_gender = widget.personal_gender;
+    print("personal_gender:$personal_gender");
     DataMenu = widget.DataMenu;
     PrintList("DrawerClass", "AllPagesNeedData", DataMenu);
     super.initState();
@@ -1427,7 +1442,7 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
                         child: InkWell(
                           splashColor: Colors.black26,
                           child: Image.asset(
-                            "lib/images/logo.jpg",
+                            pic(),
                             width: 120,
                             height: 120,
                           ),

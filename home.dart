@@ -32,21 +32,22 @@ class _MainPageState extends State<MainPage> {
 
   var db = new Mysql();
   String personal_name = "";
+  String personal_gender = "";
 
   @override
   void initState() {
     DataMenu = widget.DataMenu;
     _getMysqlData();
-    _delayText();
     PrintList("MainPage", "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
   //延遲取得資料庫資料，因為會有非同步的情況
-  Future _delayText() async{
-    Future.delayed(const Duration(milliseconds:500), () {
+  Future _delayText() async {
+    Future.delayed(const Duration(milliseconds: 300), () {
       setState(() {
         personal_name = PersonalMenu[0].name.toString();
+        personal_gender = PersonalMenu[0].gender.toString();
       });
     });
   }
@@ -68,19 +69,20 @@ class _MainPageState extends State<MainPage> {
         }
       });
       conn.close();
-    });
+    }).then((value) => _delayText());
   }
 
   //在主畫面按下返回鍵
   Future<bool> RequestPop() async {
     //登出提示框
-    showAlertDialog(context);
+    showAlertDialog(context, DataMenu);
     return Future.value(false);
   }
 
   @override
   Widget build(BuildContext context) {
-    final DrawerClassPage _drawer = DrawerClassPage(personal_name, DataMenu);
+    final DrawerClassPage _drawer =
+        DrawerClassPage(personal_name, personal_gender, DataMenu);
 
     //返回鍵
     return WillPopScope(
@@ -135,6 +137,108 @@ class _MainPageState extends State<MainPage> {
   }
 }
 
+// 顯示確認登出對話框
+void showAlertDialog(BuildContext context, List<AllPagesNeedData> DataMenu) {
+  // Init
+  AlertDialog dialog = AlertDialog(
+    backgroundColor: DarkMode(
+        DataMenu[0].isdark, "background", Colors.grey.shade800, Colors.white),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(15)),
+    ),
+    title: RichText(
+      text: TextSpan(
+        children: [
+          const WidgetSpan(
+            child: Icon(
+              Icons.warning,
+              size: 30,
+              color: Colors.yellow,
+            ),
+          ),
+          TextSpan(
+            text: "您確定要登出嗎?",
+            style: TextStyle(
+              fontSize: 25,
+              color: DarkMode(
+                  DataMenu[0].isdark, "Text", Colors.black, Colors.white),
+            ),
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      Center(
+        child: Container(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    DarkMode(DataMenu[0].isdark, "background", Colors.grey,
+                        Colors.white),
+                  ),
+                ),
+                child: Text(
+                  "取消",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: DarkMode(
+                        DataMenu[0].isdark, "Text", Colors.blue, Colors.white),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              const SizedBox(
+                width: 30,
+              ),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.blue),
+                ),
+                child: const Text(
+                  "登出",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    ],
+  );
+
+  // Show the dialog (showDialog() => showGeneralDialog())
+  //登出確認框的動畫
+  showGeneralDialog(
+    context: context,
+    pageBuilder: (context, anim1, anim2) {
+      return Wrap();
+    },
+    transitionBuilder: (context, anim1, anim2, child) {
+      return Transform(
+        transform: Matrix4.translationValues(
+          0.0,
+          (1.0 - Curves.easeInOut.transform(anim1.value)) * 400,
+          0.0,
+        ),
+        child: dialog,
+      );
+    },
+    transitionDuration: const Duration(milliseconds: 400),
+  );
+}
+
 // 首頁，主要頁面
 class HomePage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
@@ -185,7 +289,7 @@ class _RecordPageState extends State<RecordPage> {
   late List<AllPagesNeedData> DataMenu;
 
   //取得Mysql裡patient_rehabilitation資料表的資料
-  void _getMysqlData() {
+  Future _getMysqlData() async {
     MysqlMenu.clear(); //初始化列表
     db.getConnection().then((conn) {
       String sql =
@@ -422,6 +526,118 @@ class _NewMessagePageState extends State<NewMessagePage> {
 
   @override
   Widget build(BuildContext context) {
+    // 顯示刪除對話框
+    void showDeleteAlertDialog(
+        List<ExpansionPanelListData> expansionpanellist_menu, index,
+        [bool all = false]) {
+      // Init
+      AlertDialog dialog = AlertDialog(
+        backgroundColor: DarkMode(DataMenu[0].isdark, "background",
+            Colors.grey.shade800, Colors.white),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+        ),
+        title: Center(
+          child: RichText(
+            text: TextSpan(
+              children: [
+                WidgetSpan(
+                  child: Icon(
+                    Icons.delete,
+                    size: 30,
+                    color: DarkMode(
+                        DataMenu[0].isdark, "Text", Colors.black, Colors.white),
+                  ),
+                ),
+                TextSpan(
+                  text: all ? "刪除全部?" : "刪除該訊息?",
+                  style: TextStyle(
+                    fontSize: 25,
+                    color: DarkMode(
+                        DataMenu[0].isdark, "Text", Colors.black, Colors.white),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                      DarkMode(DataMenu[0].isdark, "background", Colors.grey,
+                          Colors.white),
+                    ),
+                  ),
+                  child: Text(
+                    "取消",
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: DarkMode(DataMenu[0].isdark, "Text", Colors.green,
+                          Colors.white),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                const SizedBox(
+                  width: 30,
+                ),
+                ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Colors.green),
+                  ),
+                  child: Text(
+                    all ? "刪除全部訊息" : "刪除",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      //刪除全部
+                      if (all)
+                        expansionpanellist_menu.clear();
+                      //刪除單一項
+                      else {
+                        expansionpanellist_menu[index].isopen = false;
+                        expansionpanellist_menu.removeAt(index);
+                      }
+                    });
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      );
+
+      // Show the dialog (showDialog() => showGeneralDialog())
+      //登出確認框的動畫
+      showGeneralDialog(
+        context: context,
+        pageBuilder: (context, anim1, anim2) {
+          return Wrap();
+        },
+        transitionBuilder: (context, anim1, anim2, child) {
+          return Transform(
+            transform: Matrix4.translationValues(
+              0.0,
+              (1.0 - Curves.easeInOut.transform(anim1.value)) * 400,
+              0.0,
+            ),
+            child: dialog,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+      );
+    }
+
     return MaterialApp(
       builder: (BuildContext context, Widget? child) {
         final MediaQueryData data = MediaQuery.of(context);
@@ -589,16 +805,18 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      print("delete all");
                                       setState(() {
-                                        expansionpanellist_menu.clear();
+                                        showDeleteAlertDialog(
+                                            expansionpanellist_menu,
+                                            index,
+                                            true); //顯示刪除全部的提示對話框
                                       });
                                     },
                                     icon: Icon(
                                       Icons.delete,
                                       size: 30,
-                                      color: DarkMode(
-                                          DataMenu[0].isdark, "Text"),
+                                      color:
+                                          DarkMode(DataMenu[0].isdark, "Text"),
                                     ),
                                   ),
                                 ],
@@ -671,10 +889,9 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                         onPressed: () {
                                           print("delete index:$index");
                                           setState(() {
-                                            expansionpanellist_menu[index]
-                                                .isopen = false;
-                                            expansionpanellist_menu
-                                                .removeAt(index);
+                                            showDeleteAlertDialog(
+                                                expansionpanellist_menu,
+                                                index); //顯示刪除提示對話框
                                           });
                                         },
                                         icon: Icon(
@@ -924,7 +1141,7 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
 
         //登出
         case 6:
-          showAlertDialog(context); //顯示登出提示對話框
+          showAlertDialog(context, DataMenu); //顯示登出提示對話框
           break;
       }
     },
@@ -1046,94 +1263,4 @@ void ChoosePage(
       );
       break;
   }
-}
-
-// 顯示確認登出對話框
-void showAlertDialog(BuildContext context) {
-  // Init
-  AlertDialog dialog = AlertDialog(
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(15)),
-    ),
-    title: RichText(
-      text: const TextSpan(
-        children: [
-          WidgetSpan(
-            child: Icon(
-              Icons.warning,
-              size: 30,
-              color: Colors.yellow,
-            ),
-          ),
-          TextSpan(
-            text: "您確定要登出嗎?",
-            style: TextStyle(fontSize: 25, color: Colors.black),
-          ),
-        ],
-      ),
-    ),
-    actions: [
-      Center(
-        child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
-                ),
-                child: const Text(
-                  "取消",
-                  style: TextStyle(fontSize: 20, color: Colors.blue),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
-              const SizedBox(
-                width: 30,
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.blue),
-                ),
-                child: const Text(
-                  "登出",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    ],
-  );
-
-  // Show the dialog (showDialog() => showGeneralDialog())
-  //登出確認框的動畫
-  showGeneralDialog(
-    context: context,
-    pageBuilder: (context, anim1, anim2) {
-      return Wrap();
-    },
-    transitionBuilder: (context, anim1, anim2, child) {
-      return Transform(
-        transform: Matrix4.translationValues(
-          0.0,
-          (1.0 - Curves.easeInOut.transform(anim1.value)) * 400,
-          0.0,
-        ),
-        child: dialog,
-      );
-    },
-    transitionDuration: const Duration(milliseconds: 400),
-  );
 }

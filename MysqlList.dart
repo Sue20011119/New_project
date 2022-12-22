@@ -20,7 +20,7 @@ class AllPagesNeedData {
 //textScaleFactor: choosetextscale(DataMenu),
 double choosetextscale(List<AllPagesNeedData> DataMenu) {
   return DataMenu[0].textscale == 0
-      ? 0.9
+      ? 0.8
       : DataMenu[0].textscale == 5
           ? 1
           : 1.2;
@@ -69,6 +69,8 @@ class ListViewMenuData {
 }
 
 //設定暗黑模式與非暗黑模式的物件顏色
+// DarkMode(DataMenu[0].isdark, "background", Colors.black, Colors.white),
+// DarkMode(DataMenu[0].isdark, "Text", Colors.black, Colors.white),
 DarkMode(bool isdark, String object,
     [Color deep_color = Colors.black, Color pale_color = Colors.white]) {
   Color? self_color;
