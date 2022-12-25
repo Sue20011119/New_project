@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "package:my_topic_project/login.dart";
 import "package:my_topic_project/MysqlInterface.dart";
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 //印出資料庫資料的入口
 // void main() => runApp(PrintInterface());
@@ -9,10 +10,17 @@ import "package:my_topic_project/MysqlInterface.dart";
 // void main() => runApp(CreateInterface());
 
 //APP啟動的入口
-void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
+
+//寄信測試的入口
+void main() {
+  runApp(NoticePage());
+}
 
 //測試入口
-// void main() => runApp(Testface());
+// void main() {
+//   runApp(Testface());
+// }
 
 class MyApp extends StatelessWidget {
 

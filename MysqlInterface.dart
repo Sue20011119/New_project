@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:my_topic_project/ConnectMysql.dart';
 import 'dart:convert';
@@ -40,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _getCustomer() {
     MysqlMenu.clear(); //初始化列表
     db.getConnection().then((conn) {
-      String sql = "SELECT * FROM patient_database";    //rehabilitation  database
+      String sql = "SELECT * FROM patient_database"; //rehabilitation  database
       conn.query(sql).then((results) {
         print("連線成功!");
         for (var row in results) {
@@ -116,7 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
 
 class CreateInterface extends StatelessWidget {
   @override
@@ -307,7 +307,6 @@ class MysqlData {
   final int? score;
 }
 
-
 class Testface extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -331,6 +330,30 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
+  late FlutterLocalNotificationsPlugin localNotification;
+
+  Future _showNotification() async {
+    var androidDetails =
+        const AndroidNotificationDetails("channelId", "channelName");
+    var iosDetails = const IOSNotificationDetails();
+    var generalNotificationDetails =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
+    await localNotification.show(
+        0, "Notice title", "Notice body", generalNotificationDetails);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var androidInitialize =
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iOSInitialize = const IOSInitializationSettings();
+    var initialzationSettings =
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    localNotification = FlutterLocalNotificationsPlugin();
+    localNotification.initialize(initialzationSettings);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -345,29 +368,76 @@ class _TestState extends State<Test> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(10),
-          child: SettingsList(
-            brightness: Brightness.dark,
-            sections: [
-              SettingsSection(
-                title: Text('Common'),
-                tiles: <SettingsTile>[
-                  SettingsTile.navigation(
-                    leading: Icon(Icons.language),
-                    title: Text('Language'),
-                    value: Text('English'),
-                  ),
-                  SettingsTile.switchTile(
-                    onToggle: (value) {},
-                    initialValue: true,
-                    leading: Icon(Icons.format_paint),
-                    title: Text('Enable custom theme'),
-                  ),
-                ],
-              ),
-            ],
+        body: Center(
+          child: Center(
+            child: Text("測試"),
           ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.notifications),
+          onPressed: _showNotification,
+        ),
+      ),
+    );
+  }
+}
+
+class NoticePage extends StatefulWidget {
+  const NoticePage({Key? key}) : super(key: key);
+
+  @override
+  _NoticePageState createState() => _NoticePageState();
+}
+
+class _NoticePageState extends State<NoticePage> {
+  late FlutterLocalNotificationsPlugin localNotification;
+
+  Future _showNotification() async {
+    var androidDetails =
+        const AndroidNotificationDetails("channelId", "channelName");
+    var iosDetails = const IOSNotificationDetails();
+    var generalNotificationDetails =
+        NotificationDetails(android: androidDetails, iOS: iosDetails);
+    await localNotification.show(
+        0, "Notice title", "Notice body", generalNotificationDetails);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    var androidInitialize =
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iOSInitialize = const IOSInitializationSettings();
+    var initialzationSettings =
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    localNotification = FlutterLocalNotificationsPlugin();
+    localNotification.initialize(initialzationSettings);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white.withOpacity(.94),
+        appBar: AppBar(
+          title: const Text(
+            "通知測試",
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 50),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Center(
+          child: Center(
+            child: Container(),
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showNotification,
+          child: const Icon(Icons.notifications),
         ),
       ),
     );

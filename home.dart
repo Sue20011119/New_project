@@ -518,6 +518,56 @@ class _NewMessagePageState extends State<NewMessagePage> {
         false),
   ];
 
+  Future<Null> _onRefresh() async {
+    await Future.delayed(Duration(seconds: 1), () {
+      print('refresh');
+      setState(() {
+        expansionpanellist_menu = [
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 0",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 1",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 2",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 3",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 4",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 5",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 6",
+              false),
+          ExpansionPanelListData(
+              false,
+              "Lorem Ipsum is simplyen tnrere recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.",
+              "12/31 7",
+              false),
+        ];
+      });
+    });
+  }
+
   @override
   void initState() {
     DataMenu = widget.DataMenu;
@@ -600,10 +650,13 @@ class _NewMessagePageState extends State<NewMessagePage> {
                   onPressed: () {
                     setState(() {
                       //刪除全部
-                      if (all)
+                      if (all){
                         expansionpanellist_menu.clear();
+                        print("delete index:all");
+                      }
                       //刪除單一項
                       else {
+                        print("delete index:$index");
                         expansionpanellist_menu[index].isopen = false;
                         expansionpanellist_menu.removeAt(index);
                       }
@@ -672,261 +725,264 @@ class _NewMessagePageState extends State<NewMessagePage> {
             ),
           ),
         ),
-        body: Padding(
-          padding:
-              const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
-          child: Column(
-            children: [
-              if (expansionpanellist_menu.isEmpty)
-                Column(
-                  children: [
-                    SwitchListTile(
-                        dense: true,
-                        activeColor: Colors.green,
-                        contentPadding: const EdgeInsets.all(10),
-                        value: DataMenu[0].RehabilitationNotice,
-                        title: Text(
-                          "復健通知",
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: DarkMode(DataMenu[0].isdark, "Text"),
+        body: RefreshIndicator(
+          onRefresh: _onRefresh,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
+            child: Column(
+              children: [
+                if (expansionpanellist_menu.isEmpty)
+                  Column(
+                    children: [
+                      SwitchListTile(
+                          dense: true,
+                          activeColor: Colors.green,
+                          contentPadding: const EdgeInsets.all(10),
+                          value: DataMenu[0].RehabilitationNotice,
+                          title: Text(
+                            "復健通知",
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: DarkMode(DataMenu[0].isdark, "Text"),
+                            ),
                           ),
-                        ),
-                        onChanged: (val) {
-                          setState(() {
-                            DataMenu[0].RehabilitationNotice =
-                                !DataMenu[0].RehabilitationNotice;
-                          });
-                        }),
-                    Container(
-                      width: double.infinity,
-                      height: 2,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.green.shade500, Colors.white),
-                    ),
-                    SwitchListTile(
-                        dense: true,
-                        activeColor: Colors.green,
-                        contentPadding: const EdgeInsets.all(10),
-                        value: DataMenu[0].QuestionnaireNotice,
-                        title: Text(
-                          "問卷填寫通知",
-                          style: TextStyle(
-                            fontSize: 30,
-                            color: DarkMode(DataMenu[0].isdark, "Text"),
+                          onChanged: (val) {
+                            setState(() {
+                              DataMenu[0].RehabilitationNotice =
+                                  !DataMenu[0].RehabilitationNotice;
+                            });
+                          }),
+                      Container(
+                        width: double.infinity,
+                        height: 2,
+                        color: DarkMode(DataMenu[0].isdark, "Text",
+                            Colors.green.shade500, Colors.white),
+                      ),
+                      SwitchListTile(
+                          dense: true,
+                          activeColor: Colors.green,
+                          contentPadding: const EdgeInsets.all(10),
+                          value: DataMenu[0].QuestionnaireNotice,
+                          title: Text(
+                            "問卷填寫通知",
+                            style: TextStyle(
+                              fontSize: 30,
+                              color: DarkMode(DataMenu[0].isdark, "Text"),
+                            ),
                           ),
-                        ),
-                        onChanged: (val) {
-                          setState(() {
-                            DataMenu[0].QuestionnaireNotice =
-                                !DataMenu[0].QuestionnaireNotice;
-                          });
-                        }),
-                    Container(
-                      width: double.infinity,
-                      height: 2,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.green.shade500, Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Divider(
-                      color: DarkMode(DataMenu[0].isdark, "Text", Colors.grey,
-                          Colors.white),
-                      thickness: 2,
-                    )
-                  ],
-                ),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: expansionpanellist_menu.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        if (index == 0)
-                          Column(
-                            children: [
-                              SwitchListTile(
-                                  dense: true,
-                                  activeColor: Colors.green,
-                                  contentPadding: const EdgeInsets.all(10),
-                                  value: DataMenu[0].RehabilitationNotice,
-                                  title: Text(
-                                    "復健通知",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      color:
-                                          DarkMode(DataMenu[0].isdark, "Text"),
-                                    ),
-                                  ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      DataMenu[0].RehabilitationNotice =
-                                          !DataMenu[0].RehabilitationNotice;
-                                    });
-                                  }),
-                              Container(
-                                width: double.infinity,
-                                height: 2,
-                                color: DarkMode(DataMenu[0].isdark, "Text",
-                                    Colors.green.shade500, Colors.white),
-                              ),
-                              SwitchListTile(
-                                  dense: true,
-                                  activeColor: Colors.green,
-                                  contentPadding: const EdgeInsets.all(10),
-                                  value: DataMenu[0].QuestionnaireNotice,
-                                  title: Text(
-                                    "問卷填寫通知",
-                                    style: TextStyle(
-                                      fontSize: 30,
-                                      color:
-                                          DarkMode(DataMenu[0].isdark, "Text"),
-                                    ),
-                                  ),
-                                  onChanged: (val) {
-                                    setState(() {
-                                      DataMenu[0].QuestionnaireNotice =
-                                          !DataMenu[0].QuestionnaireNotice;
-                                    });
-                                  }),
-                              Container(
-                                width: double.infinity,
-                                height: 2,
-                                color: DarkMode(DataMenu[0].isdark, "Text",
-                                    Colors.green.shade500, Colors.white),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        showDeleteAlertDialog(
-                                            expansionpanellist_menu,
-                                            index,
-                                            true); //顯示刪除全部的提示對話框
-                                      });
-                                    },
-                                    icon: Icon(
-                                      Icons.delete,
-                                      size: 30,
-                                      color:
-                                          DarkMode(DataMenu[0].isdark, "Text"),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Divider(
-                                color: DarkMode(DataMenu[0].isdark, "Text",
-                                    Colors.grey, Colors.white),
-                                thickness: 2,
-                              )
-                            ],
-                          ),
-                        ExpansionPanelList(
-                            animationDuration:
-                                const Duration(milliseconds: 500),
-                            elevation: 0,
-                            expandedHeaderPadding: const EdgeInsets.all(8),
-                            children: [
-                              ExpansionPanel(
-                                backgroundColor: DarkMode(
-                                    DataMenu[0].isdark,
-                                    "background",
-                                    Colors.grey.shade900,
-                                    Colors.white),
-                                isExpanded:
-                                    expansionpanellist_menu[index].isopen,
-                                canTapOnHeader: true,
-                                //能按標題展開
-                                headerBuilder:
-                                    (BuildContext context, bool isExpanded) {
-                                  return ListTile(
-                                    leading: !expansionpanellist_menu[index]
-                                            .isread
-                                        ? Icon(Icons.circle,
-                                            size: 16,
-                                            color: Colors.greenAccent.shade200)
-                                        : const Icon(Icons.circle_outlined,
-                                            size: 16, color: Colors.grey),
+                          onChanged: (val) {
+                            setState(() {
+                              DataMenu[0].QuestionnaireNotice =
+                                  !DataMenu[0].QuestionnaireNotice;
+                            });
+                          }),
+                      Container(
+                        width: double.infinity,
+                        height: 2,
+                        color: DarkMode(DataMenu[0].isdark, "Text",
+                            Colors.green.shade500, Colors.white),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      Divider(
+                        color: DarkMode(DataMenu[0].isdark, "Text", Colors.grey,
+                            Colors.white),
+                        thickness: 2,
+                      )
+                    ],
+                  ),
+                Expanded(
+                  child: ListView.separated(
+                    itemCount: expansionpanellist_menu.length,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          if (index == 0)
+                            Column(
+                              children: [
+                                SwitchListTile(
+                                    dense: true,
+                                    activeColor: Colors.green,
+                                    contentPadding: const EdgeInsets.all(10),
+                                    value: DataMenu[0].RehabilitationNotice,
                                     title: Text(
-                                      "${expansionpanellist_menu[index].date}復健通知",
+                                      "復健通知",
                                       style: TextStyle(
-                                          color: DarkMode(
-                                              DataMenu[0].isdark, "Text"),
-                                          fontSize: 25,
-                                          overflow: TextOverflow.ellipsis,
-                                          fontWeight:
-                                              //未讀嗎?未讀的話粗體，已讀的話復原
-                                              !expansionpanellist_menu[index]
-                                                      .isread
-                                                  ? FontWeight.bold
-                                                  : FontWeight.normal),
+                                        fontSize: 30,
+                                        color: DarkMode(
+                                            DataMenu[0].isdark, "Text"),
+                                      ),
                                     ),
-                                  );
-                                },
-                                body: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        expansionpanellist_menu[index].detail,
+                                    onChanged: (val) {
+                                      setState(() {
+                                        DataMenu[0].RehabilitationNotice =
+                                            !DataMenu[0].RehabilitationNotice;
+                                      });
+                                    }),
+                                Container(
+                                  width: double.infinity,
+                                  height: 2,
+                                  color: DarkMode(DataMenu[0].isdark, "Text",
+                                      Colors.green.shade500, Colors.white),
+                                ),
+                                SwitchListTile(
+                                    dense: true,
+                                    activeColor: Colors.green,
+                                    contentPadding: const EdgeInsets.all(10),
+                                    value: DataMenu[0].QuestionnaireNotice,
+                                    title: Text(
+                                      "問卷填寫通知",
+                                      style: TextStyle(
+                                        fontSize: 30,
+                                        color: DarkMode(
+                                            DataMenu[0].isdark, "Text"),
+                                      ),
+                                    ),
+                                    onChanged: (val) {
+                                      setState(() {
+                                        DataMenu[0].QuestionnaireNotice =
+                                            !DataMenu[0].QuestionnaireNotice;
+                                      });
+                                    }),
+                                Container(
+                                  width: double.infinity,
+                                  height: 2,
+                                  color: DarkMode(DataMenu[0].isdark, "Text",
+                                      Colors.green.shade500, Colors.white),
+                                ),
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        setState(() {
+                                          showDeleteAlertDialog(
+                                              expansionpanellist_menu,
+                                              index,
+                                              true); //顯示刪除全部的提示對話框
+                                        });
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        size: 30,
+                                        color: DarkMode(
+                                            DataMenu[0].isdark, "Text"),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  color: DarkMode(DataMenu[0].isdark, "Text",
+                                      Colors.grey, Colors.white),
+                                  thickness: 2,
+                                )
+                              ],
+                            ),
+                          ExpansionPanelList(
+                              animationDuration:
+                                  const Duration(milliseconds: 500),
+                              elevation: 0,
+                              expandedHeaderPadding: const EdgeInsets.all(8),
+                              children: [
+                                ExpansionPanel(
+                                  backgroundColor: DarkMode(
+                                      DataMenu[0].isdark,
+                                      "background",
+                                      Colors.grey.shade900,
+                                      Colors.white),
+                                  isExpanded:
+                                      expansionpanellist_menu[index].isopen,
+                                  canTapOnHeader: true,
+                                  //能按標題展開
+                                  headerBuilder:
+                                      (BuildContext context, bool isExpanded) {
+                                    return ListTile(
+                                      leading: !expansionpanellist_menu[index]
+                                              .isread
+                                          ? Icon(Icons.circle,
+                                              size: 16,
+                                              color:
+                                                  Colors.greenAccent.shade200)
+                                          : const Icon(Icons.circle_outlined,
+                                              size: 16, color: Colors.grey),
+                                      title: Text(
+                                        "${expansionpanellist_menu[index].date}復健通知",
                                         style: TextStyle(
-                                          color: DarkMode(
-                                              DataMenu[0].isdark, "Text"),
-                                          fontSize: 25,
+                                            color: DarkMode(
+                                                DataMenu[0].isdark, "Text"),
+                                            fontSize: 25,
+                                            overflow: TextOverflow.ellipsis,
+                                            fontWeight:
+                                                //未讀嗎?未讀的話粗體，已讀的話復原
+                                                !expansionpanellist_menu[index]
+                                                        .isread
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal),
+                                      ),
+                                    );
+                                  },
+                                  body: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          expansionpanellist_menu[index].detail,
+                                          style: TextStyle(
+                                            color: DarkMode(
+                                                DataMenu[0].isdark, "Text"),
+                                            fontSize: 25,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(
-                                        height: 15,
-                                      ),
-                                      IconButton(
-                                        onPressed: () {
-                                          print("delete index:$index");
-                                          setState(() {
-                                            showDeleteAlertDialog(
-                                                expansionpanellist_menu,
-                                                index); //顯示刪除提示對話框
-                                          });
-                                        },
-                                        icon: Icon(
-                                          Icons.delete,
-                                          size: 30,
-                                          color: DarkMode(
-                                              DataMenu[0].isdark, "Text"),
+                                        const SizedBox(
+                                          height: 15,
                                         ),
-                                      ),
-                                    ],
+                                        IconButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              showDeleteAlertDialog(
+                                                  expansionpanellist_menu,
+                                                  index); //顯示刪除提示對話框
+                                            });
+                                          },
+                                          icon: Icon(
+                                            Icons.delete,
+                                            size: 30,
+                                            color: DarkMode(
+                                                DataMenu[0].isdark, "Text"),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                            expansionCallback: (i, isExpanded) {
-                              setState(() {
-                                expansionpanellist_menu[index].isopen =
-                                    !isExpanded;
-                                expansionpanellist_menu[index].isread = true;
-                              });
-                            }),
-                      ],
-                    );
-                  },
-                  //選擇分隔線的
-                  separatorBuilder: (BuildContext context, int index) {
-                    return Divider(
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.grey.shade200, Colors.white),
-                      thickness: 2,
-                    );
-                  },
+                              ],
+                              expansionCallback: (i, isExpanded) {
+                                setState(() {
+                                  expansionpanellist_menu[index].isopen =
+                                      !isExpanded;
+                                  expansionpanellist_menu[index].isread = true;
+                                });
+                              }),
+                        ],
+                      );
+                    },
+                    //選擇分隔線的
+                    separatorBuilder: (BuildContext context, int index) {
+                      return Divider(
+                        color: DarkMode(DataMenu[0].isdark, "Text",
+                            Colors.grey.shade200, Colors.white),
+                        thickness: 2,
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
