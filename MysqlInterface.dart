@@ -339,7 +339,7 @@ class _TestState extends State<Test> {
     var generalNotificationDetails =
         NotificationDetails(android: androidDetails, iOS: iosDetails);
     await localNotification.show(
-        0, "Notice title", "Notice body", generalNotificationDetails);
+        0, "測試測試，這是通知的內容", "測試測試，這是通知的內容", generalNotificationDetails);
   }
 
   @override
@@ -399,7 +399,7 @@ class _NoticePageState extends State<NoticePage> {
     var generalNotificationDetails =
         NotificationDetails(android: androidDetails, iOS: iosDetails);
     await localNotification.show(
-        0, "Notice title", "Notice body", generalNotificationDetails);
+        0, "測試測試，這是通知的標題", "測試測試，這是通知的內容", generalNotificationDetails);
   }
 
   @override
