@@ -65,11 +65,14 @@ class _MainPageState extends State<MainPage> {
           setState(() {
             PersonalMenu.add(
                 MysqlDataOfPersonal(row['id'], row['name'], row['gender']));
+            personal_name = PersonalMenu[0].name.toString();
+            personal_gender = PersonalMenu[0].gender.toString();
           });
         }
       });
       conn.close();
-    }).then((value) => _delayText());
+    });
+    // .then((value) => _delayText());
   }
 
   //在主畫面按下返回鍵
@@ -650,7 +653,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                   onPressed: () {
                     setState(() {
                       //刪除全部
-                      if (all){
+                      if (all) {
                         expansionpanellist_menu.clear();
                         print("delete index:all");
                       }
@@ -1224,12 +1227,12 @@ Widget buildGridView(List<GridViewMenuData> menu, BuildContext context,
         //是深色模式嗎?是的話背景黑色，不是的話背景白色
         color: DarkMode(DataMenu[0].isdark, "background", Colors.black,
             Colors.amber.shade50),
-        padding: const EdgeInsets.only(top: 0, right: 20, left: 20, bottom: 20),
+        padding: const EdgeInsets.only(top: 0, right: 20, left: 20, bottom: 0),
         child: GridView.builder(
           itemCount: menu.length,
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               //寬高比
-              childAspectRatio: 5 / 7,
+              childAspectRatio: 50 / 87,
               crossAxisCount: 2,
               crossAxisSpacing: 20.0,
               mainAxisSpacing: 20.0),

@@ -512,13 +512,13 @@ class _UserPageState extends State<UserPage> {
   void initState() {
     DataMenu = widget.DataMenu;
     _getMysqlData();
-    _delayText();
+    // _delayText();
     PrintList("UserPage", "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
   _getMysqlData() {
-    PersonalMenu.clear(); //初始化列表
+    // PersonalMenu.clear(); //初始化列表
     db.getConnection().then((conn) {
       String sql =
           "SELECT * FROM patient_database WHERE id='${DataMenu[0].id}'";
@@ -529,6 +529,9 @@ class _UserPageState extends State<UserPage> {
           setState(() {
             PersonalMenu.add(
                 MysqlDataOfPersonal(row['id'], row['name'], row['gender']));
+            personal_id = PersonalMenu[0].id.toString();
+            personal_name = PersonalMenu[0].name.toString();
+            personal_gender = PersonalMenu[0].gender.toString();
           });
         }
       });
@@ -632,57 +635,52 @@ class _UserPageState extends State<UserPage> {
                       return Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Container(
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Container(
-                                  alignment: Alignment.center,
-                                  width: 250,
-                                  height: 250,
-                                  decoration: BoxDecoration(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(200.0)),
-                                      color: DarkMode(
-                                          DataMenu[0].isdark, "background"),
-                                      border: Border.all(color: Colors.black)),
-                                  child: ClipOval(
-                                    child: Image.asset(
-                                      personal_gender == "男"
-                                          ? pic("男")
-                                          : pic("女"),
-                                      height:
-                                          MediaQuery.of(context).size.height,
-                                      width: MediaQuery.of(context).size.width,
-                                      fit: BoxFit.cover,
-                                    ),
+                          Column(
+                            children: [
+                              const SizedBox(
+                                height: 20,
+                              ),
+                              Container(
+                                alignment: Alignment.center,
+                                width: 250,
+                                height: 250,
+                                decoration: BoxDecoration(
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(200.0)),
+                                    color: DarkMode(
+                                        DataMenu[0].isdark, "background"),
+                                    border: Border.all(color: Colors.black)),
+                                child: ClipOval(
+                                  child: Image.asset(
+                                    personal_gender == "男"
+                                        ? pic("男")
+                                        : pic("女"),
+                                    height: MediaQuery.of(context).size.height,
+                                    width: MediaQuery.of(context).size.width,
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 30,
                           ),
-                          Container(
-                            child: Column(
-                              children: [
-                                buildlayout(
-                                    context, "名稱", personal_name, DataMenu),
-                                buildlayout(
-                                    context, "性別", personal_gender, DataMenu),
-                                buildlayout(context, "年齡", "暫無", DataMenu),
-                                buildlayout(context, "診斷", "暫無", DataMenu),
-                                buildlayout(context, "連絡電話", "暫無", DataMenu),
-                                buildlayout(
-                                    context, "個案編號", personal_id, DataMenu),
-                                buildlayout(context, "使用日期", "暫無", DataMenu),
-                                buildlayout(context, "個案來源", "暫無", DataMenu),
-                                buildlayout(context, "緊急聯絡人", "暫無", DataMenu),
-                              ],
-                            ),
+                          Column(
+                            children: [
+                              buildlayout(
+                                  context, "名稱", personal_name, DataMenu),
+                              buildlayout(
+                                  context, "性別", personal_gender, DataMenu),
+                              buildlayout(context, "年齡", "暫無", DataMenu),
+                              buildlayout(context, "診斷", "暫無", DataMenu),
+                              buildlayout(context, "連絡電話", "暫無", DataMenu),
+                              buildlayout(
+                                  context, "個案編號", personal_id, DataMenu),
+                              buildlayout(context, "使用日期", "暫無", DataMenu),
+                              buildlayout(context, "個案來源", "暫無", DataMenu),
+                              buildlayout(context, "緊急聯絡人", "暫無", DataMenu),
+                            ],
                           ),
                         ],
                       );
@@ -1387,7 +1385,7 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
   pic() {
     if (personal_gender == "男")
       return 'lib/images/mpatient.jpg';
-     else // (personal_gender == "女")
+    else // (personal_gender == "女")
       return 'lib/images/wpatient.jpg';
   }
 

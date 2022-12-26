@@ -23,7 +23,7 @@ double choosetextscale(List<AllPagesNeedData> DataMenu) {
       ? 0.8
       : DataMenu[0].textscale == 5
           ? 1
-          : 1.2;
+          : 1.1;
 }
 
 //設定登入的MysqlData的格式

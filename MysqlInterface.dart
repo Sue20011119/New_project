@@ -330,28 +330,10 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
-  late FlutterLocalNotificationsPlugin localNotification;
-
-  Future _showNotification() async {
-    var androidDetails =
-        const AndroidNotificationDetails("channelId", "channelName");
-    var iosDetails = const IOSNotificationDetails();
-    var generalNotificationDetails =
-        NotificationDetails(android: androidDetails, iOS: iosDetails);
-    await localNotification.show(
-        0, "測試測試，這是通知的內容", "測試測試，這是通知的內容", generalNotificationDetails);
-  }
 
   @override
   void initState() {
     super.initState();
-    var androidInitialize =
-        const AndroidInitializationSettings("@mipmap/ic_launcher");
-    var iOSInitialize = const IOSInitializationSettings();
-    var initialzationSettings =
-        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
-    localNotification = FlutterLocalNotificationsPlugin();
-    localNotification.initialize(initialzationSettings);
   }
 
   @override
@@ -368,15 +350,7 @@ class _TestState extends State<Test> {
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
-        body: Center(
-          child: Center(
-            child: Text("測試"),
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.notifications),
-          onPressed: _showNotification,
-        ),
+        body: Container(),
       ),
     );
   }
