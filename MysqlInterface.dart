@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:my_topic_project/MysqlList.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class PrintInterface extends StatelessWidget {
   // This widget is the root of your application.
@@ -34,7 +35,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   var db = new Mysql();
-  var name = '沒東西';
+  var name = '';
 
   List<MysqlData> MysqlMenu = [];
 
@@ -147,7 +148,7 @@ class WriteSQLdataState extends State<WriteSQLdata> {
   late bool error, sending, success;
   late String msg;
 
-  String phpurl = "http://192.168.10.11/appproject/write.php";
+  String phpurl = "http://192.168.10.12/appproject/write.php";
 
   //本地不能使用 http://localhost/
   //使用本地 IP 地址或 URL
@@ -330,27 +331,113 @@ class Test extends StatefulWidget {
 }
 
 class _TestState extends State<Test> {
+  late String videoTitle;
+
+  //影片網址
+  final List<String> _videoUrlList = [
+    'https://www.youtube.com/watch?v=9mplI5qEhxk',
+    'https://www.youtube.com/watch?v=o9xmNAlhdYU',
+    'https://www.youtube.com/watch?v=R1iJSPn2okQ',
+    'https://www.youtube.com/watch?v=kPcu_5RkJpU',
+    'https://www.youtube.com/watch?v=fRzPUjFMwI4',
+    'https://www.youtube.com/watch?v=kfXdP7nZIiE',
+  ];
+
+  List <YoutubePlayerController> lYTC = [];
+
+  Map<String, dynamic> cStates = {};
 
   @override
   void initState() {
     super.initState();
+    fillYTlists();
+  }
+
+  fillYTlists(){
+    for (var element in _videoUrlList) {
+      String _id = YoutubePlayer.convertUrlToId(element)!;
+      YoutubePlayerController _ytController = YoutubePlayerController(
+        initialVideoId: _id,
+        flags: const YoutubePlayerFlags(
+          autoPlay: false,
+          enableCaption: true,
+          captionLanguage: 'en',
+        ),
+      );
+
+      _ytController.addListener(() {
+        print('$_id 播放  ${_ytController.value.isPlaying}');
+        if (cStates[_id] != _ytController.value.isPlaying) {
+          if (mounted) {
+            setState(() {
+              cStates[_id] = _ytController.value.isPlaying;
+            });
+          }
+        }
+      });
+
+      lYTC.add(_ytController);
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var element in lYTC) {
+      element.dispose();
+    }
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.white.withOpacity(.94),
-        appBar: AppBar(
-          title: Text(
-            "Settings",
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('放影片測試'),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: ListView.builder(
+          itemCount: _videoUrlList.length,
+          shrinkWrap: true,
+          itemBuilder: (context, index) {
+            YoutubePlayerController _ytController = lYTC[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  Container(
+                    height: 220.0,
+                    decoration: const BoxDecoration(
+                      color: Color(0xfff5f5f5),
+                      borderRadius: BorderRadius.all(Radius.circular(12)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.all(Radius.circular(12)),
+                      child: YoutubePlayer(
+                        controller: _ytController,
+                        showVideoProgressIndicator: true,
+                        progressIndicatorColor: Colors.lightBlueAccent,
+                        bottomActions: [
+                          CurrentPosition(),
+                          ProgressBar(isExpanded: true),
+                          FullScreenButton(),
+                        ],
+                        onReady: (){
+                          print('onReady for $index');
+                        },
+                        onEnded: (YoutubeMetaData _md) {
+                          _ytController.seekTo(const Duration(seconds: 0));
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
         ),
-        body: Container(),
       ),
     );
   }

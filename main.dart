@@ -10,7 +10,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // void main() => runApp(CreateInterface());
 
 //APP啟動的入口
-void main() => runApp(MyApp());
+// void main() => runApp(MyApp());
 
 //通知測試的入口
 // void main() => runApp(NoticePage());
@@ -18,7 +18,7 @@ void main() => runApp(MyApp());
 
 
 //測試入口
-// void main() => runApp(Testface());
+void main() => runApp(Testface());
 
 
 class MyApp extends StatelessWidget {
