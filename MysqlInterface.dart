@@ -145,10 +145,17 @@ class WriteSQLdataState extends State<WriteSQLdata> {
   TextEditingController typectl = TextEditingController();
   TextEditingController scorectl = TextEditingController();
 
+  String ip = "192.168.0.13";
   late bool error, sending, success;
   late String msg;
 
-  String phpurl = "http://192.168.10.12/appproject/write.php";
+  late List request_php=[
+    "insert.php", //新增
+    "delete.php", //刪除
+    "update.php", //修改
+  ];
+
+  late String phpurl;
 
   //本地不能使用 http://localhost/
   //使用本地 IP 地址或 URL
@@ -164,11 +171,15 @@ class WriteSQLdataState extends State<WriteSQLdata> {
     super.initState();
   }
 
-  Future<void> sendData() async {
+  Future<void> sendData(int num) async {
+    print(request_php[num]);
+    String phpurl = "http://$ip/appproject/${request_php[num]}";
     //發送帶有標題data的post request
     var res = await http.post(Uri.parse(phpurl), body: {
+      "ip":ip,  //網路資料庫ip
       "id": idctl.text,
       "name": namectl.text,
+      // "time": DateTime.now().toString(),
       "time": timectl.text,
       "type": typectl.text,
       "score": scorectl.text,
@@ -277,14 +288,60 @@ class WriteSQLdataState extends State<WriteSQLdata> {
                       setState(() {
                         sending = true;
                       });
-                      sendData();
+                      sendData(0);
                     },
                     color: Colors.redAccent,
                     colorBrightness: Brightness.dark,
                     child: Text(
                       sending
                           ? "寄送中..."
-                          : "送出資料", //如果 sending == true 顯示寄送中...，否則顯示送出資料；
+                          : "新增資料", //如果 sending == true 顯示寄送中...，否則顯示送新增資料；
+                    ),
+                    //background of button is darker color, so set brightness to dark
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    onPressed: () {
+                      //按下按鈕後設定sending為true
+                      setState(() {
+                        sending = true;
+                      });
+                      sendData(1);
+                    },
+                    color: Colors.green,
+                    colorBrightness: Brightness.dark,
+                    child: Text(
+                      sending
+                          ? "寄送中..."
+                          : "刪除資料(以id為主)", //如果 sending == true 顯示寄送中...，否則顯示刪除資料；
+                    ),
+                    //background of button is darker color, so set brightness to dark
+                  ),
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 20),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: RaisedButton(
+                    onPressed: () {
+                      //按下按鈕後設定sending為true
+                      setState(() {
+                        sending = true;
+                      });
+                      sendData(2);
+                    },
+                    color: Colors.blue,
+                    colorBrightness: Brightness.dark,
+                    child: Text(
+                      sending
+                          ? "寄送中..."
+                          : "修改資料(以id為主)", //如果 sending == true 顯示寄送中...，否則顯示修改  資料；
                     ),
                     //background of button is darker color, so set brightness to dark
                   ),

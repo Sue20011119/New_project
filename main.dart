@@ -7,7 +7,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // void main() => runApp(PrintInterface());
 
 //新增資料庫資料的入口
-// void main() => runApp(CreateInterface());
+void main() => runApp(CreateInterface());
 
 //APP啟動的入口
 // void main() => runApp(MyApp());
@@ -18,7 +18,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
 //測試入口
-void main() => runApp(Testface());
+// void main() => runApp(Testface());
 
 
 class MyApp extends StatelessWidget {
