@@ -84,31 +84,17 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    final DrawerClassPage _drawer =
-        DrawerClassPage(personal_name, personal_gender, DataMenu);
-
     //返回鍵
     return WillPopScope(
       onWillPop: RequestPop,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.green,
-          centerTitle: true,
-          title: const Text(
-            "失語症復健APP",
-            style: TextStyle(fontSize: 25),
-          ),
-        ),
-        drawer: _drawer,
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.black87,
-          //
           selectedFontSize: 20,
           unselectedFontSize: 18,
           iconSize: 30,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white,
+          selectedItemColor: Colors.grey.shade900,
+          unselectedItemColor: Colors.grey.shade700,
           selectedIconTheme: const IconThemeData(
             size: 42,
           ),
@@ -124,12 +110,12 @@ class _MainPageState extends State<MainPage> {
             });
           },
           items: [
+            buildBottomNavigationBarView(Icons.assignment_return,
+                Colors.redAccent.shade400, "返回", DataMenu),
+            buildBottomNavigationBarView(Icons.content_paste_search,
+                Colors.yellow.shade400, "使用紀錄", DataMenu),
             buildBottomNavigationBarView(
-                Icons.home, Colors.redAccent.shade400, "首頁", DataMenu),
-            buildBottomNavigationBarView(Icons.schedule_outlined,
-                Colors.yellow.shade400, "紀錄", DataMenu),
-            buildBottomNavigationBarView(Icons.circle_notifications_rounded,
-                Colors.lightGreen.shade400, "訊息", DataMenu),
+                Icons.campaign, Colors.lightGreen.shade400, "新訊息", DataMenu),
             buildBottomNavigationBarView(
                 Icons.error_rounded, Colors.blue.shade300, "關於", DataMenu),
           ],
@@ -257,11 +243,13 @@ class _HomePageState extends State<HomePage> {
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
   final List<GridViewMenuData> menu = [
-    GridViewMenuData(0, Icons.fitness_center, '語言訓練', Colors.pink),
-    GridViewMenuData(1, Icons.health_and_safety, '生理需求', Colors.green),
     GridViewMenuData(
-        2, Icons.content_paste_search, '認識失語症', Colors.orangeAccent),
-    GridViewMenuData(3, Icons.settings, '基本設定', Colors.cyan),
+        0, Icons.fitness_center, '需求表達', Colors.orangeAccent.shade100),
+    GridViewMenuData(
+        1, Icons.health_and_safety, '復健訓練', Colors.indigo.shade200),
+    GridViewMenuData(
+        2, Icons.content_paste_search, '諮詢社群', Colors.green.shade300),
+    GridViewMenuData(3, Icons.settings, '設定', Colors.grey),
   ];
 
   @override
@@ -1139,6 +1127,7 @@ BottomNavigationBarItem buildBottomNavigationBarView(
     icon: Icon(
       icon,
       color: color,
+      size: 45,
     ),
     label: label,
   );
@@ -1207,7 +1196,7 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
   );
 }
 
-//Ink+GridView模板
+//GridView模板
 Widget buildGridView(List<GridViewMenuData> menu, BuildContext context,
     List<AllPagesNeedData> DataMenu) {
   DataMenu = DataMenu;
@@ -1223,68 +1212,97 @@ Widget buildGridView(List<GridViewMenuData> menu, BuildContext context,
     },
     debugShowCheckedModeBanner: false,
     home: Scaffold(
-      body: Container(
-        //是深色模式嗎?是的話背景黑色，不是的話背景白色
-        color: DarkMode(DataMenu[0].isdark, "background", Colors.black,
-            Colors.amber.shade50),
-        padding: const EdgeInsets.only(top: 0, right: 20, left: 20, bottom: 0),
-        child: GridView.builder(
-          itemCount: menu.length,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              //寬高比
-              childAspectRatio: 50 / 87,
-              crossAxisCount: 2,
-              crossAxisSpacing: 20.0,
-              mainAxisSpacing: 20.0),
-          itemBuilder: (BuildContext context, int index) {
-            return Material(
-              //是深色模式嗎?是的話背景黑色，不是的話背景白色
-              color: DarkMode(DataMenu[0].isdark, "background", Colors.black,
-                  Colors.amber.shade50),
-              borderRadius: const BorderRadius.all(Radius.circular(30)),
-              child: Column(
-                children: [
-                  Ink(
-                    decoration: BoxDecoration(
-                      color: menu[index].self_color,
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(30.0)),
-                    ),
-                    child: InkResponse(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(30.0)),
-                      //控制高亮的參數
-                      highlightColor: Colors.white24,
-                      highlightShape: BoxShape.rectangle,
-                      radius: 0.0,
-                      splashColor: Colors.red,
-                      //true表示要剪裁水波紋響應的界面；false不剪裁 ，如果控件是圓角不剪裁的話水波紋是矩形
-                      containedInkWell: true,
-                      onTap: () {
-                        print(menu[index].title);
-                        ChoosePage(context, menu[index].index, DataMenu);
-                      },
-                      child: Icon(
-                        menu[index].icon,
-                        size: 140,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    menu[index].title,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 26,
-                        //是深色模式嗎?不是的話字黑色，是的話字白色
-                        color: DarkMode(DataMenu[0].isdark, "Text"),
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                right: 20.0,
+                left: 20.0,
+                bottom: 20.0),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                "Hello",
+                style: TextStyle(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            );
-          },
-        ),
+              Text(
+                "病患",
+                style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    decoration: TextDecoration.underline),
+              ),
+            ],
+          ),
+          Text(
+            "繼續努力加油!!!",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Material(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.monetization_on,
+                  size: 80,
+                  color: Colors.yellow.shade800,
+                ),
+                Text(
+                  "顯示金幣數量",
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: GridView.builder(
+              itemCount: menu.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  //寬高比
+                  childAspectRatio: 4.5,
+                  crossAxisCount: 1,
+                  crossAxisSpacing: 0,
+                  mainAxisSpacing: 0),
+              itemBuilder: (BuildContext context, int index) {
+                return Material(
+                  color: menu[index].self_color,
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width/30,
+                      ),
+                      Icon(
+                        menu[index].icon,
+                        size: 60,
+                      ),
+                      Container(
+                        width: MediaQuery.of(context).size.width-120,
+                        alignment: Alignment.center,
+                        child: Text(
+                          menu[index].title,
+                          style: TextStyle(
+                              fontSize: 40, fontWeight: FontWeight.bold,),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     ),
   );

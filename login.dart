@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_topic_project/MysqlInterface.dart';
 import 'package:my_topic_project/home.dart';
-import "package:my_topic_project/LoginJumpPage.dart";
 import 'dart:io';
 import 'package:my_topic_project/ConnectMysql.dart';
 import 'package:my_topic_project/MysqlList.dart';
@@ -24,13 +23,6 @@ class _LoginPageState extends State<LoginPage> {
   List<AllPagesNeedData> DataMenu = [];
   String Textname = "";
 
-  //判斷是否有按眼睛
-  void _toggleVisibility() {
-    setState(() {
-      _isHidden = !_isHidden;
-    });
-  }
-
   var db = new Mysql();
 
   //取得Mysql裡patient_database資料表的資料
@@ -42,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
       conn.query(sql).then((results) {
         print("連線成功!");
         for (var row in results) {
-          // print(row);
+          print(row);
           setState(() {
             MysqlMenu.add(MysqlDataOflogin_patient_database(
                 row['id'], row['account'], row['password']));
@@ -55,6 +47,7 @@ class _LoginPageState extends State<LoginPage> {
 
   //登入條件判斷
   _LoginJudgment(String account, String password, BuildContext context) {
+    print("account:$account；password:$password");
     setState(() {
       //先將狀態清空
       login_state = "";
@@ -125,11 +118,13 @@ class _LoginPageState extends State<LoginPage> {
     //初始化DataMenu
     //  id, account, Carer, RehabilitationNotice, QuestionnaireNotice, isdark;
     DataMenu.add(AllPagesNeedData("", "", false, true, true, true, 5));
+    //TextField的焦點
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    var keyboardSize = MediaQuery.of(context).viewInsets.bottom;
     Future<bool> RequestPop() async {
       showAlertDialog(context);
       return Future.value(false);
@@ -139,10 +134,11 @@ class _LoginPageState extends State<LoginPage> {
       onWillPop: RequestPop,
       child: Scaffold(
         resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+        backgroundColor: Colors.blue.shade100,
         body: ProgressHUD(
           indicatorColor: Colors.white,
           backgroundColor: Colors.lightBlue.shade100,
-          textStyle: TextStyle(
+          textStyle: const TextStyle(
             fontSize: 40,
           ),
           child: Builder(
@@ -158,13 +154,36 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    Image.asset(
-                      'lib/images/logo.jpg',
-                      width: 200,
-                      height: 200,
+                    SizedBox(
+                      height: keyboardSize==0? MediaQuery.of(context).size.height / 5:0,
+                    ),
+                    const Text(
+                      "歡迎使用",
+                      style: TextStyle(
+                          fontSize: 50,
+                          fontWeight: FontWeight.bold,
+                          decoration: TextDecoration.underline),
                     ),
                     const SizedBox(
-                      height: 40.0,
+                      height: 30,
+                    ),
+                    const Text(
+                      "整合復健APP使用登入",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    const Text(
+                      "(高醫X花慈X高科大)",
+                      textAlign: TextAlign.center,
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(
+                      height: 30,
                     ),
                     buildTextField("帳號"),
                     const SizedBox(
@@ -186,64 +205,12 @@ class _LoginPageState extends State<LoginPage> {
                               fontSize: 16,
                             ),
                           ),
-                          // ErrorText(login_state),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPassWordPage()));
-                            },
-                            child: Text(
-                              "忘記密碼",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                decoration: TextDecoration.underline,
-                                color: Colors.blue[400],
-                              ),
-                            ),
-                          ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 50.0),
-                    //登入按鈕
-                    buildButtonContainer(context),
-                    const SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            const SizedBox(
-                              height: 30,
-                            ),
-                            const Text("沒帳戶請按"),
-                            const SizedBox(
-                              width: 6.0,
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                    builder: (context) =>
-                                        const CreateAccountPage()));
-                              },
-                              child: Text(
-                                "註冊帳戶",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                  decoration: TextDecoration.underline,
-                                  color: Colors.blue[700],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 30),
+                    buildButtonContainer(context), //登入按鈕
+                    Padding(padding: MediaQuery.of(context).viewInsets),
                   ],
                 ),
               ),
@@ -256,29 +223,29 @@ class _LoginPageState extends State<LoginPage> {
 
   //輸入框格式
   Widget buildTextField(String hintText) {
-    return TextField(
-      controller: hintText == "帳號" ? _accountcontroller : _pwcontroller,
-      decoration: InputDecoration(
-        hintText: hintText,
-        hintStyle: const TextStyle(
-          color: Colors.grey,
-          fontSize: 16.0,
+    return Row(
+      children: [
+        Text(
+          "$hintText：",
+          style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(20.0),
+        Expanded(
+          child: TextField(
+            controller: hintText == "帳號" ? _accountcontroller : _pwcontroller,
+            decoration: const InputDecoration(
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(),
+              isDense: true,
+              contentPadding: EdgeInsets.all(8),
+            ),
+            style: const TextStyle(
+              fontSize: 30,
+              color: Colors.black,
+            ),
+          ),
         ),
-        prefixIcon:
-            hintText == "帳號" ? const Icon(Icons.email) : const Icon(Icons.lock),
-        suffixIcon: hintText == "密碼"
-            ? IconButton(
-                onPressed: _toggleVisibility,
-                icon: _isHidden
-                    ? const Icon(Icons.visibility_off)
-                    : const Icon(Icons.visibility),
-              )
-            : null,
-      ),
-      obscureText: hintText == "密碼" ? _isHidden : false,
+      ],
     );
   }
 
@@ -286,19 +253,19 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildButtonContainer(BuildContext context) {
     return SizedBox(
       //取得裝置的數據
-      width: MediaQuery.of(context).size.width - 48.0,
+      width: MediaQuery.of(context).size.width * 0.9,
       height: 48.0,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(1000),
           ),
-          primary: Colors.blueAccent, // background
+          primary: Colors.blueAccent.shade100, // background
           onPrimary: Colors.white, // foreground
         ),
         child: const Text(
           "登入",
-          style: TextStyle(fontSize: 25),
+          style: TextStyle(fontSize: 25, color: Colors.black),
         ),
         onPressed: () {
           _LoginJudgment(_accountcontroller.text, _pwcontroller.text, context);
