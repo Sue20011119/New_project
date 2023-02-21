@@ -13,49 +13,6 @@ import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:horizontal_picker/horizontal_picker.dart';
 import 'package:settings_ui/settings_ui.dart';
 
-//語言訓練頁面
-class TrainPage extends StatefulWidget {
-  const TrainPage({Key? key}) : super(key: key);
-
-  @override
-  _TrainPageState createState() => _TrainPageState();
-}
-
-class _TrainPageState extends State<TrainPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 100,
-          ),
-          const Text(
-            "語言訓練頁面",
-            style: TextStyle(fontSize: 30),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(1000),
-              ),
-              primary: Colors.blueAccent, // background
-              onPrimary: Colors.white, // foreground
-            ),
-            child: const Text(
-              "返回",
-              style: TextStyle(fontSize: 25),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 //生理需求頁面
 class PhysiologicalPage extends StatefulWidget {
   const PhysiologicalPage({Key? key}) : super(key: key);
@@ -99,54 +56,75 @@ class _PhysiologicalPageState extends State<PhysiologicalPage> {
   }
 }
 
-//認識失語症頁面
-class RecognizePage extends StatefulWidget {
-  List<AllPagesNeedData> DataMenu = [];
-
-  RecognizePage(this.DataMenu);
+//復健訓練頁面
+class TrainPage extends StatefulWidget {
+  const TrainPage({Key? key}) : super(key: key);
 
   @override
-  _RecognizePageState createState() => _RecognizePageState();
+  _TrainPageState createState() => _TrainPageState();
 }
 
-class _RecognizePageState extends State<RecognizePage> {
+class _TrainPageState extends State<TrainPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          const SizedBox(
+            height: 100,
+          ),
+          const Text(
+            "語言訓練頁面",
+            style: TextStyle(fontSize: 30),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(1000),
+              ),
+              primary: Colors.blueAccent, // background
+              onPrimary: Colors.white, // foreground
+            ),
+            child: const Text(
+              "返回",
+              style: TextStyle(fontSize: 25),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+//諮詢社群頁面
+class CommunityCommunicationPage extends StatefulWidget {
+  List<AllPagesNeedData> DataMenu = [];
+
+  CommunityCommunicationPage(this.DataMenu);
+
+  @override
+  _CommunityCommunicationPageState createState() =>
+      _CommunityCommunicationPageState();
+}
+
+class _CommunityCommunicationPageState
+    extends State<CommunityCommunicationPage> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
-  final List<ListViewMenuData> listview_menu = [
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-    ListViewMenuData('Google', 'https://www.google.com/'),
-  ];
 
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("RecognizePage", "AllPagesNeedData", DataMenu);
+    PrintList("CommunityCommunicationPage", "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    //分隔線顏色
-    Widget divider0 = const Divider(
-      color: Colors.orange,
-      thickness: 2,
-    );
-    Widget divider1 = const Divider(
-      color: Colors.green,
-      thickness: 2,
-    );
-    Widget divider2 = const Divider(
-      color: Colors.blue,
-      thickness: 2,
-    );
-
     return MaterialApp(
       builder: (BuildContext context, Widget? child) {
         final MediaQueryData data = MediaQuery.of(context);
@@ -159,99 +137,68 @@ class _RecognizePageState extends State<RecognizePage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: DarkMode(
-            DataMenu[0].isdark, "background", Colors.black, Colors.white),
-        appBar: AppBar(
-          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-              Colors.grey.shade900, Colors.brown.shade50),
-          toolbarHeight: 0,
-          flexibleSpace: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.keyboard_return,
-                    size: 35,
-                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
-                        Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(DataMenu)),
-                    );
-                    // Navigator.pop(context);
-                  },
-                ),
-                const Text(""),
-                Text(
-                  "認識失語症",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
-                        Colors.white),
-                  ),
-                ),
-                const Text(""),
-                const Text(""),
-                const Text(""),
-              ],
+        backgroundColor: Colors.green.shade300,
+        body: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 7,
+              color: Colors.white,
             ),
-          ),
-        ),
-        body: Builder(
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: DarkMode(DataMenu[0].isdark, "background",
-                      Colors.grey.shade900, Colors.orange.shade50),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              padding: const EdgeInsets.only(
-                  top: 0.0, right: 20.0, left: 20.0, bottom: 20.0),
-              child: ListView.separated(
-                itemCount: listview_menu.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.add_link,
-                      size: 50,
-                      color: Colors.blue,
-                    ),
-                    title: Text(
-                      "${listview_menu[index].name}$index",
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: DarkMode(
-                          DataMenu[0].isdark,
-                          "Text",
+            Center(
+              child: Column(
+                children: [
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: const [
+                      Icon(Icons.phone_in_talk, size: 60,),
+                      Text(
+                        "諮",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    onTap: () {
-                      launchURL(listview_menu[index].url);
-                    },
-                  );
-                },
-                //選擇分隔線的
-                separatorBuilder: (BuildContext context, int index) {
-                  return index % 3 == 0
-                      ? divider0
-                      : index % 3 == 1
-                          ? divider1
-                          : divider2;
-                },
+                      Text(
+                        "群",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "社",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "群",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        " ",
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 10,
+                  ),
+                  Image.asset('lib/images/LINE_Link.png'),
+                ],
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -269,230 +216,6 @@ class BasicSettingsPage extends StatefulWidget {
 }
 
 class _BasicSettingsPageState extends State<BasicSettingsPage> {
-  var db = new Mysql();
-  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
-  late List<AllPagesNeedData> DataMenu;
-
-  @override
-  void initState() {
-    DataMenu = widget.DataMenu;
-    PrintList("BasicSettingsPage", "AllPagesNeedData", DataMenu);
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-            Colors.black, Colors.cyan.shade50),
-        appBar: AppBar(
-          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-              Colors.grey.shade900, Colors.brown.shade50),
-          toolbarHeight: 0,
-          flexibleSpace: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.keyboard_return,
-                    size: 35,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.cyan, Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(DataMenu)),
-                    );
-                    // Navigator.pop(context);
-                  },
-                ),
-                const Text(""),
-                Text(
-                  "基本設定",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.cyan, Colors.white),
-                  ),
-                ),
-                const Text(""),
-                const Text(""),
-                const Text(""),
-              ],
-            ),
-          ),
-        ),
-        body: Padding(
-          padding:
-              const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
-          child: ListView(
-            children: [
-              Text(
-                "樣式設定",
-                style: TextStyle(
-                  fontSize: 30,
-                  color: DarkMode(DataMenu[0].isdark, "Text",
-                      Colors.grey.shade900, Colors.white),
-                ),
-              ),
-              Card(
-                color: DarkMode(DataMenu[0].isdark, "background",
-                    Colors.grey.shade900, Colors.white),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: Icon(
-                        Icons.dark_mode_rounded,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.yellow, Colors.white),
-                        size: 30,
-                      ),
-                      title: Text(
-                        "暗黑模式",
-                        style: TextStyle(
-                          fontSize: 30,
-                          color: DarkMode(
-                            DataMenu[0].isdark,
-                            "Text",
-                          ),
-                        ),
-                      ),
-                      subtitle: Text(
-                        DataMenu[0].isdark ? "開啟" : "關閉",
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: DarkMode(
-                            DataMenu[0].isdark,
-                            "Text",
-                          ),
-                        ),
-                      ),
-                      trailing: Switch.adaptive(
-                        activeColor: Colors.cyan,
-                        value: DataMenu[0].isdark,
-                        onChanged: (value) {
-                          setState(() {
-                            DataMenu[0].isdark = !DataMenu[0].isdark;
-                          });
-                        },
-                      ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 2,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.amber.shade500, Colors.white),
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.text_fields,
-                        color: DarkMode(DataMenu[0].isdark, "Text"),
-                        size: 35,
-                      ),
-                      title: Text(
-                        "字體大小",
-                        style: TextStyle(
-                          fontSize: 30,
-                          color: DarkMode(
-                            DataMenu[0].isdark,
-                            "Text",
-                          ),
-                        ),
-                      ),
-                    ),
-                    Slider(
-                      activeColor: Colors.cyan,
-                      thumbColor: Colors.cyan,
-                      min: 0,
-                      max: 10,
-                      value: DataMenu[0].textscale,
-                      divisions: 2,
-                      label: DataMenu[0].textscale == 0
-                          ? "小"
-                          : DataMenu[0].textscale == 5
-                              ? "中"
-                              : "大",
-                      onChanged: (value) {
-                        setState(() {
-                          print(value);
-                          DataMenu[0].textscale = value;
-                        });
-                      },
-                    ),
-                    Container(
-                      width: double.infinity,
-                      height: 2,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.amber.shade500, Colors.white),
-                    ),
-                    ListTile(
-                      leading: Icon(
-                        Icons.person,
-                        color: DarkMode(
-                          DataMenu[0].isdark,
-                          "Text",
-                        ),
-                        size: 30,
-                      ),
-                      title: Text(
-                        "照護者",
-                        style: TextStyle(
-                          fontSize: 30,
-                          color: DarkMode(
-                            DataMenu[0].isdark,
-                            "Text",
-                          ),
-                        ),
-                      ),
-                      subtitle: const Text(""),
-                      trailing: Switch.adaptive(
-                        activeColor: Colors.cyan,
-                        value: DataMenu[0].Carer,
-                        onChanged: (value) {
-                          setState(() {
-                            DataMenu[0].Carer = !DataMenu[0].Carer;
-                          });
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-//使用者資料頁面
-class UserPage extends StatefulWidget {
-  List<AllPagesNeedData> DataMenu = [];
-
-  UserPage(this.DataMenu);
-
-  @override
-  _UserPageState createState() => _UserPageState();
-}
-
-class _UserPageState extends State<UserPage> {
   var db = new Mysql();
   List<MysqlDataOfPersonal> PersonalMenu = []; //個人資料
   late List<AllPagesNeedData> DataMenu;
@@ -513,7 +236,7 @@ class _UserPageState extends State<UserPage> {
     DataMenu = widget.DataMenu;
     _getMysqlData();
     // _delayText();
-    PrintList("UserPage", "AllPagesNeedData", DataMenu);
+    PrintList("BasicSettingsPage", "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -696,31 +419,35 @@ class _UserPageState extends State<UserPage> {
   }
 }
 
-//社群交流頁面
-class CommunityCommunicationPage extends StatefulWidget {
+//認識失語症頁面
+class RecognizePage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
 
-  CommunityCommunicationPage(this.DataMenu);
+  RecognizePage(this.DataMenu);
 
   @override
-  _CommunityCommunicationPageState createState() =>
-      _CommunityCommunicationPageState();
+  _RecognizePageState createState() => _RecognizePageState();
 }
 
-class _CommunityCommunicationPageState
-    extends State<CommunityCommunicationPage> {
-  var db = new Mysql();
-  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+class _RecognizePageState extends State<RecognizePage> {
   late List<AllPagesNeedData> DataMenu;
   final List<ListViewMenuData> listview_menu = [
-    ListViewMenuData('病友交流社群', 'https://www.typassn.org/about/'),
-    ListViewMenuData('LINE', 'https://liff.line.me/1655226850-Bd3EKqZe'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
+    ListViewMenuData('Google', 'https://www.google.com/'),
   ];
 
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("CommunityCommunicationPage", "AllPagesNeedData", DataMenu);
+    PrintList("RecognizePage", "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -752,23 +479,46 @@ class _CommunityCommunicationPageState
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
+        backgroundColor: DarkMode(
+            DataMenu[0].isdark, "background", Colors.black, Colors.white),
         appBar: AppBar(
-          backgroundColor: Colors.red,
-          centerTitle: true,
-          title: const Text(
-            "社群交流",
-            style: TextStyle(fontSize: 25),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.keyboard_return,
-              size: 35,
-              color: Colors.white,
+          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
+              Colors.grey.shade900, Colors.brown.shade50),
+          toolbarHeight: 0,
+          flexibleSpace: Container(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  icon: Icon(
+                    Icons.keyboard_return,
+                    size: 35,
+                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
+                        Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => HomePage(DataMenu)),
+                    );
+                    // Navigator.pop(context);
+                  },
+                ),
+                const Text(""),
+                Text(
+                  "認識失語症",
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
+                        Colors.white),
+                  ),
+                ),
+                const Text(""),
+                const Text(""),
+                const Text(""),
+              ],
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
           ),
         ),
         body: Builder(
@@ -782,28 +532,28 @@ class _CommunityCommunicationPageState
                 bottom: 20.0),
             child: Container(
               decoration: BoxDecoration(
-                color: DarkMode(DataMenu[0].isdark, "background",
-                    Colors.grey.shade900, Colors.red.shade50),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
-              ),
+                  color: DarkMode(DataMenu[0].isdark, "background",
+                      Colors.grey.shade900, Colors.orange.shade50),
+                  borderRadius: BorderRadius.all(Radius.circular(20))),
+              padding: const EdgeInsets.only(
+                  top: 0.0, right: 20.0, left: 20.0, bottom: 20.0),
               child: ListView.separated(
                 itemCount: listview_menu.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    leading: Icon(
-                      Icons.group,
+                    leading: const Icon(
+                      Icons.add_link,
                       size: 50,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.red.shade900, Colors.white),
+                      color: Colors.blue,
                     ),
                     title: Text(
-                      listview_menu[index].name,
+                      "${listview_menu[index].name}$index",
                       style: TextStyle(
                         fontSize: 23,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.red.shade900, Colors.white),
+                        color: DarkMode(
+                          DataMenu[0].isdark,
+                          "Text",
+                        ),
                       ),
                     ),
                     onTap: () {
@@ -1422,7 +1172,7 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
               child: InkWell(
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => UserPage(DataMenu)));
+                      builder: (context) => BasicSettingsPage(DataMenu)));
                 },
                 child: Column(
                   children: <Widget>[

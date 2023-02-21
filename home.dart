@@ -187,7 +187,7 @@ void showAlertDialog(BuildContext context, List<AllPagesNeedData> DataMenu) {
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.blue),
+                  MaterialStateProperty.all<Color>(Colors.blue),
                 ),
                 child: const Text(
                   "登出",
@@ -243,12 +243,9 @@ class _HomePageState extends State<HomePage> {
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
   final List<GridViewMenuData> menu = [
-    GridViewMenuData(
-        0, Icons.fitness_center, '需求表達', Colors.orangeAccent.shade100),
-    GridViewMenuData(
-        1, Icons.health_and_safety, '復健訓練', Colors.indigo.shade200),
-    GridViewMenuData(
-        2, Icons.content_paste_search, '諮詢社群', Colors.green.shade300),
+    GridViewMenuData(0, Icons.handshake, '需求表達', Colors.orangeAccent.shade100),
+    GridViewMenuData(1, Icons.directions_walk, '復健訓練', Colors.indigo.shade200),
+    GridViewMenuData(2, Icons.phone_in_talk, '諮詢社群', Colors.green.shade300),
     GridViewMenuData(3, Icons.settings, '設定', Colors.grey),
   ];
 
@@ -260,11 +257,172 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return buildGridView(menu, context, DataMenu);
+    return MaterialApp(
+      builder: (BuildContext context, Widget? child) {
+        final MediaQueryData data = MediaQuery.of(context);
+        return MediaQuery(
+          data: data.copyWith(
+            textScaleFactor: choosetextscale(DataMenu),
+          ),
+          child: child!,
+        );
+      },
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery
+                      .of(context)
+                      .padding
+                      .top,
+                  right: 20.0,
+                  left: 20.0,
+                  bottom: 20.0),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: const [
+                Text(
+                  "Hello",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  "病患",
+                  style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      decoration: TextDecoration.underline),
+                ),
+              ],
+            ),
+            const Text(
+              "繼續努力加油!!!",
+              style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Material(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.monetization_on,
+                    size: 80,
+                    color: Colors.yellow.shade800,
+                  ),
+                  const Text(
+                    "顯示金幣數量",
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.underline),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              //移除上面出現的白色部分
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: GridView.builder(
+                  itemCount: menu.length,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    //寬高比
+                    childAspectRatio: 4.5,
+                    crossAxisCount: 1,
+                  ),
+                  itemBuilder: (BuildContext context, int index) {
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {});
+                        switch (index) {
+                        //需求表達頁面
+                          case 0:
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (
+                                      context) => const PhysiologicalPage()),
+                            );
+                            break;
+
+                        //復健訓練頁面
+                          case 1:
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) => const TrainPage()),
+                            );
+                            break;
+
+                        //諮詢社群頁面
+                          case 2:
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      CommunityCommunicationPage(DataMenu)),
+                            );
+                            break;
+
+                        //設定頁面
+                          case 3:
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      BasicSettingsPage(DataMenu)),
+                            );
+                            break;
+                        }
+                      },
+                      child: Material(
+                        color: menu[index].self_color,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width / 30,
+                            ),
+                            Icon(
+                              menu[index].icon,
+                              size: 60,
+                            ),
+                            Container(
+                              width: MediaQuery
+                                  .of(context)
+                                  .size
+                                  .width - 120,
+                              alignment: Alignment.center,
+                              child: Text(
+                                menu[index].title,
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
-//紀錄頁面
+//復健紀錄頁面
 class RecordPage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
 
@@ -317,7 +475,7 @@ class _RecordPageState extends State<RecordPage> {
       thickness: 2,
     );
     Widget divider2 = Divider(
-      color: Colors.yellow[600],
+      color: Colors.yellow.shade600,
       thickness: 2,
     );
     Widget divider3 = const Divider(
@@ -329,7 +487,7 @@ class _RecordPageState extends State<RecordPage> {
       thickness: 2,
     );
     Widget divider5 = Divider(
-      color: Colors.blue[900],
+      color: Colors.blue.shade900,
       thickness: 2,
     );
     Widget divider6 = const Divider(
@@ -341,16 +499,16 @@ class _RecordPageState extends State<RecordPage> {
       return index % 7 == 0
           ? divider0
           : index % 7 == 1
-              ? divider1
-              : index % 7 == 2
-                  ? divider2
-                  : index % 7 == 3
-                      ? divider3
-                      : index % 7 == 4
-                          ? divider4
-                          : index % 7 == 5
-                              ? divider5
-                              : divider6;
+          ? divider1
+          : index % 7 == 2
+          ? divider2
+          : index % 7 == 3
+          ? divider3
+          : index % 7 == 4
+          ? divider4
+          : index % 7 == 5
+          ? divider5
+          : divider6;
     }
 
     return MaterialApp(
@@ -365,87 +523,82 @@ class _RecordPageState extends State<RecordPage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-              Colors.grey.shade900, Colors.yellow.shade50),
-          toolbarHeight: 10,
-          flexibleSpace: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "復健紀錄",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
-                        Colors.white),
-                  ),
-                ),
-              ],
+        backgroundColor: Colors.orange.shade50,
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery
+                      .of(context)
+                      .padding
+                      .top,
+                  right: 20.0,
+                  left: 20.0,
+                  bottom: 20.0),
             ),
+            const Center(
+              child: Text("復健訓練",
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),),
+            ),
+          SizedBox(
+            height: 10,
           ),
-        ),
-        body: Container(
-          color: DarkMode(DataMenu[0].isdark, "background", Colors.black,
-              Colors.orange.shade50),
-          padding: const EdgeInsets.all(20),
-          child: ListView.separated(
-            itemCount: MysqlMenu.length,
-            itemBuilder: (context, index) {
-              return Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  border: Border.all(
-                    width: 1,
-                    color: DarkMode(DataMenu[0].isdark, "background",
-                        Colors.grey.shade900, Colors.orange.shade50),
-                  ),
-                  color: DarkMode(DataMenu[0].isdark, "background",
-                      Colors.grey.shade900, Colors.orange.shade50),
+            Expanded(
+              //移除上面出現的白色部分
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: ListView.separated(
+                  itemCount: MysqlMenu.length,
+                  itemBuilder: (context, index) {
+                    return Container(
+                      color: MysqlMenu[index].score>90?Colors.green.shade200:
+                      MysqlMenu[index].score>=75?Colors.yellow.shade400:
+                      MysqlMenu[index].score>=60?Colors.orange.shade300:Colors.red.shade200,
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.access_time,
+                          size: 50,
+                          color: Colors.black,
+                        ),
+                        title: Text(
+                          MysqlMenu[index].type,
+                          style: const TextStyle(
+                            fontSize: 23,
+                            color: Colors.black,
+                          ),
+                        ),
+                        subtitle: Text(
+                          //日期格式轉換
+                          formatDate(
+                              MysqlMenu[index].time, [yyyy, "-", mm, "-", dd]),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                        trailing:
+                        Text(
+                          MysqlMenu[index].score.toString(),
+                          style: const TextStyle(
+                            fontSize: 23,
+                            color: Colors.black,
+                          ),
+                        ),
+                        onTap: () {
+                          print(index);
+                        },
+                      ),
+                    );
+                  },
+                  //選擇分隔線的
+                  separatorBuilder: (BuildContext context, int index) {
+                    return ChooseDivider(index);
+                  },
                 ),
-                child: ListTile(
-                  leading: Icon(
-                    Icons.access_time,
-                    size: 50,
-                    color: DarkMode(DataMenu[0].isdark, "Text"),
-                  ),
-                  title: Text(
-                    '${MysqlMenu[index].type}',
-                    style: TextStyle(
-                      fontSize: 23,
-                      color: DarkMode(DataMenu[0].isdark, "Text"),
-                    ),
-                  ),
-                  subtitle: Text(
-                    //日期格式轉換
-                    formatDate(MysqlMenu[index].time, [yyyy, "-", mm, "-", dd]),
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: DarkMode(DataMenu[0].isdark, "Text"),
-                    ),
-                  ),
-                  trailing:
-                      // const Icon(
-                      //   Icons.chevron_right,
-                      //   size: 40,
-                      // ),
-                      Text(
-                    '${MysqlMenu[index].score}',
-                    style: TextStyle(
-                      fontSize: 23,
-                      color: DarkMode(DataMenu[0].isdark, "Text"),
-                    ),
-                  ),
-                  onTap: () {},
-                ),
-              );
-            },
-            //選擇分隔線的
-            separatorBuilder: (BuildContext context, int index) {
-              return ChooseDivider(index);
-            },
-          ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -510,7 +663,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
   ];
 
   Future<Null> _onRefresh() async {
-    await Future.delayed(Duration(seconds: 1), () {
+    await Future.delayed(const Duration(seconds: 1), () {
       print('refresh');
       setState(() {
         expansionpanellist_menu = [
@@ -632,11 +785,11 @@ class _NewMessagePageState extends State<NewMessagePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor:
-                        MaterialStateProperty.all<Color>(Colors.green),
+                    MaterialStateProperty.all<Color>(Colors.green),
                   ),
                   child: Text(
                     all ? "刪除全部訊息" : "刪除",
-                    style: TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 20),
                   ),
                   onPressed: () {
                     setState(() {
@@ -720,7 +873,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
           onRefresh: _onRefresh,
           child: Padding(
             padding:
-                const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
+            const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
             child: Column(
               children: [
                 if (expansionpanellist_menu.isEmpty)
@@ -741,7 +894,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           onChanged: (val) {
                             setState(() {
                               DataMenu[0].RehabilitationNotice =
-                                  !DataMenu[0].RehabilitationNotice;
+                              !DataMenu[0].RehabilitationNotice;
                             });
                           }),
                       Container(
@@ -765,7 +918,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           onChanged: (val) {
                             setState(() {
                               DataMenu[0].QuestionnaireNotice =
-                                  !DataMenu[0].QuestionnaireNotice;
+                              !DataMenu[0].QuestionnaireNotice;
                             });
                           }),
                       Container(
@@ -809,7 +962,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                     onChanged: (val) {
                                       setState(() {
                                         DataMenu[0].RehabilitationNotice =
-                                            !DataMenu[0].RehabilitationNotice;
+                                        !DataMenu[0].RehabilitationNotice;
                                       });
                                     }),
                                 Container(
@@ -834,7 +987,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                     onChanged: (val) {
                                       setState(() {
                                         DataMenu[0].QuestionnaireNotice =
-                                            !DataMenu[0].QuestionnaireNotice;
+                                        !DataMenu[0].QuestionnaireNotice;
                                       });
                                     }),
                                 Container(
@@ -876,7 +1029,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                             ),
                           ExpansionPanelList(
                               animationDuration:
-                                  const Duration(milliseconds: 500),
+                              const Duration(milliseconds: 500),
                               elevation: 0,
                               expandedHeaderPadding: const EdgeInsets.all(8),
                               children: [
@@ -887,33 +1040,34 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                       Colors.grey.shade900,
                                       Colors.white),
                                   isExpanded:
-                                      expansionpanellist_menu[index].isopen,
+                                  expansionpanellist_menu[index].isopen,
                                   canTapOnHeader: true,
                                   //能按標題展開
                                   headerBuilder:
                                       (BuildContext context, bool isExpanded) {
                                     return ListTile(
                                       leading: !expansionpanellist_menu[index]
-                                              .isread
+                                          .isread
                                           ? Icon(Icons.circle,
-                                              size: 16,
-                                              color:
-                                                  Colors.greenAccent.shade200)
+                                          size: 16,
+                                          color:
+                                          Colors.greenAccent.shade200)
                                           : const Icon(Icons.circle_outlined,
-                                              size: 16, color: Colors.grey),
+                                          size: 16, color: Colors.grey),
                                       title: Text(
-                                        "${expansionpanellist_menu[index].date}復健通知",
+                                        "${expansionpanellist_menu[index]
+                                            .date}復健通知",
                                         style: TextStyle(
                                             color: DarkMode(
                                                 DataMenu[0].isdark, "Text"),
                                             fontSize: 25,
                                             overflow: TextOverflow.ellipsis,
                                             fontWeight:
-                                                //未讀嗎?未讀的話粗體，已讀的話復原
-                                                !expansionpanellist_menu[index]
-                                                        .isread
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal),
+                                            //未讀嗎?未讀的話粗體，已讀的話復原
+                                            !expansionpanellist_menu[index]
+                                                .isread
+                                                ? FontWeight.bold
+                                                : FontWeight.normal),
                                       ),
                                     );
                                   },
@@ -955,7 +1109,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                               expansionCallback: (i, isExpanded) {
                                 setState(() {
                                   expansionpanellist_menu[index].isopen =
-                                      !isExpanded;
+                                  !isExpanded;
                                   expansionpanellist_menu[index].isread = true;
                                 });
                               }),
@@ -1051,7 +1205,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
         ),
         body: Padding(
           padding:
-              const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
+          const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
           child: ListView(
             children: [
               Card(
@@ -1067,7 +1221,13 @@ class _AboutUsPageState extends State<AboutUsPage> {
                     buildAboutAs("APP使用", "", DataMenu),
                     buildAboutAs(
                         "最後更新時間",
-                        "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                        "${DateTime
+                            .now()
+                            .year}/${DateTime
+                            .now()
+                            .month}/${DateTime
+                            .now()
+                            .day}",
                         DataMenu),
                   ],
                 ),
@@ -1081,8 +1241,8 @@ class _AboutUsPageState extends State<AboutUsPage> {
 }
 
 //關於我們頁面的list
-Widget buildAboutAs(
-    String title, String trailing, List<AllPagesNeedData> DataMenu) {
+Widget buildAboutAs(String title, String trailing,
+    List<AllPagesNeedData> DataMenu) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
@@ -1098,7 +1258,7 @@ Widget buildAboutAs(
         style: TextStyle(
           fontSize: 24,
           color:
-              DarkMode(DataMenu[0].isdark, "Text", Colors.grey, Colors.white),
+          DarkMode(DataMenu[0].isdark, "Text", Colors.grey, Colors.white),
         ),
       ),
       Container(
@@ -1121,8 +1281,8 @@ class GridViewMenuData {
 }
 
 //BottomNavigationBarItem模板
-BottomNavigationBarItem buildBottomNavigationBarView(
-    IconData icon, Color color, String label, List<AllPagesNeedData> DataMenu) {
+BottomNavigationBarItem buildBottomNavigationBarView(IconData icon, Color color,
+    String label, List<AllPagesNeedData> DataMenu) {
   return BottomNavigationBarItem(
     icon: Icon(
       icon,
@@ -1151,43 +1311,43 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
         )),
     onTap: () {
       switch (index) {
-        //社區交流頁面
+      //社區交流頁面
         case 0:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => CommunityCommunicationPage(DataMenu)));
           break;
 
-        //相關連結頁面
+      //相關連結頁面
         case 1:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RelateLinkPage(DataMenu)));
           break;
 
-        //問卷系統頁面
+      //問卷系統頁面
         case 2:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => QuestionnairePage(DataMenu)));
           break;
 
-        //居家照護小知識頁面
+      //居家照護小知識頁面
         case 3:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => HomeCarePage(DataMenu)));
           break;
 
-        //放鬆音樂頁面
+      //放鬆音樂頁面
         case 4:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RelaxMusicPage(DataMenu)));
           break;
 
-        //回首頁
+      //回首頁
         case 5:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MainPage(DataMenu)));
           break;
 
-        //登出
+      //登出
         case 6:
           showAlertDialog(context, DataMenu); //顯示登出提示對話框
           break;
@@ -1196,144 +1356,32 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
   );
 }
 
-//GridView模板
-Widget buildGridView(List<GridViewMenuData> menu, BuildContext context,
-    List<AllPagesNeedData> DataMenu) {
-  DataMenu = DataMenu;
-  return MaterialApp(
-    builder: (BuildContext context, Widget? child) {
-      final MediaQueryData data = MediaQuery.of(context);
-      return MediaQuery(
-        data: data.copyWith(
-          textScaleFactor: choosetextscale(DataMenu),
-        ),
-        child: child!,
-      );
-    },
-    debugShowCheckedModeBanner: false,
-    home: Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Hello",
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                "病患",
-                style: TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline),
-              ),
-            ],
-          ),
-          Text(
-            "繼續努力加油!!!",
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Material(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.monetization_on,
-                  size: 80,
-                  color: Colors.yellow.shade800,
-                ),
-                Text(
-                  "顯示金幣數量",
-                  style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      decoration: TextDecoration.underline),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: GridView.builder(
-              itemCount: menu.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  //寬高比
-                  childAspectRatio: 4.5,
-                  crossAxisCount: 1,
-                  crossAxisSpacing: 0,
-                  mainAxisSpacing: 0),
-              itemBuilder: (BuildContext context, int index) {
-                return Material(
-                  color: menu[index].self_color,
-                  child: Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width/30,
-                      ),
-                      Icon(
-                        menu[index].icon,
-                        size: 60,
-                      ),
-                      Container(
-                        width: MediaQuery.of(context).size.width-120,
-                        alignment: Alignment.center,
-                        child: Text(
-                          menu[index].title,
-                          style: TextStyle(
-                              fontSize: 40, fontWeight: FontWeight.bold,),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-
 //跳轉首頁方格頁面
-void ChoosePage(
-    BuildContext context, int index, List<AllPagesNeedData> DataMenu) {
+void ChoosePage(BuildContext context, int index,
+    List<AllPagesNeedData> DataMenu) {
   switch (index) {
-    //訓練頁面
+  //訓練頁面
     case 0:
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => TrainPage()),
+        MaterialPageRoute(builder: (context) => const TrainPage()),
       );
       break;
 
-    //生理需求頁面
+  //生理需求頁面
     case 1:
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => PhysiologicalPage()),
+        MaterialPageRoute(builder: (context) => const PhysiologicalPage()),
       );
       break;
 
-    //認識失語症頁面
+  //認識失語症頁面
     case 2:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => RecognizePage(DataMenu)),
       );
       break;
 
-    //基本設定頁面
+  //基本設定頁面
     case 3:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => BasicSettingsPage(DataMenu)),
