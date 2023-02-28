@@ -110,14 +110,14 @@ class _MainPageState extends State<MainPage> {
             });
           },
           items: [
-            buildBottomNavigationBarView(Icons.assignment_return,
+            buildBottomNavigationBarView("lib/images/bottom_return.png",
                 Colors.redAccent.shade400, "返回", DataMenu),
-            buildBottomNavigationBarView(Icons.content_paste_search,
+            buildBottomNavigationBarView("lib/images/bottom_record.png",
                 Colors.yellow.shade400, "使用紀錄", DataMenu),
-            buildBottomNavigationBarView(
-                Icons.campaign, Colors.lightGreen.shade400, "新訊息", DataMenu),
-            buildBottomNavigationBarView(
-                Icons.error_rounded, Colors.blue.shade300, "關於", DataMenu),
+            buildBottomNavigationBarView("lib/images/bottom_notify.png",
+                Colors.lightGreen.shade400, "新訊息", DataMenu),
+            buildBottomNavigationBarView("lib/images/bottom_info.png",
+                Colors.blue.shade300, "關於", DataMenu),
           ],
         ),
         body: pages[currentIndex],
@@ -187,7 +187,7 @@ void showAlertDialog(BuildContext context, List<AllPagesNeedData> DataMenu) {
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor:
-                  MaterialStateProperty.all<Color>(Colors.blue),
+                      MaterialStateProperty.all<Color>(Colors.blue),
                 ),
                 child: const Text(
                   "登出",
@@ -269,14 +269,12 @@ class _HomePageState extends State<HomePage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         body: Column(
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery
-                      .of(context)
-                      .padding
-                      .top,
+                  top: MediaQuery.of(context).padding.top,
                   right: 20.0,
                   left: 20.0,
                   bottom: 20.0),
@@ -343,16 +341,16 @@ class _HomePageState extends State<HomePage> {
                       onTap: () {
                         setState(() {});
                         switch (index) {
-                        //需求表達頁面
+                          //需求表達頁面
                           case 0:
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (
-                                      context) => const PhysiologicalPage()),
+                                  builder: (context) =>
+                                      const PhysiologicalPage()),
                             );
                             break;
 
-                        //復健訓練頁面
+                          //復健訓練頁面
                           case 1:
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -360,7 +358,7 @@ class _HomePageState extends State<HomePage> {
                             );
                             break;
 
-                        //諮詢社群頁面
+                          //諮詢社群頁面
                           case 2:
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -369,7 +367,7 @@ class _HomePageState extends State<HomePage> {
                             );
                             break;
 
-                        //設定頁面
+                          //設定頁面
                           case 3:
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -384,20 +382,14 @@ class _HomePageState extends State<HomePage> {
                         child: Row(
                           children: [
                             SizedBox(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width / 30,
+                              width: MediaQuery.of(context).size.width / 30,
                             ),
                             Icon(
                               menu[index].icon,
                               size: 60,
                             ),
                             Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width - 120,
+                              width: MediaQuery.of(context).size.width - 120,
                               alignment: Alignment.center,
                               child: Text(
                                 menu[index].title,
@@ -499,16 +491,16 @@ class _RecordPageState extends State<RecordPage> {
       return index % 7 == 0
           ? divider0
           : index % 7 == 1
-          ? divider1
-          : index % 7 == 2
-          ? divider2
-          : index % 7 == 3
-          ? divider3
-          : index % 7 == 4
-          ? divider4
-          : index % 7 == 5
-          ? divider5
-          : divider6;
+              ? divider1
+              : index % 7 == 2
+                  ? divider2
+                  : index % 7 == 3
+                      ? divider3
+                      : index % 7 == 4
+                          ? divider4
+                          : index % 7 == 5
+                              ? divider5
+                              : divider6;
     }
 
     return MaterialApp(
@@ -523,26 +515,26 @@ class _RecordPageState extends State<RecordPage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: Colors.orange.shade50,
         body: Column(
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery
-                      .of(context)
-                      .padding
-                      .top,
+                  top: MediaQuery.of(context).padding.top,
                   right: 20.0,
                   left: 20.0,
                   bottom: 20.0),
             ),
             const Center(
-              child: Text("復健訓練",
-                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),),
+              child: Text(
+                "復健訓練",
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+              ),
             ),
-          SizedBox(
-            height: 10,
-          ),
+            const SizedBox(
+              height: 10,
+            ),
             Expanded(
               //移除上面出現的白色部分
               child: MediaQuery.removePadding(
@@ -552,9 +544,13 @@ class _RecordPageState extends State<RecordPage> {
                   itemCount: MysqlMenu.length,
                   itemBuilder: (context, index) {
                     return Container(
-                      color: MysqlMenu[index].score>90?Colors.green.shade200:
-                      MysqlMenu[index].score>=75?Colors.yellow.shade400:
-                      MysqlMenu[index].score>=60?Colors.orange.shade300:Colors.red.shade200,
+                      color: MysqlMenu[index].score > 90
+                          ? Colors.green.shade200
+                          : MysqlMenu[index].score >= 75
+                              ? Colors.yellow.shade400
+                              : MysqlMenu[index].score >= 60
+                                  ? Colors.orange.shade300
+                                  : Colors.red.shade200,
                       child: ListTile(
                         leading: const Icon(
                           Icons.access_time,
@@ -577,8 +573,7 @@ class _RecordPageState extends State<RecordPage> {
                             color: Colors.black,
                           ),
                         ),
-                        trailing:
-                        Text(
+                        trailing: Text(
                           MysqlMenu[index].score.toString(),
                           style: const TextStyle(
                             fontSize: 23,
@@ -785,7 +780,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.green),
+                        MaterialStateProperty.all<Color>(Colors.green),
                   ),
                   child: Text(
                     all ? "刪除全部訊息" : "刪除",
@@ -847,6 +842,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
         appBar: AppBar(
           backgroundColor: DarkMode(DataMenu[0].isdark, "background",
@@ -873,7 +869,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
           onRefresh: _onRefresh,
           child: Padding(
             padding:
-            const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
+                const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
             child: Column(
               children: [
                 if (expansionpanellist_menu.isEmpty)
@@ -894,7 +890,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           onChanged: (val) {
                             setState(() {
                               DataMenu[0].RehabilitationNotice =
-                              !DataMenu[0].RehabilitationNotice;
+                                  !DataMenu[0].RehabilitationNotice;
                             });
                           }),
                       Container(
@@ -918,7 +914,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                           onChanged: (val) {
                             setState(() {
                               DataMenu[0].QuestionnaireNotice =
-                              !DataMenu[0].QuestionnaireNotice;
+                                  !DataMenu[0].QuestionnaireNotice;
                             });
                           }),
                       Container(
@@ -962,7 +958,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                     onChanged: (val) {
                                       setState(() {
                                         DataMenu[0].RehabilitationNotice =
-                                        !DataMenu[0].RehabilitationNotice;
+                                            !DataMenu[0].RehabilitationNotice;
                                       });
                                     }),
                                 Container(
@@ -987,7 +983,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                     onChanged: (val) {
                                       setState(() {
                                         DataMenu[0].QuestionnaireNotice =
-                                        !DataMenu[0].QuestionnaireNotice;
+                                            !DataMenu[0].QuestionnaireNotice;
                                       });
                                     }),
                                 Container(
@@ -1029,7 +1025,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                             ),
                           ExpansionPanelList(
                               animationDuration:
-                              const Duration(milliseconds: 500),
+                                  const Duration(milliseconds: 500),
                               elevation: 0,
                               expandedHeaderPadding: const EdgeInsets.all(8),
                               children: [
@@ -1040,34 +1036,33 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                       Colors.grey.shade900,
                                       Colors.white),
                                   isExpanded:
-                                  expansionpanellist_menu[index].isopen,
+                                      expansionpanellist_menu[index].isopen,
                                   canTapOnHeader: true,
                                   //能按標題展開
                                   headerBuilder:
                                       (BuildContext context, bool isExpanded) {
                                     return ListTile(
                                       leading: !expansionpanellist_menu[index]
-                                          .isread
+                                              .isread
                                           ? Icon(Icons.circle,
-                                          size: 16,
-                                          color:
-                                          Colors.greenAccent.shade200)
+                                              size: 16,
+                                              color:
+                                                  Colors.greenAccent.shade200)
                                           : const Icon(Icons.circle_outlined,
-                                          size: 16, color: Colors.grey),
+                                              size: 16, color: Colors.grey),
                                       title: Text(
-                                        "${expansionpanellist_menu[index]
-                                            .date}復健通知",
+                                        "${expansionpanellist_menu[index].date}復健通知",
                                         style: TextStyle(
                                             color: DarkMode(
                                                 DataMenu[0].isdark, "Text"),
                                             fontSize: 25,
                                             overflow: TextOverflow.ellipsis,
                                             fontWeight:
-                                            //未讀嗎?未讀的話粗體，已讀的話復原
-                                            !expansionpanellist_menu[index]
-                                                .isread
-                                                ? FontWeight.bold
-                                                : FontWeight.normal),
+                                                //未讀嗎?未讀的話粗體，已讀的話復原
+                                                !expansionpanellist_menu[index]
+                                                        .isread
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal),
                                       ),
                                     );
                                   },
@@ -1109,7 +1104,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                               expansionCallback: (i, isExpanded) {
                                 setState(() {
                                   expansionpanellist_menu[index].isopen =
-                                  !isExpanded;
+                                      !isExpanded;
                                   expansionpanellist_menu[index].isread = true;
                                 });
                               }),
@@ -1181,59 +1176,57 @@ class _AboutUsPageState extends State<AboutUsPage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-              Colors.grey.shade900, Colors.blue.shade50),
-          toolbarHeight: 10,
-          flexibleSpace: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "關於我們",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.blue, Colors.white),
-                  ),
-                ),
-              ],
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+        backgroundColor: Colors.blue.shade50,
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  right: 20.0,
+                  left: 20.0,
+                  bottom: 20.0),
             ),
-          ),
-        ),
-        body: Padding(
-          padding:
-          const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
-          child: ListView(
-            children: [
-              Card(
-                color: DarkMode(
-                  DataMenu[0].isdark,
-                  "background",
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+            const Center(
+              child: Text(
+                "關於我們",
+                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            Expanded(
+              //移除上面出現的白色部分
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: ListView(
                   children: [
-                    buildAboutAs("發展單位", "高科大", DataMenu),
-                    buildAboutAs("合作公司", "高醫", DataMenu),
-                    buildAboutAs("APP使用", "", DataMenu),
-                    buildAboutAs(
-                        "最後更新時間",
-                        "${DateTime
-                            .now()
-                            .year}/${DateTime
-                            .now()
-                            .month}/${DateTime
-                            .now()
-                            .day}",
-                        DataMenu),
+                    Card(
+                      color: Colors.blue.shade50,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: 2,
+                            color: Colors.black,
+                          ),
+                          buildAboutAs("發展單位及合作公司", "高科大/高醫"),
+                          buildAboutAs("APP使用", ""),
+                          buildAboutAs(
+                            "最後更新時間",
+                            "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -1241,30 +1234,27 @@ class _AboutUsPageState extends State<AboutUsPage> {
 }
 
 //關於我們頁面的list
-Widget buildAboutAs(String title, String trailing,
-    List<AllPagesNeedData> DataMenu) {
+Widget buildAboutAs(String title, String trailing) {
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 28,
-          color: DarkMode(DataMenu[0].isdark, "Text"),
+          fontWeight: FontWeight.bold,
         ),
       ),
       Text(
         trailing,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 24,
-          color:
-          DarkMode(DataMenu[0].isdark, "Text", Colors.grey, Colors.white),
         ),
       ),
       Container(
         width: double.infinity,
         height: 2,
-        color: DarkMode(DataMenu[0].isdark, "Text", Colors.blue, Colors.white),
+        color: Colors.black,
       ),
     ],
   );
@@ -1281,14 +1271,10 @@ class GridViewMenuData {
 }
 
 //BottomNavigationBarItem模板
-BottomNavigationBarItem buildBottomNavigationBarView(IconData icon, Color color,
-    String label, List<AllPagesNeedData> DataMenu) {
+BottomNavigationBarItem buildBottomNavigationBarView(
+    String url, Color color, String label, List<AllPagesNeedData> DataMenu) {
   return BottomNavigationBarItem(
-    icon: Icon(
-      icon,
-      color: color,
-      size: 45,
-    ),
+    icon: Image.asset(url),
     label: label,
   );
 }
@@ -1311,43 +1297,43 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
         )),
     onTap: () {
       switch (index) {
-      //社區交流頁面
+        //社區交流頁面
         case 0:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => CommunityCommunicationPage(DataMenu)));
           break;
 
-      //相關連結頁面
+        //相關連結頁面
         case 1:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RelateLinkPage(DataMenu)));
           break;
 
-      //問卷系統頁面
+        //問卷系統頁面
         case 2:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => QuestionnairePage(DataMenu)));
           break;
 
-      //居家照護小知識頁面
+        //居家照護小知識頁面
         case 3:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => HomeCarePage(DataMenu)));
           break;
 
-      //放鬆音樂頁面
+        //放鬆音樂頁面
         case 4:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RelaxMusicPage(DataMenu)));
           break;
 
-      //回首頁
+        //回首頁
         case 5:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MainPage(DataMenu)));
           break;
 
-      //登出
+        //登出
         case 6:
           showAlertDialog(context, DataMenu); //顯示登出提示對話框
           break;
@@ -1357,31 +1343,31 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
 }
 
 //跳轉首頁方格頁面
-void ChoosePage(BuildContext context, int index,
-    List<AllPagesNeedData> DataMenu) {
+void ChoosePage(
+    BuildContext context, int index, List<AllPagesNeedData> DataMenu) {
   switch (index) {
-  //訓練頁面
+    //訓練頁面
     case 0:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const TrainPage()),
       );
       break;
 
-  //生理需求頁面
+    //生理需求頁面
     case 1:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => const PhysiologicalPage()),
       );
       break;
 
-  //認識失語症頁面
+    //認識失語症頁面
     case 2:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => RecognizePage(DataMenu)),
       );
       break;
 
-  //基本設定頁面
+    //基本設定頁面
     case 3:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => BasicSettingsPage(DataMenu)),

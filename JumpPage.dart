@@ -137,6 +137,7 @@ class _CommunityCommunicationPageState
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: Colors.green.shade300,
         body: Column(
           children: [
@@ -153,7 +154,10 @@ class _CommunityCommunicationPageState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: const [
-                      Icon(Icons.phone_in_talk, size: 60,),
+                      Icon(
+                        Icons.phone_in_talk,
+                        size: 60,
+                      ),
                       Text(
                         "諮",
                         style: TextStyle(
@@ -205,7 +209,7 @@ class _CommunityCommunicationPageState
   }
 }
 
-//基本設定頁面
+//設定頁面
 class BasicSettingsPage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
 
@@ -223,12 +227,14 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   String personal_id = "";
   String personal_name = "";
   String personal_gender = "";
+  final _nicknamecontroller = TextEditingController();
+  DateTime _birthday=DateTime(2020, 2, 1);
 
   pic(String sex) {
     if (sex == "男")
-      return 'lib/images/mpatient.jpg';
+      return 'lib/images/male.png';
     else
-      return 'lib/images/wpatient.jpg';
+      return 'lib/images/female.png';
   }
 
   @override
@@ -255,6 +261,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
             personal_id = PersonalMenu[0].id.toString();
             personal_name = PersonalMenu[0].name.toString();
             personal_gender = PersonalMenu[0].gender.toString();
+            _nicknamecontroller.text = personal_name;
           });
         }
       });
@@ -273,45 +280,6 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
     });
   }
 
-  //建造版面
-  buildlayout(BuildContext context, String title, String detail,
-      List<AllPagesNeedData> DataMenu) {
-    return Column(
-      children: [
-        Container(
-          alignment: Alignment.topLeft,
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 30,
-              color: DarkMode(DataMenu[0].isdark, "Text"),
-            ),
-          ),
-        ),
-        Container(
-          alignment: Alignment.centerLeft,
-          width: MediaQuery.of(context).size.width - 20,
-          height: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-              color: DarkMode(DataMenu[0].isdark, "background",
-                  Colors.grey.shade900, Colors.white),
-              border: Border.all(color: Colors.black38)),
-          child: Text(
-            detail,
-            style: TextStyle(
-              fontSize: 30,
-              color: DarkMode(DataMenu[0].isdark, "Text"),
-            ), //字串的大小
-          ),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-      ],
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -326,83 +294,399 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: Colors.cyan.shade700,
-          centerTitle: true,
-          title: const Text(
-            "使用者頁面",
-            style: TextStyle(fontSize: 25),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.keyboard_return,
-              size: 35,
-              color: Colors.white,
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+        body: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  top: MediaQuery.of(context).padding.top,
+                  right: 20.0,
+                  left: 20.0,
+                  bottom: 20.0),
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
-        body: SingleChildScrollView(
-          child: Center(
-            child: Column(
-              children: [
-                Container(
+            Expanded(
+              //移除上面出現的白色部分
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: Container(
                   height: MediaQuery.of(context).size.height,
                   alignment: Alignment.center,
                   child: ListView.builder(
                     itemCount: list.abs(),
                     itemBuilder: (context, index) {
                       return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Column(
                             children: [
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              Container(
-                                alignment: Alignment.center,
-                                width: 250,
-                                height: 250,
-                                decoration: BoxDecoration(
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(200.0)),
-                                    color: DarkMode(
-                                        DataMenu[0].isdark, "background"),
-                                    border: Border.all(color: Colors.black)),
-                                child: ClipOval(
-                                  child: Image.asset(
-                                    personal_gender == "男"
-                                        ? pic("男")
-                                        : pic("女"),
-                                    height: MediaQuery.of(context).size.height,
-                                    width: MediaQuery.of(context).size.width,
-                                    fit: BoxFit.cover,
+                              Row(
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: 120,
+                                    height: 120,
+                                    decoration: const BoxDecoration(
+                                      borderRadius: BorderRadius.all(
+                                          Radius.circular(200.0)),
+                                    ),
+                                    child: ClipOval(
+                                      child: Image.asset(
+                                        personal_gender == "男"
+                                            ? pic("男")
+                                            : pic("女"),
+                                        height:
+                                            MediaQuery.of(context).size.height,
+                                        width:
+                                            MediaQuery.of(context).size.width,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
                                   ),
-                                ),
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Text(
+                                              "帳號：",
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                DataMenu[0].account,
+                                                style: const TextStyle(
+                                                    fontSize: 30),
+                                                overflow: TextOverflow.fade,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Text(
+                                              "姓名：",
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                personal_name,
+                                                style: const TextStyle(
+                                                    fontSize: 30),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        SizedBox(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              150,
+                                          child: Row(
+                                            children: [
+                                              const Text(
+                                                "暱稱：",
+                                                style: TextStyle(
+                                                    fontSize: 30,
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Flexible(
+                                                child: TextFormField(
+                                                  decoration:
+                                                      const InputDecoration(
+                                                    filled: true,
+                                                    fillColor: Colors.white,
+                                                    border:
+                                                        OutlineInputBorder(),
+                                                    isDense: true,
+                                                    contentPadding:
+                                                        EdgeInsets.all(8),
+                                                  ),
+                                                  style: const TextStyle(
+                                                    fontSize: 30,
+                                                    color: Colors.black,
+                                                  ),
+                                                  controller:
+                                                      _nicknamecontroller,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                           const SizedBox(
-                            height: 30,
+                            height: 20,
                           ),
                           Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              buildlayout(
-                                  context, "名稱", personal_name, DataMenu),
-                              buildlayout(
-                                  context, "性別", personal_gender, DataMenu),
-                              buildlayout(context, "年齡", "暫無", DataMenu),
-                              buildlayout(context, "診斷", "暫無", DataMenu),
-                              buildlayout(context, "連絡電話", "暫無", DataMenu),
-                              buildlayout(
-                                  context, "個案編號", personal_id, DataMenu),
-                              buildlayout(context, "使用日期", "暫無", DataMenu),
-                              buildlayout(context, "個案來源", "暫無", DataMenu),
-                              buildlayout(context, "緊急聯絡人", "暫無", DataMenu),
+                              Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  const Text(
+                                    "生日：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                          "${_birthday.year}/${_birthday.month}/${_birthday.day}",
+                                      // "",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                    FlatButton(
+                                      child: Icon(Icons.date_range),
+                                      onPressed: () async {
+                                        var result = await showDatePicker(
+                                            context: context,
+                                            initialDate: DateTime.now(),
+                                            firstDate: DateTime(1920, 01),
+                                            lastDate: DateTime.now());
+                                        if (result != null) {
+                                          setState(() {
+                                            _birthday = result;
+                                            print(_birthday);
+                                          });
+                                        }
+                                      },
+                                    ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: const [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "年齡：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "暫無",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  const Text(
+                                    "性別：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      personal_gender,
+                                      style: const TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: const [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "診斷：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "暫無",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: const [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "患側：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "暫無",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: const [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "連絡電話：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "暫無",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: const [
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "緊急聯絡人：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "暫無",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: const [
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "緊急連絡人電話：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: const [
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  Text(
+                                    "暫無",
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  const Text(
+                                    "加入日期：",
+                                    style: TextStyle(
+                                        fontSize: 30,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                                      style: const TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
+                                      primary: Colors.blueAccent.shade100,
+                                      // background
+                                      onPrimary: Colors.white, // foreground
+                                    ),
+                                    child: const Text(
+                                      "儲存資料",
+                                      style: TextStyle(
+                                          fontSize: 25, color: Colors.black),
+                                    ),
+                                    onPressed: () {},
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ],
@@ -410,9 +694,9 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                     },
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -479,6 +763,7 @@ class _RecognizePageState extends State<RecognizePage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: DarkMode(
             DataMenu[0].isdark, "background", Colors.black, Colors.white),
         appBar: AppBar(
@@ -636,6 +921,7 @@ class _RelateLinkPageState extends State<RelateLinkPage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
         appBar: AppBar(
           backgroundColor: Colors.cyan,
@@ -751,6 +1037,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
         appBar: AppBar(
           backgroundColor: Colors.purple,
@@ -897,6 +1184,7 @@ class _HomeCarePageState extends State<HomeCarePage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
         appBar: AppBar(
           backgroundColor: Colors.lightGreen,
@@ -1033,6 +1321,7 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
       },
       debugShowCheckedModeBanner: false,
       home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
         appBar: AppBar(
           backgroundColor: Colors.amber,
