@@ -224,11 +224,20 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   List<MysqlDataOfPersonal> PersonalMenu = []; //個人資料
   late List<AllPagesNeedData> DataMenu;
   int list = 1; //設置ListView.builder顯示的倍數
-  String personal_id = "";
-  String personal_name = "";
-  String personal_gender = "";
+  String id = "";
+  String name = "";
+  String gender = "";
   final _nicknamecontroller = TextEditingController();
-  DateTime _birthday=DateTime(2020, 2, 1);
+  DateTime _birthday = DateTime(2020, 2, 1); //生日
+  bool diagnosis_left = false; //診斷左側
+  bool diagnosis_right = false; //診斷右側
+  bool diagnosis_hemorrhagic = false; //診斷出血性
+  bool diagnosis_ischemic = false; //診斷缺血性
+  bool affected_side_left = false; //患側左側
+  bool affected_side_right = false; //患側右側
+  String phone = ""; //手機號碼
+  String emergency_contact = ""; //緊急連絡人
+  String emergency_contact_phone = ""; //緊急連絡人電話
 
   pic(String sex) {
     if (sex == "男")
@@ -258,10 +267,29 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
           setState(() {
             PersonalMenu.add(
                 MysqlDataOfPersonal(row['id'], row['name'], row['gender']));
-            personal_id = PersonalMenu[0].id.toString();
-            personal_name = PersonalMenu[0].name.toString();
-            personal_gender = PersonalMenu[0].gender.toString();
-            _nicknamecontroller.text = personal_name;
+            id = PersonalMenu[0].id.toString();
+            name = PersonalMenu[0].name.toString();
+            _nicknamecontroller.text = row['nickname'].toString();
+            _birthday = row['birthday'];
+            gender = PersonalMenu[0].gender.toString();
+            diagnosis_left = row['diagnosis_left'] == 0 ? false : true;
+            diagnosis_right = row['diagnosis_right'] == 0 ? false : true;
+            diagnosis_hemorrhagic =
+                row['diagnosis_hemorrhagic'] == 0 ? false : true;
+            diagnosis_ischemic = row['diagnosis_ischemic'] == 0 ? false : true;
+            affected_side_left = row['affected_side_left'] == 0 ? false : true;
+            affected_side_right =
+                row['affected_side_right'] == 0 ? false : true;
+            phone = row['phone'];
+            emergency_contact = row['emergency_contact'];
+            emergency_contact_phone = row['emergency_contact_phone'];
+
+            // print("diagnosis_left:$diagnosis_left");
+            // print("diagnosis_right:$diagnosis_right");
+            // print("diagnosis_hemorrhagic:$diagnosis_hemorrhagic");
+            // print("diagnosis_ischemic:$diagnosis_ischemic");
+            // print("affected_side_left:$affected_side_left");
+            // print("affected_side_right:$affected_side_right");
           });
         }
       });
@@ -273,9 +301,9 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   Future _delayText() async {
     Future.delayed(const Duration(milliseconds: 100), () {
       setState(() {
-        personal_id = PersonalMenu[0].id.toString();
-        personal_name = PersonalMenu[0].name.toString();
-        personal_gender = PersonalMenu[0].gender.toString();
+        id = PersonalMenu[0].id.toString();
+        name = PersonalMenu[0].name.toString();
+        gender = PersonalMenu[0].gender.toString();
       });
     });
   }
@@ -331,9 +359,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                     ),
                                     child: ClipOval(
                                       child: Image.asset(
-                                        personal_gender == "男"
-                                            ? pic("男")
-                                            : pic("女"),
+                                        gender == "男" ? pic("男") : pic("女"),
                                         height:
                                             MediaQuery.of(context).size.height,
                                         width:
@@ -382,7 +408,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                             ),
                                             Expanded(
                                               child: Text(
-                                                personal_name,
+                                                name,
                                                 style: const TextStyle(
                                                     fontSize: 30),
                                               ),
@@ -458,38 +484,37 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                          "${_birthday.year}/${_birthday.month}/${_birthday.day}",
-                                      // "",
+                                      "${_birthday.year}/${_birthday.month}/${_birthday.day}",
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
-                                    FlatButton(
-                                      child: Icon(Icons.date_range),
-                                      onPressed: () async {
-                                        var result = await showDatePicker(
-                                            context: context,
-                                            initialDate: DateTime.now(),
-                                            firstDate: DateTime(1920, 01),
-                                            lastDate: DateTime.now());
-                                        if (result != null) {
-                                          setState(() {
-                                            _birthday = result;
-                                            print(_birthday);
-                                          });
-                                        }
-                                      },
-                                    ),
+                                  FlatButton(
+                                    child: Icon(Icons.date_range),
+                                    onPressed: () async {
+                                      var result = await showDatePicker(
+                                          context: context,
+                                          initialDate: DateTime.now(),
+                                          firstDate: DateTime(1920, 01),
+                                          lastDate: DateTime.now());
+                                      if (result != null) {
+                                        setState(() {
+                                          _birthday = result;
+                                          print(_birthday);
+                                        });
+                                      }
+                                    },
+                                  ),
                                 ],
                               ),
                               const SizedBox(
                                 height: 10,
                               ),
                               Row(
-                                children: const [
+                                children: [
                                   const SizedBox(
                                     width: 20,
                                   ),
-                                  Text(
+                                  const Text(
                                     "年齡：",
                                     style: TextStyle(
                                         fontSize: 30,
@@ -497,8 +522,8 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      "暫無",
-                                      style: TextStyle(fontSize: 30),
+                                      "${(DateTime.now().difference(_birthday).inDays / 365).truncate()}", //截斷
+                                      style: const TextStyle(fontSize: 30),
                                     ),
                                   ),
                                 ],
@@ -519,7 +544,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      personal_gender,
+                                      gender,
                                       style: const TextStyle(fontSize: 30),
                                     ),
                                   ),
@@ -529,19 +554,86 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 height: 10,
                               ),
                               Row(
-                                children: const [
+                                children: [
                                   const SizedBox(
                                     width: 20,
                                   ),
-                                  Text(
+                                  const Text(
                                     "診斷：",
                                     style: TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Expanded(
+                                    child: Checkbox(
+                                      value: diagnosis_left,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          diagnosis_left = newValue ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Expanded(
                                     child: Text(
-                                      "暫無",
+                                      "左側",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Checkbox(
+                                      value: diagnosis_right,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          diagnosis_right = newValue ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    child: Text(
+                                      "右側",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const SizedBox(
+                                    width: 20,
+                                  ),
+                                  Expanded(
+                                    child: Checkbox(
+                                      value: diagnosis_hemorrhagic,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          diagnosis_hemorrhagic =
+                                              newValue ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    child: Text(
+                                      "出血性",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Checkbox(
+                                      value: diagnosis_ischemic,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          diagnosis_ischemic =
+                                              newValue ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    child: Text(
+                                      "缺血性",
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
@@ -551,19 +643,47 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 height: 10,
                               ),
                               Row(
-                                children: const [
+                                children: [
                                   const SizedBox(
                                     width: 20,
                                   ),
-                                  Text(
+                                  const Text(
                                     "患側：",
                                     style: TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
                                   Expanded(
+                                    child: Checkbox(
+                                      value: affected_side_left,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          affected_side_left =
+                                              newValue ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Expanded(
                                     child: Text(
-                                      "暫無",
+                                      "左側",
+                                      style: TextStyle(fontSize: 30),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Checkbox(
+                                      value: affected_side_right,
+                                      onChanged: (newValue) {
+                                        setState(() {
+                                          affected_side_right =
+                                              newValue ?? false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Expanded(
+                                    child: Text(
+                                      "右側",
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
@@ -573,7 +693,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 height: 10,
                               ),
                               Row(
-                                children: const [
+                                children: [
                                   const SizedBox(
                                     width: 20,
                                   ),
@@ -585,7 +705,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      "暫無",
+                                      phone,
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
@@ -595,7 +715,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 height: 10,
                               ),
                               Row(
-                                children: const [
+                                children: [
                                   SizedBox(
                                     width: 20,
                                   ),
@@ -607,7 +727,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                   ),
                                   Expanded(
                                     child: Text(
-                                      "暫無",
+                                      emergency_contact,
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
@@ -630,12 +750,12 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 ],
                               ),
                               Row(
-                                children: const [
+                                children: [
                                   SizedBox(
                                     width: 20,
                                   ),
                                   Text(
-                                    "暫無",
+                                    emergency_contact_phone,
                                     style: TextStyle(fontSize: 30),
                                   ),
                                 ],
@@ -683,7 +803,11 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                       style: TextStyle(
                                           fontSize: 25, color: Colors.black),
                                     ),
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      setState(() {
+                                        int a = 1;
+                                      });
+                                    },
                                   ),
                                 ],
                               ),
