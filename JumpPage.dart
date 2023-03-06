@@ -225,19 +225,89 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   late List<AllPagesNeedData> DataMenu;
   int list = 1; //設置ListView.builder顯示的倍數
   String id = "";
-  String name = "";
-  String gender = "";
-  final _nicknamecontroller = TextEditingController();
-  DateTime _birthday = DateTime(2020, 2, 1); //生日
+  String name = ""; //姓名
+  String gender = ""; //性別
+  final _nicknamecontroller = TextEditingController(); //暱稱
+  DateTime _birthday = DateTime.now(); //生日
   bool diagnosis_left = false; //診斷左側
   bool diagnosis_right = false; //診斷右側
   bool diagnosis_hemorrhagic = false; //診斷出血性
   bool diagnosis_ischemic = false; //診斷缺血性
   bool affected_side_left = false; //患側左側
   bool affected_side_right = false; //患側右側
-  String phone = ""; //手機號碼
+  final _phonecontroller = TextEditingController(); //手機號碼
+  final _emergency_contactcontroller = TextEditingController(); //緊急聯絡人
+  final _emergency_contact_phonecontroller =
+      TextEditingController(); //緊急聯絡人手機號碼
   String emergency_contact = ""; //緊急連絡人
   String emergency_contact_phone = ""; //緊急連絡人電話
+
+  String ip = "192.168.0.13";
+  late bool error, sending, success;
+  late String msg;
+
+  late List request_php = [
+    "insert_patient_database.php", //新增
+    "delete_patient_database.php", //刪除
+    "update_patient_database.php", //修改
+  ];
+
+  late String phpurl;
+
+  //本地不能使用 http://localhost/
+  //使用本地 IP 地址或 URL
+  //Windows 使用 ipconfig ；在 Linux 上使用 ip a 取得 IP 地址
+
+  //送出資料
+  Future<void> sendData(int num) async {
+    print(request_php[num]);
+    String phpurl = "http://$ip/appproject/${request_php[num]}";
+    //發送帶有標題data的post request
+    var res = await http.post(Uri.parse(phpurl), body: {
+      //傳過去的值
+      "ip": ip, //網路資料庫ip
+      "id": id,
+      "nickname": _nicknamecontroller.text,
+      "birthday": _birthday.toString(),
+      "diagnosis_left": (diagnosis_left ? 1 : 0).toString(),
+      "diagnosis_right": (diagnosis_right ? 1 : 0).toString(),
+      "diagnosis_hemorrhagic": (diagnosis_hemorrhagic ? 1 : 0).toString(),
+      "diagnosis_ischemic": (diagnosis_ischemic ? 1 : 0).toString(),
+      "affected_side_left": (affected_side_left ? 1 : 0).toString(),
+      "affected_side_right": (affected_side_right ? 1 : 0).toString(),
+      "phone": _phonecontroller.text,
+      "emergency_contact": _emergency_contactcontroller.text,
+      "emergency_contact_phone": _emergency_contact_phonecontroller.text,
+    });
+
+    if (res.statusCode == 200) {
+      print(res.body);
+      var data = json.decode(res.body); //將json解碼為陣列形式
+      if (data["error"]) {
+        //錯誤的話
+        setState(() {
+          //從 server 收到錯誤時刷新 UI 介面顯示文字
+          sending = false;
+          error = true;
+          msg = data["message"]; //來自server 的錯誤消息
+          print("msg:$msg");
+        });
+      } else {
+        setState(() {
+          sending = false;
+          success = true; //使用 setState 設定success為成功狀態(true)並刷新 UI 介面顯示文字
+        });
+      }
+    } else {
+      //存在錯誤的話
+      setState(() {
+        error = true;
+        msg = "Error!";
+        sending = false; //標記錯誤並使用 setState 刷新 UI 介面顯示文字
+        print("msg:$msg");
+      });
+    }
+  }
 
   pic(String sex) {
     if (sex == "男")
@@ -252,6 +322,10 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
     _getMysqlData();
     // _delayText();
     PrintList("BasicSettingsPage", "AllPagesNeedData", DataMenu);
+    error = false;
+    sending = false;
+    success = false;
+    msg = "";
     super.initState();
   }
 
@@ -280,9 +354,10 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
             affected_side_left = row['affected_side_left'] == 0 ? false : true;
             affected_side_right =
                 row['affected_side_right'] == 0 ? false : true;
-            phone = row['phone'];
-            emergency_contact = row['emergency_contact'];
-            emergency_contact_phone = row['emergency_contact_phone'];
+            _phonecontroller.text = row['phone'];
+            _emergency_contactcontroller.text = row['emergency_contact'];
+            _emergency_contact_phonecontroller.text =
+                row['emergency_contact_phone'];
 
             // print("diagnosis_left:$diagnosis_left");
             // print("diagnosis_right:$diagnosis_right");
@@ -376,6 +451,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
+                                        //帳號
                                         Row(
                                           children: [
                                             const Text(
@@ -398,6 +474,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                         const SizedBox(
                                           height: 10,
                                         ),
+                                        //姓名
                                         Row(
                                           children: [
                                             const Text(
@@ -418,6 +495,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                         const SizedBox(
                                           height: 10,
                                         ),
+                                        //暱稱
                                         SizedBox(
                                           width: MediaQuery.of(context)
                                                   .size
@@ -471,6 +549,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              //生日
                               Row(
                                 children: [
                                   const SizedBox(
@@ -509,6 +588,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //年齡
                               Row(
                                 children: [
                                   const SizedBox(
@@ -531,6 +611,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //性別
                               Row(
                                 children: [
                                   const SizedBox(
@@ -553,6 +634,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //診斷
                               Row(
                                 children: [
                                   const SizedBox(
@@ -564,6 +646,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
+                                  //診斷左側
                                   Expanded(
                                     child: Checkbox(
                                       value: diagnosis_left,
@@ -580,6 +663,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
+                                  //診斷右側
                                   Expanded(
                                     child: Checkbox(
                                       value: diagnosis_right,
@@ -598,11 +682,13 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                   ),
                                 ],
                               ),
+                              //腦中風
                               Row(
                                 children: [
                                   const SizedBox(
                                     width: 20,
                                   ),
+                                  //出血性
                                   Expanded(
                                     child: Checkbox(
                                       value: diagnosis_hemorrhagic,
@@ -620,6 +706,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
+                                  //缺血性
                                   Expanded(
                                     child: Checkbox(
                                       value: diagnosis_ischemic,
@@ -642,6 +729,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //患側
                               Row(
                                 children: [
                                   const SizedBox(
@@ -653,6 +741,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
+                                  //患側左側
                                   Expanded(
                                     child: Checkbox(
                                       value: affected_side_left,
@@ -670,6 +759,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                       style: TextStyle(fontSize: 30),
                                     ),
                                   ),
+                                  //患側右側
                                   Expanded(
                                     child: Checkbox(
                                       value: affected_side_right,
@@ -692,21 +782,37 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //連絡電話
                               Row(
                                 children: [
                                   const SizedBox(
                                     width: 20,
                                   ),
-                                  Text(
+                                  const Text(
                                     "連絡電話：",
                                     style: TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      phone,
-                                      style: TextStyle(fontSize: 30),
+                                  Flexible(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        right: 20.0,
+                                      ),
+                                      child: TextFormField(
+                                        decoration: const InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          border: OutlineInputBorder(),
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.all(8),
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 30,
+                                          color: Colors.black,
+                                        ),
+                                        controller: _phonecontroller,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -714,21 +820,38 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //緊急聯絡人
                               Row(
                                 children: [
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 20,
                                   ),
-                                  Text(
+                                  const Text(
                                     "緊急聯絡人：",
                                     style: TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      emergency_contact,
-                                      style: TextStyle(fontSize: 30),
+                                  Flexible(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(
+                                        right: 20.0,
+                                      ),
+                                      child: TextFormField(
+                                        decoration: const InputDecoration(
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          border: OutlineInputBorder(),
+                                          isDense: true,
+                                          contentPadding: EdgeInsets.all(8),
+                                        ),
+                                        style: const TextStyle(
+                                          fontSize: 30,
+                                          color: Colors.black,
+                                        ),
+                                        controller:
+                                            _emergency_contactcontroller,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -736,29 +859,40 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                               const SizedBox(
                                 height: 10,
                               ),
+                              //緊急聯絡人電話
                               Row(
                                 children: const [
                                   SizedBox(
                                     width: 20,
                                   ),
                                   Text(
-                                    "緊急連絡人電話：",
+                                    "緊急聯絡人電話：",
                                     style: TextStyle(
                                         fontSize: 30,
                                         fontWeight: FontWeight.bold),
                                   ),
                                 ],
                               ),
-                              Row(
-                                children: [
-                                  SizedBox(
-                                    width: 20,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                  right: 20.0,
+                                  left: 20.0,
+                                ),
+                                child: TextFormField(
+                                  decoration: const InputDecoration(
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.all(8),
                                   ),
-                                  Text(
-                                    emergency_contact_phone,
-                                    style: TextStyle(fontSize: 30),
+                                  style: const TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.black,
                                   ),
-                                ],
+                                  controller:
+                                      _emergency_contact_phonecontroller,
+                                ),
                               ),
                               const SizedBox(
                                 height: 10,
@@ -805,8 +939,9 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                     ),
                                     onPressed: () {
                                       setState(() {
-                                        int a = 1;
+                                        sending = true;
                                       });
+                                      sendData(2); //修改 update
                                     },
                                   ),
                                 ],

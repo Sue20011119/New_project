@@ -179,7 +179,6 @@ class WriteSQLdataState extends State<WriteSQLdata> {
       "ip":ip,  //網路資料庫ip
       "id": idctl.text,
       "name": namectl.text,
-      // "time": DateTime.now().toString(),
       "time": timectl.text,
       "type": typectl.text,
       "score": scorectl.text,

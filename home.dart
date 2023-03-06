@@ -130,15 +130,14 @@ class _MainPageState extends State<MainPage> {
 void showAlertDialog(BuildContext context, List<AllPagesNeedData> DataMenu) {
   // Init
   AlertDialog dialog = AlertDialog(
-    backgroundColor: DarkMode(
-        DataMenu[0].isdark, "background", Colors.grey.shade800, Colors.white),
+    backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(15)),
     ),
     title: RichText(
-      text: TextSpan(
+      text: const TextSpan(
         children: [
-          const WidgetSpan(
+          WidgetSpan(
             child: Icon(
               Icons.warning,
               size: 30,
@@ -149,8 +148,7 @@ void showAlertDialog(BuildContext context, List<AllPagesNeedData> DataMenu) {
             text: "您確定要登出嗎?",
             style: TextStyle(
               fontSize: 25,
-              color: DarkMode(
-                  DataMenu[0].isdark, "Text", Colors.black, Colors.white),
+              color: Colors.black,
             ),
           ),
         ],
