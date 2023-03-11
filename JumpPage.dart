@@ -12,45 +12,338 @@ import 'package:my_topic_project/MysqlList.dart';
 import 'package:babstrap_settings_screen/babstrap_settings_screen.dart';
 import 'package:horizontal_picker/horizontal_picker.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:http/http.dart';
+import 'dart:async';
+import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';
+import 'package:dio/dio.dart';
+import 'package:audioplayers/audioplayers.dart';
 
-//生理需求頁面
-class PhysiologicalPage extends StatefulWidget {
-  const PhysiologicalPage({Key? key}) : super(key: key);
+//需求表達1頁面
+class PhysiologicalPage1 extends StatefulWidget {
+  List<AllPagesNeedData> DataMenu = [];
+
+  PhysiologicalPage1(this.DataMenu);
 
   @override
-  _PhysiologicalPageState createState() => _PhysiologicalPageState();
+  _PhysiologicalPage1State createState() => _PhysiologicalPage1State();
 }
 
-class _PhysiologicalPageState extends State<PhysiologicalPage> {
+class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+  late List<AllPagesNeedData> DataMenu;
+
+  Widget buildPhysiologicalPage(String audio, String image, String title) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height / 5,
+      width: MediaQuery.of(context).size.width / 3,
+      child: TextButton(
+        onPressed: () {
+          final player = AudioCache();
+          player.play(audio);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width / 3,
+              height: MediaQuery.of(context).size.height / 10,
+              child: Image.asset(
+                image,
+                width: 50,
+                height: 50,
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 30, color: Colors.black),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void initState() {
+    DataMenu = widget.DataMenu;
+    PrintList("PhysiologicalPage1", "AllPagesNeedData", DataMenu);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 100,
+    return MaterialApp(
+      builder: (BuildContext context, Widget? child) {
+        final MediaQueryData data = MediaQuery.of(context);
+        return MediaQuery(
+          data: data.copyWith(
+            textScaleFactor: 1,
           ),
-          const Text(
-            "生理需求頁面",
-            style: TextStyle(fontSize: 30),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(1000),
+          child: child!,
+        );
+      },
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+        backgroundColor: Colors.orangeAccent.shade100,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height / 7,
+                color: Colors.white,
               ),
-              primary: Colors.blueAccent, // background
-              onPrimary: Colors.white, // foreground
-            ),
-            child: const Text(
-              "返回",
-              style: TextStyle(fontSize: 25),
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
+              Center(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          height: MediaQuery.of(context).size.height / 8,
+                          child: Image.asset(
+                            'lib/images/need.png',
+                          ),
+                        ),
+                        const Text(
+                          '需 求 表 達',
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //肚子餓
+                        buildPhysiologicalPage(
+                            "hungry.mp3", "lib/images/hungry.png", "肚子餓"),
+                        //口渴
+                        buildPhysiologicalPage(
+                            "thirsty.mp3", "lib/images/thirsty.png", "口渴"),
+                        //小號
+                        buildPhysiologicalPage(
+                            "small.mp3", "lib/images/small.png", "小號"),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //大號
+                        buildPhysiologicalPage(
+                            "big.mp3", "lib/images/large.png", "大號"),
+                        //換尿布
+                        buildPhysiologicalPage(
+                            "change.mp3", "lib/images/change.png", "換尿布"),
+                        //翻身
+                        buildPhysiologicalPage(
+                            "body.mp3", "lib/images/body.png", "翻身"),
+                      ],
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 12,
+                      width: MediaQuery.of(context).size.width / 1.5,
+                      decoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10.0)),
+                          color: Colors.deepOrange.shade800,
+                          border:
+                              Border.all(color: Colors.deepOrange.shade800)),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    PhysiologicalPage2(DataMenu)),
+                          );
+                        },
+                        child: const Text(
+                          '下一頁',
+                          style: TextStyle(fontSize: 27, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+//需求表達2頁面
+class PhysiologicalPage2 extends StatefulWidget {
+  List<AllPagesNeedData> DataMenu = [];
+
+  PhysiologicalPage2(this.DataMenu);
+
+  @override
+  _PhysiologicalPage2State createState() => _PhysiologicalPage2State();
+}
+
+class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+  late List<AllPagesNeedData> DataMenu;
+
+  Widget buildPhysiologicalPage(String audio, String image, String title) {
+    return SizedBox(
+      height: MediaQuery.of(context).size.height / 5,
+      width: MediaQuery.of(context).size.width / 3,
+      child: TextButton(
+        onPressed: () {
+          final player = AudioCache();
+          player.play(audio);
+        },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width / 3,
+              height: MediaQuery.of(context).size.height / 10,
+              child: Image.asset(
+                image,
+                width: 50,
+                height: 50,
+              ),
+            ),
+            Container(
+              color: Colors.white,
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 30, color: Colors.black),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  void initState() {
+    DataMenu = widget.DataMenu;
+    PrintList("PhysiologicalPage2", "AllPagesNeedData", DataMenu);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      builder: (BuildContext context, Widget? child) {
+        final MediaQueryData data = MediaQuery.of(context);
+        return MediaQuery(
+          data: data.copyWith(
+            textScaleFactor: 1,
+          ),
+          child: child!,
+        );
+      },
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+        backgroundColor: Colors.orangeAccent.shade100,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height / 7,
+                color: Colors.white,
+              ),
+              Center(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          height: MediaQuery.of(context).size.height / 8,
+                          child: Image.asset(
+                            'lib/images/need.png',
+                          ),
+                        ),
+                        const Text(
+                          '需 求 表 達',
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //很熱
+                        buildPhysiologicalPage(
+                            "hot.mp3", "lib/images/hot.png", "很熱"),
+                        //很冷
+                        buildPhysiologicalPage(
+                            "cold.mp3", "lib/images/cold.png", "很冷"),
+                        //頭暈
+                        buildPhysiologicalPage(
+                            "faint.mp3", "lib/images/faint.png", "頭暈"),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        //頭痛
+                        buildPhysiologicalPage(
+                            "head.mp3", "lib/images/head.png", "頭痛"),
+                        //腹痛
+                        buildPhysiologicalPage(
+                            "stomach.mp3", "lib/images/stomach.png", "腹痛"),
+                        //下床
+                        buildPhysiologicalPage(
+                            "bed.mp3", "lib/images/bed.png", "下床"),
+                      ],
+                    ),
+                    Container(
+                      height: MediaQuery.of(context).size.height / 12,
+                      width: MediaQuery.of(context).size.width / 1.5,
+                      decoration: BoxDecoration(
+                          borderRadius:
+                          const BorderRadius.all(Radius.circular(10.0)),
+                          color: Colors.deepOrange.shade800,
+                          border:
+                          Border.all(color: Colors.deepOrange.shade800)),
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text(
+                          '上一頁',
+                          style: TextStyle(fontSize: 27, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -58,13 +351,25 @@ class _PhysiologicalPageState extends State<PhysiologicalPage> {
 
 //復健訓練頁面
 class TrainPage extends StatefulWidget {
-  const TrainPage({Key? key}) : super(key: key);
+  List<AllPagesNeedData> DataMenu = [];
+
+  TrainPage(this.DataMenu);
 
   @override
   _TrainPageState createState() => _TrainPageState();
 }
 
 class _TrainPageState extends State<TrainPage> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+  late List<AllPagesNeedData> DataMenu;
+
+  void initState() {
+    DataMenu = widget.DataMenu;
+    PrintList("TrainPage", "AllPagesNeedData", DataMenu);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -130,7 +435,7 @@ class _CommunityCommunicationPageState
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -139,70 +444,92 @@ class _CommunityCommunicationPageState
       home: Scaffold(
         resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         backgroundColor: Colors.green.shade300,
-        body: Column(
-          children: [
-            Container(
-              height: MediaQuery.of(context).size.height / 7,
-              color: Colors.white,
-            ),
-            Center(
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: const [
-                      Icon(
-                        Icons.phone_in_talk,
-                        size: 60,
-                      ),
-                      Text(
-                        "諮",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "群",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "社",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "群",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        " ",
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height / 10,
-                  ),
-                  Image.asset('lib/images/LINE_Link.png'),
-                ],
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: MediaQuery.of(context).size.height / 7,
+                color: Colors.white,
               ),
-            ),
-          ],
+              Center(
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 15,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Image.asset(
+                          'lib/images/phone.png',
+                        ),
+                        const Text(
+                          "諮",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          "群",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          "社",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          "群",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Text(
+                          " ",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 10,
+                    ),
+                    Image.asset('lib/images/LINE_Link.png'),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 15,
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        primary: Colors.blue.shade100,
+                        // background
+                        onPrimary: Colors.white, // foreground
+                      ),
+                      child: const Text(
+                        "返回",
+                        style: TextStyle(fontSize: 25, color: Colors.black),
+                      ),
+                      onPressed: () {
+                        print(context);
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -224,11 +551,12 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   List<MysqlDataOfPersonal> PersonalMenu = []; //個人資料
   late List<AllPagesNeedData> DataMenu;
   int list = 1; //設置ListView.builder顯示的倍數
-  String id = "";
+  String id = ""; //病患編號
   String name = ""; //姓名
-  String gender = ""; //性別
   final _nicknamecontroller = TextEditingController(); //暱稱
+  final _namecontroller = TextEditingController(); //暱稱
   DateTime _birthday = DateTime.now(); //生日
+  String gender = ""; //性別
   bool diagnosis_left = false; //診斷左側
   bool diagnosis_right = false; //診斷右側
   bool diagnosis_hemorrhagic = false; //診斷出血性
@@ -241,12 +569,15 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
       TextEditingController(); //緊急聯絡人手機號碼
   String emergency_contact = ""; //緊急連絡人
   String emergency_contact_phone = ""; //緊急連絡人電話
+  DateTime joindate = DateTime.now(); //加入日期
 
-  String ip = "192.168.0.13";
+  String ip = "192.168.10.5";
+
+  // String ip = "192.168.43.133";
   late bool error, sending, success;
   late String msg;
 
-  late List request_php = [
+  List request_php = [
     "insert_patient_database.php", //新增
     "delete_patient_database.php", //刪除
     "update_patient_database.php", //修改
@@ -267,6 +598,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
       //傳過去的值
       "ip": ip, //網路資料庫ip
       "id": id,
+      "name": _namecontroller.text,
       "nickname": _nicknamecontroller.text,
       "birthday": _birthday.toString(),
       "diagnosis_left": (diagnosis_left ? 1 : 0).toString(),
@@ -278,13 +610,14 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
       "phone": _phonecontroller.text,
       "emergency_contact": _emergency_contactcontroller.text,
       "emergency_contact_phone": _emergency_contact_phonecontroller.text,
+      "joindate": joindate.toString(),
     });
 
     if (res.statusCode == 200) {
-      print(res.body);
+      print("res.body：${res.body}"); //印出回傳回來的data
       var data = json.decode(res.body); //將json解碼為陣列形式
       if (data["error"]) {
-        //錯誤的話
+        //沒有錯誤的話
         setState(() {
           //從 server 收到錯誤時刷新 UI 介面顯示文字
           sending = false;
@@ -342,7 +675,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
             PersonalMenu.add(
                 MysqlDataOfPersonal(row['id'], row['name'], row['gender']));
             id = PersonalMenu[0].id.toString();
-            name = PersonalMenu[0].name.toString();
+            _namecontroller.text = PersonalMenu[0].name.toString();
             _nicknamecontroller.text = row['nickname'].toString();
             _birthday = row['birthday'];
             gender = PersonalMenu[0].gender.toString();
@@ -358,6 +691,10 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
             _emergency_contactcontroller.text = row['emergency_contact'];
             _emergency_contact_phonecontroller.text =
                 row['emergency_contact_phone'];
+            joindate =
+                row['joindate'].difference(DateTime(2000, 1, 1)).inDays <= 1
+                    ? DateTime.now()
+                    : row['joindate']; //如果不是null，就加入今天日期
 
             // print("diagnosis_left:$diagnosis_left");
             // print("diagnosis_right:$diagnosis_right");
@@ -385,97 +722,92 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                right: 20.0,
+                left: 20.0,
+                bottom: 20.0),
           ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  right: 20.0,
-                  left: 20.0,
-                  bottom: 20.0),
-            ),
-            Expanded(
-              //移除上面出現的白色部分
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: Container(
-                  height: MediaQuery.of(context).size.height,
-                  alignment: Alignment.center,
-                  child: ListView.builder(
-                    itemCount: list.abs(),
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    alignment: Alignment.center,
-                                    width: 120,
-                                    height: 120,
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(200.0)),
+          Expanded(
+            //移除上面出現的白色部分
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: Container(
+                height: MediaQuery.of(context).size.height,
+                alignment: Alignment.center,
+                child: ListView.builder(
+                  itemCount: list.abs(),
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        Column(
+                          children: [
+                            Row(
+                              children: [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  width: 120,
+                                  height: 120,
+                                  decoration: const BoxDecoration(
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(200.0)),
+                                  ),
+                                  child: ClipOval(
+                                    child: Image.asset(
+                                      gender == "男" ? pic("男") : pic("女"),
+                                      height:
+                                          MediaQuery.of(context).size.height,
+                                      width: MediaQuery.of(context).size.width,
+                                      fit: BoxFit.cover,
                                     ),
-                                    child: ClipOval(
-                                      child: Image.asset(
-                                        gender == "男" ? pic("男") : pic("女"),
-                                        height:
-                                            MediaQuery.of(context).size.height,
-                                        width:
-                                            MediaQuery.of(context).size.width,
-                                        fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      //帳號
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "帳號：",
+                                            style: TextStyle(
+                                                fontSize: 30,
+                                                fontWeight: FontWeight.bold),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              DataMenu[0].account,
+                                              style:
+                                                  const TextStyle(fontSize: 30),
+                                              overflow: TextOverflow.fade,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        //帳號
-                                        Row(
-                                          children: [
-                                            const Text(
-                                              "帳號：",
-                                              style: TextStyle(
-                                                  fontSize: 30,
-                                                  fontWeight: FontWeight.bold),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                DataMenu[0].account,
-                                                style: const TextStyle(
-                                                    fontSize: 30),
-                                                overflow: TextOverflow.fade,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        //姓名
-                                        Row(
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      //姓名
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                170,
+                                        child: Row(
                                           children: [
                                             const Text(
                                               "姓名：",
@@ -483,480 +815,511 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                                   fontSize: 30,
                                                   fontWeight: FontWeight.bold),
                                             ),
-                                            Expanded(
-                                              child: Text(
-                                                name,
+                                            Flexible(
+                                              child: TextFormField(
+                                                decoration:
+                                                    const InputDecoration(
+                                                  filled: true,
+                                                  fillColor: Colors.white,
+                                                  border: OutlineInputBorder(),
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.all(8),
+                                                ),
                                                 style: const TextStyle(
-                                                    fontSize: 30),
+                                                  fontSize: 30,
+                                                  color: Colors.black,
+                                                ),
+                                                controller: _namecontroller,
                                               ),
                                             ),
                                           ],
                                         ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        //暱稱
-                                        SizedBox(
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width -
-                                              150,
-                                          child: Row(
-                                            children: [
-                                              const Text(
-                                                "暱稱：",
-                                                style: TextStyle(
-                                                    fontSize: 30,
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                              Flexible(
-                                                child: TextFormField(
-                                                  decoration:
-                                                      const InputDecoration(
-                                                    filled: true,
-                                                    fillColor: Colors.white,
-                                                    border:
-                                                        OutlineInputBorder(),
-                                                    isDense: true,
-                                                    contentPadding:
-                                                        EdgeInsets.all(8),
-                                                  ),
-                                                  style: const TextStyle(
-                                                    fontSize: 30,
-                                                    color: Colors.black,
-                                                  ),
-                                                  controller:
-                                                      _nicknamecontroller,
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                      //暱稱
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width -
+                                                170,
+                                        child: Row(
+                                          children: [
+                                            const Text(
+                                              "暱稱：",
+                                              style: TextStyle(
+                                                  fontSize: 30,
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                            Flexible(
+                                              child: TextFormField(
+                                                decoration:
+                                                    const InputDecoration(
+                                                  filled: true,
+                                                  fillColor: Colors.white,
+                                                  border: OutlineInputBorder(),
+                                                  isDense: true,
+                                                  contentPadding:
+                                                      EdgeInsets.all(8),
                                                 ),
+                                                style: const TextStyle(
+                                                  fontSize: 30,
+                                                  color: Colors.black,
+                                                ),
+                                                controller: _nicknamecontroller,
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                      ],
-                                    ),
+                                      ),
+                                      const SizedBox(
+                                        height: 10,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //生日
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            //生日
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "生日：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "${_birthday.year}/${_birthday.month}/${_birthday.day}",
+                                    style: TextStyle(fontSize: 30),
                                   ),
-                                  const Text(
-                                    "生日：",
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
+                                ),
+                                FlatButton(
+                                  child: Icon(Icons.date_range),
+                                  onPressed: () async {
+                                    var result = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime.now(),
+                                        firstDate: DateTime(1920, 01),
+                                        lastDate: DateTime.now());
+                                    if (result != null) {
+                                      setState(() {
+                                        _birthday = result;
+                                        print(_birthday);
+                                      });
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //年齡
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "年齡：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "${(DateTime.now().difference(_birthday).inDays / 365).truncate()}", //截斷
+                                    style: const TextStyle(fontSize: 30),
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      "${_birthday.year}/${_birthday.month}/${_birthday.day}",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //性別
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "性別：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    gender,
+                                    style: const TextStyle(fontSize: 30),
                                   ),
-                                  FlatButton(
-                                    child: Icon(Icons.date_range),
-                                    onPressed: () async {
-                                      var result = await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime.now(),
-                                          firstDate: DateTime(1920, 01),
-                                          lastDate: DateTime.now());
-                                      if (result != null) {
-                                        setState(() {
-                                          _birthday = result;
-                                          print(_birthday);
-                                        });
-                                      }
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //診斷
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "診斷：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                //診斷左側
+                                Expanded(
+                                  child: Checkbox(
+                                    value: diagnosis_left,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        diagnosis_left = newValue ?? false;
+                                      });
                                     },
                                   ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //年齡
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
+                                ),
+                                const Expanded(
+                                  child: Text(
+                                    "左側",
+                                    style: TextStyle(fontSize: 30),
                                   ),
-                                  const Text(
-                                    "年齡：",
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
+                                ),
+                                //診斷右側
+                                Expanded(
+                                  child: Checkbox(
+                                    value: diagnosis_right,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        diagnosis_right = newValue ?? false;
+                                      });
+                                    },
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      "${(DateTime.now().difference(_birthday).inDays / 365).truncate()}", //截斷
-                                      style: const TextStyle(fontSize: 30),
+                                ),
+                                const Expanded(
+                                  child: Text(
+                                    "右側",
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            //腦中風
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                //出血性
+                                Expanded(
+                                  child: Checkbox(
+                                    value: diagnosis_hemorrhagic,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        diagnosis_hemorrhagic =
+                                            newValue ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Expanded(
+                                  child: Text(
+                                    "出血性",
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ),
+                                //缺血性
+                                Expanded(
+                                  child: Checkbox(
+                                    value: diagnosis_ischemic,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        diagnosis_ischemic = newValue ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Expanded(
+                                  child: Text(
+                                    "缺血性",
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //患側
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "患側：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                //患側左側
+                                Expanded(
+                                  child: Checkbox(
+                                    value: affected_side_left,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        affected_side_left = newValue ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Expanded(
+                                  child: Text(
+                                    "左側",
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ),
+                                //患側右側
+                                Expanded(
+                                  child: Checkbox(
+                                    value: affected_side_right,
+                                    onChanged: (newValue) {
+                                      setState(() {
+                                        affected_side_right = newValue ?? false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Expanded(
+                                  child: Text(
+                                    "右側",
+                                    style: TextStyle(fontSize: 30),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //連絡電話
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "連絡電話：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 20.0,
                                     ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //性別
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  const Text(
-                                    "性別：",
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Expanded(
-                                    child: Text(
-                                      gender,
-                                      style: const TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //診斷
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  const Text(
-                                    "診斷：",
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  //診斷左側
-                                  Expanded(
-                                    child: Checkbox(
-                                      value: diagnosis_left,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          diagnosis_left = newValue ?? false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Text(
-                                      "左側",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                  //診斷右側
-                                  Expanded(
-                                    child: Checkbox(
-                                      value: diagnosis_right,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          diagnosis_right = newValue ?? false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Text(
-                                      "右側",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              //腦中風
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  //出血性
-                                  Expanded(
-                                    child: Checkbox(
-                                      value: diagnosis_hemorrhagic,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          diagnosis_hemorrhagic =
-                                              newValue ?? false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Text(
-                                      "出血性",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                  //缺血性
-                                  Expanded(
-                                    child: Checkbox(
-                                      value: diagnosis_ischemic,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          diagnosis_ischemic =
-                                              newValue ?? false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Text(
-                                      "缺血性",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //患側
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  const Text(
-                                    "患側：",
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  //患側左側
-                                  Expanded(
-                                    child: Checkbox(
-                                      value: affected_side_left,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          affected_side_left =
-                                              newValue ?? false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Text(
-                                      "左側",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                  //患側右側
-                                  Expanded(
-                                    child: Checkbox(
-                                      value: affected_side_right,
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          affected_side_right =
-                                              newValue ?? false;
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                  const Expanded(
-                                    child: Text(
-                                      "右側",
-                                      style: TextStyle(fontSize: 30),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //連絡電話
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  const Text(
-                                    "連絡電話：",
-                                    style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 20.0,
+                                    child: TextFormField(
+                                      decoration: const InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(),
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.all(8),
                                       ),
-                                      child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.all(8),
-                                        ),
-                                        style: const TextStyle(
-                                          fontSize: 30,
-                                          color: Colors.black,
-                                        ),
-                                        controller: _phonecontroller,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //緊急聯絡人
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
-                                  ),
-                                  const Text(
-                                    "緊急聯絡人：",
-                                    style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 30,
-                                        fontWeight: FontWeight.bold),
-                                  ),
-                                  Flexible(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 20.0,
+                                        color: Colors.black,
                                       ),
-                                      child: TextFormField(
-                                        decoration: const InputDecoration(
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border: OutlineInputBorder(),
-                                          isDense: true,
-                                          contentPadding: EdgeInsets.all(8),
-                                        ),
-                                        style: const TextStyle(
-                                          fontSize: 30,
-                                          color: Colors.black,
-                                        ),
-                                        controller:
-                                            _emergency_contactcontroller,
-                                      ),
+                                      controller: _phonecontroller,
                                     ),
                                   ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              //緊急聯絡人電話
-                              Row(
-                                children: const [
-                                  SizedBox(
-                                    width: 20,
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //緊急聯絡人
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "緊急聯絡人：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Flexible(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(
+                                      right: 20.0,
+                                    ),
+                                    child: TextFormField(
+                                      decoration: const InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: OutlineInputBorder(),
+                                        isDense: true,
+                                        contentPadding: EdgeInsets.all(8),
+                                      ),
+                                      style: const TextStyle(
+                                        fontSize: 30,
+                                        color: Colors.black,
+                                      ),
+                                      controller: _emergency_contactcontroller,
+                                    ),
                                   ),
-                                  Text(
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            //緊急聯絡人電話
+                            Row(
+                              children: const [
+                                SizedBox(
+                                  width: 20,
+                                ),
+                                Expanded(
+                                  child: Text(
                                     "緊急聯絡人電話：",
                                     style: TextStyle(
                                         fontSize: 30,
-                                        fontWeight: FontWeight.bold),
+                                        fontWeight: FontWeight.bold,
+                                        overflow: TextOverflow.fade),
                                   ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                  right: 20.0,
-                                  left: 20.0,
                                 ),
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: OutlineInputBorder(),
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.all(8),
-                                  ),
-                                  style: const TextStyle(
-                                    fontSize: 30,
-                                    color: Colors.black,
-                                  ),
-                                  controller:
-                                      _emergency_contact_phonecontroller,
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                right: 20.0,
+                                left: 20.0,
+                              ),
+                              child: TextFormField(
+                                decoration: const InputDecoration(
+                                  filled: true,
+                                  fillColor: Colors.white,
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.all(8),
                                 ),
+                                style: const TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.black,
+                                ),
+                                controller: _emergency_contact_phonecontroller,
                               ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                children: [
-                                  const SizedBox(
-                                    width: 20,
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              children: [
+                                const SizedBox(
+                                  width: 20,
+                                ),
+                                const Text(
+                                  "加入日期：",
+                                  style: TextStyle(
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                Expanded(
+                                  child: Text(
+                                    "${joindate.year}/${joindate.month}/${joindate.day}",
+                                    // "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                                    style: const TextStyle(fontSize: 30),
                                   ),
-                                  const Text(
-                                    "加入日期：",
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 30,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(100),
+                                    ),
+                                    primary: Colors.blueAccent.shade100,
+                                    // background
+                                    onPrimary: Colors.white, // foreground
+                                  ),
+                                  child: const Text(
+                                    "儲存資料",
                                     style: TextStyle(
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.bold),
+                                        fontSize: 25, color: Colors.black),
                                   ),
-                                  Expanded(
-                                    child: Text(
-                                      "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
-                                      style: const TextStyle(fontSize: 30),
+                                  onPressed: () {
+                                    setState(() {
+                                      sending = true;
+                                    });
+                                    sendData(2); //修改 update
+                                  },
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(100),
                                     ),
+                                    primary: Colors.green.shade100,
+                                    // background
+                                    onPrimary: Colors.white, // foreground
                                   ),
-                                ],
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(100),
-                                      ),
-                                      primary: Colors.blueAccent.shade100,
-                                      // background
-                                      onPrimary: Colors.white, // foreground
-                                    ),
-                                    child: const Text(
-                                      "儲存資料",
-                                      style: TextStyle(
-                                          fontSize: 25, color: Colors.black),
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        sending = true;
-                                      });
-                                      sendData(2); //修改 update
-                                    },
+                                  child: const Text(
+                                    "返回",
+                                    style: TextStyle(
+                                        fontSize: 25, color: Colors.black),
                                   ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1015,7 +1378,7 @@ class _RecognizePageState extends State<RecognizePage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -1173,7 +1536,7 @@ class _RelateLinkPageState extends State<RelateLinkPage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -1289,7 +1652,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -1436,7 +1799,7 @@ class _HomeCarePageState extends State<HomeCarePage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -1573,7 +1936,7 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );

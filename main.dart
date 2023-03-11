@@ -32,6 +32,16 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,  //不顯示上方debug的物件
       home: const LoginPage(),  //第一頁，到登入畫面
+      //調整全部字體大小
+      builder: (BuildContext context, Widget? child) {
+        final MediaQueryData data = MediaQuery.of(context);
+        return MediaQuery(
+          data: data.copyWith(
+            textScaleFactor: 1,
+          ),
+          child: child!,
+        );
+      },
     );
   }
 }

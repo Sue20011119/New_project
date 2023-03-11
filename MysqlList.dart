@@ -40,10 +40,9 @@ class MysqlDataOflogin_patient_database {
 //MysqlMenu
 class MysqlDataOfpatient_rehabilitation {
   MysqlDataOfpatient_rehabilitation(
-      this.id, this.name, this.time, this.type, this.score);
+      this.id, this.time, this.type, this.score);
 
   final String id;
-  final String name;
   final DateTime time;
   final String type;
   final int score;

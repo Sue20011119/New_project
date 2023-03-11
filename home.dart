@@ -240,16 +240,51 @@ class _HomePageState extends State<HomePage> {
   var db = new Mysql();
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+  List<MysqlDataOfPersonal> PersonalMenu = []; //個人資料
+  String id = ""; //病患編號
+  String name = ""; //姓名
+  int coin = 100; //病患的虛擬幣
   final List<GridViewMenuData> menu = [
-    GridViewMenuData(0, Icons.handshake, '需求表達', Colors.orangeAccent.shade100),
-    GridViewMenuData(1, Icons.directions_walk, '復健訓練', Colors.indigo.shade200),
-    GridViewMenuData(2, Icons.phone_in_talk, '諮詢社群', Colors.green.shade300),
-    GridViewMenuData(3, Icons.settings, '設定', Colors.grey),
+    GridViewMenuData(
+        0, 'lib/images/hands.png', '需求表達', Colors.orangeAccent.shade100),
+    GridViewMenuData(
+        1, 'lib/images/rehabilitation.png', '復健訓練', Colors.indigo.shade200),
+    GridViewMenuData(2, 'lib/images/phone.png', '諮詢社群', Colors.green.shade300),
+    GridViewMenuData(3, 'lib/images/settings.png', '設定', Colors.grey),
   ];
+
+  _getMysqlData() {
+    // PersonalMenu.clear(); //初始化列表
+    db.getConnection().then((conn) {
+      String sql =
+          "SELECT * FROM patient_database WHERE id='${DataMenu[0].id}'";
+      conn.query(sql).then((results) {
+        print("連線成功!");
+        for (var row in results) {
+          print(row);
+          setState(() {
+            PersonalMenu.add(
+                MysqlDataOfPersonal(row['id'], row['name'], row['gender']));
+            id = PersonalMenu[0].id.toString();
+            name = PersonalMenu[0].name.toString();
+            coin = row['coin'];
+            // print("diagnosis_left:$diagnosis_left");
+            // print("diagnosis_right:$diagnosis_right");
+            // print("diagnosis_hemorrhagic:$diagnosis_hemorrhagic");
+            // print("diagnosis_ischemic:$diagnosis_ischemic");
+            // print("affected_side_left:$affected_side_left");
+            // print("affected_side_right:$affected_side_right");
+          });
+        }
+      });
+      conn.close();
+    });
+  }
 
   @override
   void initState() {
     DataMenu = widget.DataMenu;
+    _getMysqlData();
     super.initState();
   }
 
@@ -260,7 +295,7 @@ class _HomePageState extends State<HomePage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -279,8 +314,8 @@ class _HomePageState extends State<HomePage> {
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
+              children: [
+                const Text(
                   "Hello",
                   style: TextStyle(
                     fontSize: 30,
@@ -288,8 +323,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 Text(
-                  "病患",
-                  style: TextStyle(
+                  name,
+                  style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline),
@@ -303,24 +338,43 @@ class _HomePageState extends State<HomePage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(
+              height: 10,
+            ),
             Material(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.monetization_on,
-                    size: 80,
-                    color: Colors.yellow.shade800,
+                  const SizedBox(
+                    width: 10,
                   ),
-                  const Text(
-                    "顯示金幣數量",
-                    style: TextStyle(
+                  Expanded(
+                    flex:1,
+                      child: Image.asset(
+                    'lib/images/coin.png',
+                    width: 70,
+                    height: 70,
+                  )),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Expanded(
+                    flex:3,
+                    child: Text(
+                      "金幣數量：$coin",
+                      style: const TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
-                        decoration: TextDecoration.underline),
+                        decoration: TextDecoration.underline,
+                        overflow: TextOverflow.fade,
+                      ),
+                    ),
                   ),
                 ],
               ),
+            ),
+            const SizedBox(
+              height: 10,
             ),
             Expanded(
               //移除上面出現的白色部分
@@ -344,7 +398,7 @@ class _HomePageState extends State<HomePage> {
                             Navigator.of(context).push(
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const PhysiologicalPage()),
+                                      PhysiologicalPage1(DataMenu)),
                             );
                             break;
 
@@ -352,7 +406,7 @@ class _HomePageState extends State<HomePage> {
                           case 1:
                             Navigator.of(context).push(
                               MaterialPageRoute(
-                                  builder: (context) => const TrainPage()),
+                                  builder: (context) => TrainPage(DataMenu)),
                             );
                             break;
 
@@ -382,9 +436,8 @@ class _HomePageState extends State<HomePage> {
                             SizedBox(
                               width: MediaQuery.of(context).size.width / 30,
                             ),
-                            Icon(
-                              menu[index].icon,
-                              size: 60,
+                            Image.asset(
+                              menu[index].image,
                             ),
                             Container(
                               width: MediaQuery.of(context).size.width - 120,
@@ -437,8 +490,8 @@ class _RecordPageState extends State<RecordPage> {
         print("連線成功!");
         for (var row in results) {
           setState(() {
-            MysqlMenu.add(MysqlDataOfpatient_rehabilitation(row['id'],
-                row['name'], row['time'], row['type'], row['score']));
+            MysqlMenu.add(MysqlDataOfpatient_rehabilitation(
+                row['id'], row['time'], row['type'], row['score']));
           });
         }
       });
@@ -506,7 +559,7 @@ class _RecordPageState extends State<RecordPage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -833,7 +886,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -1167,7 +1220,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
           data: data.copyWith(
-            textScaleFactor: choosetextscale(DataMenu),
+            textScaleFactor: 1,
           ),
           child: child!,
         );
@@ -1260,10 +1313,10 @@ Widget buildAboutAs(String title, String trailing) {
 
 //設定GridViewMenuData格式
 class GridViewMenuData {
-  GridViewMenuData(this.index, this.icon, this.title, this.self_color);
+  GridViewMenuData(this.index, this.image, this.title, this.self_color);
 
   final int index;
-  final IconData icon;
+  final String image;
   final String title;
   final Color self_color;
 }
@@ -1347,14 +1400,14 @@ void ChoosePage(
     //訓練頁面
     case 0:
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const TrainPage()),
+        MaterialPageRoute(builder: (context) => TrainPage(DataMenu)),
       );
       break;
 
     //生理需求頁面
     case 1:
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => const PhysiologicalPage()),
+        MaterialPageRoute(builder: (context) => PhysiologicalPage1(DataMenu)),
       );
       break;
 

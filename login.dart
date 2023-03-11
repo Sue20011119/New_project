@@ -33,8 +33,11 @@ class _LoginPageState extends State<LoginPage> {
           "SELECT * FROM patient_database WHERE account='$login_account'";
       conn.query(sql).then((results) {
         print("連線成功!");
+        // print("result：$results");
         for (var row in results) {
-          print(row);
+          print("row：$row");
+          // print("row['password']：${row['password']}");
+          // print("result：$results");
           setState(() {
             MysqlMenu.add(MysqlDataOflogin_patient_database(
                 row['id'], row['account'], row['password']));
