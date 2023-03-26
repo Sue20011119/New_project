@@ -120,7 +120,7 @@ class _LoginPageState extends State<LoginPage> {
     DataMenu.clear();
     //初始化DataMenu
     //  id, account, Carer, RehabilitationNotice, QuestionnaireNotice, isdark;
-    DataMenu.add(AllPagesNeedData("", "", false, true, true, true, 5));
+    DataMenu.add(AllPagesNeedData("", "", false, false, "LoginPage"));
     //TextField的焦點
     super.initState();
   }

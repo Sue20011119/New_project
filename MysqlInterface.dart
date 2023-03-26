@@ -9,6 +9,7 @@ import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:my_topic_project/MysqlList.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 class PrintInterface extends StatelessWidget {
   // This widget is the root of your application.
@@ -149,7 +150,7 @@ class WriteSQLdataState extends State<WriteSQLdata> {
   late bool error, sending, success;
   late String msg;
 
-  late List request_php=[
+  late List request_php = [
     "insert.php", //新增
     "delete.php", //刪除
     "update.php", //修改
@@ -176,7 +177,7 @@ class WriteSQLdataState extends State<WriteSQLdata> {
     String phpurl = "http://$ip/appproject/${request_php[num]}";
     //發送帶有標題data的post request
     var res = await http.post(Uri.parse(phpurl), body: {
-      "ip":ip,  //網路資料庫ip
+      "ip": ip, //網路資料庫ip
       "id": idctl.text,
       "name": namectl.text,
       "time": timectl.text,
@@ -399,7 +400,7 @@ class _TestState extends State<Test> {
     'https://www.youtube.com/watch?v=kfXdP7nZIiE',
   ];
 
-  List <YoutubePlayerController> lYTC = [];
+  List<YoutubePlayerController> lYTC = [];
 
   Map<String, dynamic> cStates = {};
 
@@ -409,7 +410,7 @@ class _TestState extends State<Test> {
     fillYTlists();
   }
 
-  fillYTlists(){
+  fillYTlists() {
     for (var element in _videoUrlList) {
       String _id = YoutubePlayer.convertUrlToId(element)!;
       YoutubePlayerController _ytController = YoutubePlayerController(
@@ -480,7 +481,7 @@ class _TestState extends State<Test> {
                           ProgressBar(isExpanded: true),
                           FullScreenButton(),
                         ],
-                        onReady: (){
+                        onReady: () {
                           print('onReady for $index');
                         },
                         onEnded: (YoutubeMetaData _md) {
@@ -559,4 +560,113 @@ class _NoticePageState extends State<NoticePage> {
       ),
     );
   }
+}
+
+class NotifyPage extends StatefulWidget {
+  const NotifyPage({Key? key}) : super(key: key);
+
+  @override
+  _NotifyPageState createState() => _NotifyPageState();
+}
+
+class _NotifyPageState extends State<NotifyPage> {
+  bool isOn = false;
+  int alarmId = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    var androidInitialize =
+    const AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iOSInitialize = const IOSInitializationSettings();
+    var initialzationSettings =
+    InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    localNotification = FlutterLocalNotificationsPlugin();
+    localNotification.initialize(initialzationSettings);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white.withOpacity(.94),
+        appBar: AppBar(
+          title: const Text(
+            "通知測試2",
+            style: TextStyle(
+                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 50),
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: Center(
+          child: Center(
+            child: Transform.scale(
+              scale: 2,
+              child: Switch(
+                value: isOn,
+                onChanged: (value) {
+                  setState(() {
+                    isOn = value;
+                    print("isOn:$isOn");
+                  });
+                  //開啟Switch
+                  if (isOn) {
+                    //定期的
+                    // print("time is:${DateTime.now()}");
+                    // print(
+                    //     "y/m/d/h=>${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().hour}");
+                    AndroidAlarmManager.periodic(
+                      const Duration(seconds: 30),
+                      alarmId,
+                      _showNotification,
+                      startAt: DateTime(
+                        DateTime.now().year,
+                        DateTime.now().month,
+                        DateTime.now().day,
+                        DateTime.now().hour,
+                        6,
+                      ),
+                    );
+
+                    //固定一個時間
+                    // AndroidAlarmManager.oneShotAt(
+                    // DateTime(2023, 3, 18, 21, 50), alarmId, firmAlarm);
+                  } else {
+                    AndroidAlarmManager.cancel(alarmId);
+                  }
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+late FlutterLocalNotificationsPlugin localNotification;
+Future<void> _showNotification() async {
+  var androidInitialize =
+  const AndroidInitializationSettings("@mipmap/ic_launcher");
+  var iOSInitialize = const IOSInitializationSettings();
+  var initialzationSettings =
+  InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+  localNotification = FlutterLocalNotificationsPlugin();
+  localNotification.initialize(initialzationSettings);
+
+
+  print("已在:${DateTime.now()} 寄出");
+  var androidDetails =
+  const AndroidNotificationDetails("channelId",
+      "channelName",
+      importance: Importance.max,
+      priority: Priority.max);
+  var iosDetails = const IOSNotificationDetails();
+  var generalNotificationDetails =
+  NotificationDetails(android: androidDetails, iOS: iosDetails);
+  await localNotification.show(
+      0, "測試測試，這是通知的標題", "測試測試，這是通知的內容", generalNotificationDetails);
 }

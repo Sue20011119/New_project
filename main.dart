@@ -2,6 +2,8 @@ import "package:flutter/material.dart";
 import "package:my_topic_project/login.dart";
 import "package:my_topic_project/MysqlInterface.dart";
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
 
 //印出資料庫資料的入口
 // void main() => runApp(PrintInterface());
@@ -10,12 +12,19 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 // void main() => runApp(CreateInterface());
 
 //APP啟動的入口
-void main() => runApp(MyApp());
+void main() async{
+  runApp(MyApp());
+  await AndroidAlarmManager.initialize();
+}
 
 //通知測試的入口
 // void main() => runApp(NoticePage());
 
-
+//定時測試的入口
+// void main() async{
+//   runApp(NotifyPage());
+//   await AndroidAlarmManager.initialize();
+// }
 
 //測試入口
 // void main() => runApp(Testface());

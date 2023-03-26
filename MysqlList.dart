@@ -4,27 +4,25 @@ import "package:flutter/cupertino.dart";
 // 設定所有頁面傳值的數據的格式
 //DataMenu
 class AllPagesNeedData {
-  AllPagesNeedData(this.id, this.account, this.Carer, this.RehabilitationNotice,
-      this.QuestionnaireNotice, this.isdark, this.textscale);
+  AllPagesNeedData(this.id, this.account, this.RehabilitationNotice,
+      this.QuestionnaireNotice, this.page);
 
   String id;
   String account;
-  bool Carer;
   bool RehabilitationNotice;
   bool QuestionnaireNotice;
-  bool isdark;
-  double textscale;
+  String page;
 }
 
 //調整字體大小
 //textScaleFactor: choosetextscale(DataMenu),
-double choosetextscale(List<AllPagesNeedData> DataMenu) {
-  return DataMenu[0].textscale == 0
-      ? 0.8
-      : DataMenu[0].textscale == 5
-          ? 1
-          : 1.1;
-}
+// double choosetextscale(List<AllPagesNeedData> DataMenu) {
+//   return DataMenu[0].textscale == 0
+//       ? 0.8
+//       : DataMenu[0].textscale == 5
+//           ? 1
+//           : 1.1;
+// }
 
 //設定登入的MysqlData的格式
 //MysqlMenu
@@ -70,29 +68,29 @@ class ListViewMenuData {
 //設定暗黑模式與非暗黑模式的物件顏色
 // DarkMode(DataMenu[0].isdark, "background", Colors.black, Colors.white),
 // DarkMode(DataMenu[0].isdark, "Text", Colors.black, Colors.white),
-DarkMode(bool isdark, String object,
-    [Color deep_color = Colors.black, Color pale_color = Colors.white]) {
-  Color? self_color;
-  switch (object) {
-    case "background":
-      //是深色模式嗎?是的話背景黑色，不是的話背景白色(自訂色)
-      isdark ? self_color = deep_color : self_color = pale_color;
-      break;
-
-    //是深色模式嗎?不是的話字黑色(自訂色)，是的話字白色
-    case "Text":
-      !isdark ? self_color = deep_color : self_color = pale_color;
-      break;
-
-    default:
-      print("ERROR，for ");
-  }
-  // print("DarkMode(bool isdark=$isdark,"
-  //     " String object=$object,"
-  //     " [Color deep_color = $deep_color,"
-  //     " Color pale_color = $pale_color])");
-  return self_color;
-}
+// DarkMode(bool isdark, String object,
+//     [Color deep_color = Colors.black, Color pale_color = Colors.white]) {
+//   Color? self_color;
+//   switch (object) {
+//     case "background":
+//       //是深色模式嗎?是的話背景黑色，不是的話背景白色(自訂色)
+//       isdark ? self_color = deep_color : self_color = pale_color;
+//       break;
+//
+//     //是深色模式嗎?不是的話字黑色(自訂色)，是的話字白色
+//     case "Text":
+//       !isdark ? self_color = deep_color : self_color = pale_color;
+//       break;
+//
+//     default:
+//       print("ERROR，for ");
+//   }
+//   // print("DarkMode(bool isdark=$isdark,"
+//   //     " String object=$object,"
+//   //     " [Color deep_color = $deep_color,"
+//   //     " Color pale_color = $pale_color])");
+//   return self_color;
+// }
 
 //印出list的function
 PrintList(String page, String class_object, List list) {
@@ -108,11 +106,10 @@ PrintList(String page, String class_object, List list) {
     case "AllPagesNeedData":
       print("$page is id:${list[0].id}, "
           "account:${list[0].account}, "
-          "Carer:${list[0].Carer}, "
           "RehabilitationNotice:${list[0].RehabilitationNotice}, "
           "QuestionnaireNotice:${list[0].QuestionnaireNotice}, "
-          "isdark:${list[0].isdark}, "
-          "textscale:${list[0].textscale}, ");
+          "page:${list[0].page}"
+      );
       break;
 
     //病患復健資料

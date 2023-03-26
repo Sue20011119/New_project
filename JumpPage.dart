@@ -19,6 +19,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:open_file/open_file.dart';
 import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 //需求表達1頁面
 class PhysiologicalPage1 extends StatefulWidget {
@@ -71,116 +73,104 @@ class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
 
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("PhysiologicalPage1", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="PhysiologicalPage1";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: Colors.orangeAccent.shade100,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height / 7,
-                color: Colors.white,
-              ),
-              Center(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 4,
-                          height: MediaQuery.of(context).size.height / 8,
-                          child: Image.asset(
-                            'lib/images/need.png',
-                          ),
-                        ),
-                        const Text(
-                          '需 求 表 達',
-                          style: TextStyle(
-                              fontSize: 50, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //肚子餓
-                        buildPhysiologicalPage(
-                            "hungry.mp3", "lib/images/hungry.png", "肚子餓"),
-                        //口渴
-                        buildPhysiologicalPage(
-                            "thirsty.mp3", "lib/images/thirsty.png", "口渴"),
-                        //小號
-                        buildPhysiologicalPage(
-                            "small.mp3", "lib/images/small.png", "小號"),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //大號
-                        buildPhysiologicalPage(
-                            "big.mp3", "lib/images/large.png", "大號"),
-                        //換尿布
-                        buildPhysiologicalPage(
-                            "change.mp3", "lib/images/change.png", "換尿布"),
-                        //翻身
-                        buildPhysiologicalPage(
-                            "body.mp3", "lib/images/body.png", "翻身"),
-                      ],
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height / 12,
-                      width: MediaQuery.of(context).size.width / 1.5,
-                      decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10.0)),
-                          color: Colors.deepOrange.shade800,
-                          border:
-                              Border.all(color: Colors.deepOrange.shade800)),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    PhysiologicalPage2(DataMenu)),
-                          );
-                        },
-                        child: const Text(
-                          '下一頁',
-                          style: TextStyle(fontSize: 27, color: Colors.white),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.orangeAccent.shade100,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 7,
+              color: Colors.white,
+            ),
+            Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 4,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Image.asset(
+                          'lib/images/need.png',
                         ),
                       ),
+                      const Text(
+                        '需 求 表 達',
+                        style: TextStyle(
+                            fontSize: 50, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //肚子餓
+                      buildPhysiologicalPage(
+                          "hungry.mp3", "lib/images/hungry.png", "肚子餓"),
+                      //口渴
+                      buildPhysiologicalPage(
+                          "thirsty.mp3", "lib/images/thirsty.png", "口渴"),
+                      //小號
+                      buildPhysiologicalPage(
+                          "small.mp3", "lib/images/small.png", "小號"),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //大號
+                      buildPhysiologicalPage(
+                          "big.mp3", "lib/images/large.png", "大號"),
+                      //換尿布
+                      buildPhysiologicalPage(
+                          "change.mp3", "lib/images/change.png", "換尿布"),
+                      //翻身
+                      buildPhysiologicalPage(
+                          "body.mp3", "lib/images/body.png", "翻身"),
+                    ],
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height / 12,
+                    width: MediaQuery.of(context).size.width / 1.5,
+                    decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
+                        color: Colors.deepOrange.shade800,
+                        border: Border.all(color: Colors.deepOrange.shade800)),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  PhysiologicalPage2(DataMenu)),
+                        );
+                      },
+                      child: const Text(
+                        '下一頁',
+                        style: TextStyle(fontSize: 27, color: Colors.white),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -238,111 +228,99 @@ class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
 
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("PhysiologicalPage2", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="PhysiologicalPage2";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: Colors.orangeAccent.shade100,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height / 7,
-                color: Colors.white,
-              ),
-              Center(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 4,
-                          height: MediaQuery.of(context).size.height / 8,
-                          child: Image.asset(
-                            'lib/images/need.png',
-                          ),
-                        ),
-                        const Text(
-                          '需 求 表 達',
-                          style: TextStyle(
-                              fontSize: 50, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //很熱
-                        buildPhysiologicalPage(
-                            "hot.mp3", "lib/images/hot.png", "很熱"),
-                        //很冷
-                        buildPhysiologicalPage(
-                            "cold.mp3", "lib/images/cold.png", "很冷"),
-                        //頭暈
-                        buildPhysiologicalPage(
-                            "faint.mp3", "lib/images/faint.png", "頭暈"),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        //頭痛
-                        buildPhysiologicalPage(
-                            "head.mp3", "lib/images/head.png", "頭痛"),
-                        //腹痛
-                        buildPhysiologicalPage(
-                            "stomach.mp3", "lib/images/stomach.png", "腹痛"),
-                        //下床
-                        buildPhysiologicalPage(
-                            "bed.mp3", "lib/images/bed.png", "下床"),
-                      ],
-                    ),
-                    Container(
-                      height: MediaQuery.of(context).size.height / 12,
-                      width: MediaQuery.of(context).size.width / 1.5,
-                      decoration: BoxDecoration(
-                          borderRadius:
-                          const BorderRadius.all(Radius.circular(10.0)),
-                          color: Colors.deepOrange.shade800,
-                          border:
-                          Border.all(color: Colors.deepOrange.shade800)),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text(
-                          '上一頁',
-                          style: TextStyle(fontSize: 27, color: Colors.white),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.orangeAccent.shade100,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 7,
+              color: Colors.white,
+            ),
+            Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 4,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Image.asset(
+                          'lib/images/need.png',
                         ),
                       ),
+                      const Text(
+                        '需 求 表 達',
+                        style: TextStyle(
+                            fontSize: 50, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //很熱
+                      buildPhysiologicalPage(
+                          "hot.mp3", "lib/images/hot.png", "很熱"),
+                      //很冷
+                      buildPhysiologicalPage(
+                          "cold.mp3", "lib/images/cold.png", "很冷"),
+                      //頭暈
+                      buildPhysiologicalPage(
+                          "faint.mp3", "lib/images/faint.png", "頭暈"),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      //頭痛
+                      buildPhysiologicalPage(
+                          "head.mp3", "lib/images/head.png", "頭痛"),
+                      //腹痛
+                      buildPhysiologicalPage(
+                          "stomach.mp3", "lib/images/stomach.png", "腹痛"),
+                      //下床
+                      buildPhysiologicalPage(
+                          "bed.mp3", "lib/images/bed.png", "下床"),
+                    ],
+                  ),
+                  Container(
+                    height: MediaQuery.of(context).size.height / 12,
+                    width: MediaQuery.of(context).size.width / 1.5,
+                    decoration: BoxDecoration(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(10.0)),
+                        color: Colors.deepOrange.shade800,
+                        border: Border.all(color: Colors.deepOrange.shade800)),
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text(
+                        '上一頁',
+                        style: TextStyle(fontSize: 27, color: Colors.white),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -366,7 +344,8 @@ class _TrainPageState extends State<TrainPage> {
 
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("TrainPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="TrainPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -424,112 +403,54 @@ class _CommunityCommunicationPageState
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("CommunityCommunicationPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="CommunityCommunicationPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: Colors.green.shade300,
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height / 7,
-                color: Colors.white,
-              ),
-              Center(
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Image.asset(
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.green.shade300,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 7,
+              color: Colors.white,
+            ),
+            Center(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 4,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Image.asset(
                           'lib/images/phone.png',
                         ),
-                        const Text(
-                          "諮",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          "群",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          "社",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          "群",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          " ",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 10,
-                    ),
-                    Image.asset('lib/images/LINE_Link.png'),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 15,
-                    ),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        primary: Colors.blue.shade100,
-                        // background
-                        onPrimary: Colors.white, // foreground
                       ),
-                      child: const Text(
-                        "返回",
-                        style: TextStyle(fontSize: 25, color: Colors.black),
+                      const Text(
+                        '諮 詢 社 群',
+                        style: TextStyle(
+                            fontSize: 50, fontWeight: FontWeight.bold),
                       ),
-                      onPressed: () {
-                        print(context);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 10,
+                  ),
+                  Image.asset('lib/images/LINE_Link.png'),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 15,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -552,9 +473,8 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   late List<AllPagesNeedData> DataMenu;
   int list = 1; //設置ListView.builder顯示的倍數
   String id = ""; //病患編號
-  String name = ""; //姓名
+  final _namecontroller = TextEditingController(); //姓名
   final _nicknamecontroller = TextEditingController(); //暱稱
-  final _namecontroller = TextEditingController(); //暱稱
   DateTime _birthday = DateTime.now(); //生日
   String gender = ""; //性別
   bool diagnosis_left = false; //診斷左側
@@ -654,7 +574,8 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
     DataMenu = widget.DataMenu;
     _getMysqlData();
     // _delayText();
-    PrintList("BasicSettingsPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="BasicSettingsPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     error = false;
     sending = false;
     success = false;
@@ -710,15 +631,15 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
   }
 
   //延遲取得資料庫資料，因為會有非同步的情況
-  Future _delayText() async {
-    Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        id = PersonalMenu[0].id.toString();
-        name = PersonalMenu[0].name.toString();
-        gender = PersonalMenu[0].gender.toString();
-      });
-    });
-  }
+  // Future _delayText() async {
+  //   Future.delayed(const Duration(milliseconds: 100), () {
+  //     setState(() {
+  //       id = PersonalMenu[0].id.toString();
+  //       name = PersonalMenu[0].name.toString();
+  //       gender = PersonalMenu[0].gender.toString();
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -750,7 +671,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                           children: [
                             Row(
                               children: [
-                                SizedBox(
+                                const SizedBox(
                                   width: 20,
                                 ),
                                 Container(
@@ -990,6 +911,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 Expanded(
                                   child: Checkbox(
                                     value: diagnosis_left,
+                                    activeColor: Colors.blue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         diagnosis_left = newValue ?? false;
@@ -1007,6 +929,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 Expanded(
                                   child: Checkbox(
                                     value: diagnosis_right,
+                                    activeColor: Colors.blue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         diagnosis_right = newValue ?? false;
@@ -1032,6 +955,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 Expanded(
                                   child: Checkbox(
                                     value: diagnosis_hemorrhagic,
+                                    activeColor: Colors.blue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         diagnosis_hemorrhagic =
@@ -1050,6 +974,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 Expanded(
                                   child: Checkbox(
                                     value: diagnosis_ischemic,
+                                    activeColor: Colors.blue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         diagnosis_ischemic = newValue ?? false;
@@ -1084,6 +1009,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 Expanded(
                                   child: Checkbox(
                                     value: affected_side_left,
+                                    activeColor: Colors.blue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         affected_side_left = newValue ?? false;
@@ -1101,6 +1027,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                                 Expanded(
                                   child: Checkbox(
                                     value: affected_side_right,
+                                    activeColor: Colors.blue,
                                     onChanged: (newValue) {
                                       setState(() {
                                         affected_side_right = newValue ?? false;
@@ -1287,29 +1214,6 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
                             const SizedBox(
                               height: 20,
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100),
-                                    ),
-                                    primary: Colors.green.shade100,
-                                    // background
-                                    onPrimary: Colors.white, // foreground
-                                  ),
-                                  child: const Text(
-                                    "返回",
-                                    style: TextStyle(
-                                        fontSize: 25, color: Colors.black),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ],
@@ -1353,7 +1257,8 @@ class _RecognizePageState extends State<RecognizePage> {
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("RecognizePage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="RecognizePage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -1373,110 +1278,89 @@ class _RecognizePageState extends State<RecognizePage> {
       thickness: 2,
     );
 
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: DarkMode(
-            DataMenu[0].isdark, "background", Colors.black, Colors.white),
-        appBar: AppBar(
-          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-              Colors.grey.shade900, Colors.brown.shade50),
-          toolbarHeight: 0,
-          flexibleSpace: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.keyboard_return,
-                    size: 35,
-                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
-                        Colors.white),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                          builder: (context) => HomePage(DataMenu)),
-                    );
-                    // Navigator.pop(context);
-                  },
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.brown.shade50,
+        toolbarHeight: 0,
+        flexibleSpace: Container(
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.keyboard_return,
+                  size: 35,
+                  color: Colors.orange,
                 ),
-                const Text(""),
-                Text(
-                  "認識失語症",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.orange,
-                        Colors.white),
-                  ),
-                ),
-                const Text(""),
-                const Text(""),
-                const Text(""),
-              ],
-            ),
-          ),
-        ),
-        body: Builder(
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: DarkMode(DataMenu[0].isdark, "background",
-                      Colors.grey.shade900, Colors.orange.shade50),
-                  borderRadius: BorderRadius.all(Radius.circular(20))),
-              padding: const EdgeInsets.only(
-                  top: 0.0, right: 20.0, left: 20.0, bottom: 20.0),
-              child: ListView.separated(
-                itemCount: listview_menu.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.add_link,
-                      size: 50,
-                      color: Colors.blue,
-                    ),
-                    title: Text(
-                      "${listview_menu[index].name}$index",
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: DarkMode(
-                          DataMenu[0].isdark,
-                          "Text",
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      launchURL(listview_menu[index].url);
-                    },
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => HomePage(DataMenu)),
                   );
-                },
-                //選擇分隔線的
-                separatorBuilder: (BuildContext context, int index) {
-                  return index % 3 == 0
-                      ? divider0
-                      : index % 3 == 1
-                          ? divider1
-                          : divider2;
+                  // Navigator.pop(context);
                 },
               ),
+              const Text(""),
+              const Text(
+                "認識失語症",
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.orange,
+                ),
+              ),
+              const Text(""),
+              const Text(""),
+              const Text(""),
+            ],
+          ),
+        ),
+      ),
+      body: Builder(
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              right: 20.0,
+              left: 20.0,
+              bottom: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.all(Radius.circular(20))),
+            padding: const EdgeInsets.only(
+                top: 0.0, right: 20.0, left: 20.0, bottom: 20.0),
+            child: ListView.separated(
+              itemCount: listview_menu.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(
+                    Icons.add_link,
+                    size: 50,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    "${listview_menu[index].name}$index",
+                    style: const TextStyle(
+                      fontSize: 23,
+                      color: Colors.black,
+                    ),
+                  ),
+                  onTap: () {
+                    launchURL(listview_menu[index].url);
+                  },
+                );
+              },
+              //選擇分隔線的
+              separatorBuilder: (BuildContext context, int index) {
+                return index % 3 == 0
+                    ? divider0
+                    : index % 3 == 1
+                        ? divider1
+                        : divider2;
+              },
             ),
           ),
         ),
@@ -1511,7 +1395,8 @@ class _RelateLinkPageState extends State<RelateLinkPage> {
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("RelateLinkPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="RelateLinkPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -1531,87 +1416,71 @@ class _RelateLinkPageState extends State<RelateLinkPage> {
       thickness: 2,
     );
 
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: Colors.cyan,
-          centerTitle: true,
-          title: const Text(
-            "相關連結",
-            style: TextStyle(fontSize: 25),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.keyboard_return,
-              size: 35,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.cyan,
+        centerTitle: true,
+        title: const Text(
+          "相關連結",
+          style: TextStyle(fontSize: 25),
         ),
-        body: Builder(
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: DarkMode(DataMenu[0].isdark, "background",
-                      Colors.grey.shade900, Colors.blue.shade50),
-                  borderRadius: const BorderRadius.all(Radius.circular(20))),
-              padding: const EdgeInsets.only(
-                  top: 0.0, right: 20.0, left: 20.0, bottom: 20.0),
-              child: ListView.separated(
-                itemCount: listview_menu.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.add_link,
-                      size: 50,
-                      color: Colors.blue,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.keyboard_return,
+            size: 35,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Builder(
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              right: 20.0,
+              left: 20.0,
+              bottom: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: const BorderRadius.all(Radius.circular(20))),
+            padding: const EdgeInsets.only(
+                top: 0.0, right: 20.0, left: 20.0, bottom: 20.0),
+            child: ListView.separated(
+              itemCount: listview_menu.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(
+                    Icons.add_link,
+                    size: 50,
+                    color: Colors.blue,
+                  ),
+                  title: Text(
+                    listview_menu[index].name,
+                    style: const TextStyle(
+                      fontSize: 23,
+                      color: Colors.white,
                     ),
-                    title: Text(
-                      listview_menu[index].name,
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: DarkMode(
-                          DataMenu[0].isdark,
-                          "Text",
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      launchURL(listview_menu[index].url);
-                    },
-                  );
-                },
-                //選擇分隔線的
-                separatorBuilder: (BuildContext context, int index) {
-                  return index % 3 == 0
-                      ? divider0
-                      : index % 3 == 1
-                          ? divider1
-                          : divider2;
-                },
-              ),
+                  ),
+                  onTap: () {
+                    launchURL(listview_menu[index].url);
+                  },
+                );
+              },
+              //選擇分隔線的
+              separatorBuilder: (BuildContext context, int index) {
+                return index % 3 == 0
+                    ? divider0
+                    : index % 3 == 1
+                        ? divider1
+                        : divider2;
+              },
             ),
           ),
         ),
@@ -1641,93 +1510,80 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("RelateLinkPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="QuestionnairePage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: Colors.purple,
-          centerTitle: true,
-          title: const Text(
-            "問卷系統",
-            style: TextStyle(fontSize: 25),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.keyboard_return,
-              size: 35,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.purple,
+        centerTitle: true,
+        title: const Text(
+          "問卷系統",
+          style: TextStyle(fontSize: 25),
         ),
-        body: Builder(
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: DarkMode(DataMenu[0].isdark, "background",
-                    Colors.grey.shade900, Colors.purple.shade50),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.keyboard_return,
+            size: 35,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Builder(
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              right: 20.0,
+              left: 20.0,
+              bottom: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.purple.shade50,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
               ),
-              padding: const EdgeInsets.all(20),
-              child: ListView.separated(
-                itemCount: listview_menu.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: const Icon(
-                      Icons.text_snippet,
-                      size: 50,
+            ),
+            padding: const EdgeInsets.all(20),
+            child: ListView.separated(
+              itemCount: listview_menu.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: const Icon(
+                    Icons.text_snippet,
+                    size: 50,
+                    color: Colors.purple,
+                  ),
+                  title: Text(
+                    listview_menu[index].name,
+                    style: const TextStyle(
+                      fontSize: 23,
                       color: Colors.purple,
                     ),
-                    title: Text(
-                      listview_menu[index].name,
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.purple, Colors.white),
-                      ),
-                    ),
-                    onTap: () {
-                      launchURL(listview_menu[index].url);
-                    },
-                  );
-                },
-                //選擇分隔線的
-                separatorBuilder: (BuildContext context, int index) {
-                  return Divider(
-                    color: DarkMode(DataMenu[0].isdark, "Text", Colors.purple,
-                        Colors.white),
-                    thickness: 2,
-                  );
-                },
-              ),
+                  ),
+                  onTap: () {
+                    launchURL(listview_menu[index].url);
+                  },
+                );
+              },
+              //選擇分隔線的
+              separatorBuilder: (BuildContext context, int index) {
+                return const Divider(
+                  color: Colors.purple,
+                  thickness: 2,
+                );
+              },
             ),
           ),
         ),
@@ -1774,7 +1630,8 @@ class _HomeCarePageState extends State<HomeCarePage> {
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("CommunityCommunicationPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="HomeCarePage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -1794,87 +1651,72 @@ class _HomeCarePageState extends State<HomeCarePage> {
       thickness: 2,
     );
 
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: Colors.lightGreen,
-          centerTitle: true,
-          title: const Text(
-            "居家照護小知識",
-            style: TextStyle(fontSize: 25),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.keyboard_return,
-              size: 35,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.lightGreen,
+        centerTitle: true,
+        title: const Text(
+          "居家照護小知識",
+          style: TextStyle(fontSize: 25),
         ),
-        body: Builder(
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: DarkMode(DataMenu[0].isdark, "background",
-                    Colors.grey.shade900, Colors.lightGreen.shade50),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.keyboard_return,
+            size: 35,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Builder(
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              right: 20.0,
+              left: 20.0,
+              bottom: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.lightGreen.shade50,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
               ),
-              child: ListView.separated(
-                itemCount: listview_menu.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Icon(
-                      Icons.info_outline,
-                      size: 50,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.greenAccent.shade700, Colors.white),
+            ),
+            child: ListView.separated(
+              itemCount: listview_menu.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Icon(
+                    Icons.info_outline,
+                    size: 50,
+                    color: Colors.orangeAccent.shade700,
+                  ),
+                  title: Text(
+                    listview_menu[index].name,
+                    style: TextStyle(
+                      fontSize: 23,
+                      color: Colors.greenAccent.shade700,
                     ),
-                    title: Text(
-                      listview_menu[index].name,
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.greenAccent.shade700, Colors.white),
-                      ),
-                    ),
-                    onTap: () {
-                      launchURL(listview_menu[index].url);
-                    },
-                  );
-                },
-                //選擇分隔線的
-                separatorBuilder: (BuildContext context, int index) {
-                  return index % 3 == 0
-                      ? divider0
-                      : index % 3 == 1
-                          ? divider1
-                          : divider2;
-                },
-              ),
+                  ),
+                  onTap: () {
+                    launchURL(listview_menu[index].url);
+                  },
+                );
+              },
+              //選擇分隔線的
+              separatorBuilder: (BuildContext context, int index) {
+                return index % 3 == 0
+                    ? divider0
+                    : index % 3 == 1
+                        ? divider1
+                        : divider2;
+              },
             ),
           ),
         ),
@@ -1911,7 +1753,9 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
   @override
   void initState() {
     DataMenu = widget.DataMenu;
-    PrintList("CommunityCommunicationPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="RelaxMusicPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+
     super.initState();
   }
 
@@ -1931,87 +1775,72 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
       thickness: 2,
     );
 
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
-          ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: Colors.amber,
-          centerTitle: true,
-          title: const Text(
-            "放鬆音樂",
-            style: TextStyle(fontSize: 25),
-          ),
-          leading: IconButton(
-            icon: const Icon(
-              Icons.keyboard_return,
-              size: 35,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.amber,
+        centerTitle: true,
+        title: const Text(
+          "放鬆音樂",
+          style: TextStyle(fontSize: 25),
         ),
-        body: Builder(
-          builder: (context) => Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(
-                top: MediaQuery.of(context).padding.top + 20,
-                right: 20.0,
-                left: 20.0,
-                bottom: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: DarkMode(DataMenu[0].isdark, "background",
-                    Colors.grey.shade900, Colors.amber.shade50),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(20),
-                ),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.keyboard_return,
+            size: 35,
+            color: Colors.white,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Builder(
+        builder: (context) => Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).padding.top + 20,
+              right: 20.0,
+              left: 20.0,
+              bottom: 20.0),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.amber.shade50,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
               ),
-              child: ListView.separated(
-                itemCount: listview_menu.length,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    leading: Icon(
-                      Icons.ondemand_video,
-                      size: 50,
-                      color: DarkMode(DataMenu[0].isdark, "Text",
-                          Colors.amber.shade900, Colors.white),
+            ),
+            child: ListView.separated(
+              itemCount: listview_menu.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  leading: Icon(
+                    Icons.ondemand_video,
+                    size: 50,
+                    color: Colors.amber.shade900,
+                  ),
+                  title: Text(
+                    listview_menu[index].name,
+                    style: TextStyle(
+                      fontSize: 23,
+                      color: Colors.amber.shade900,
                     ),
-                    title: Text(
-                      listview_menu[index].name,
-                      style: TextStyle(
-                        fontSize: 23,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.amber.shade900, Colors.white),
-                      ),
-                    ),
-                    onTap: () {
-                      launchURL(listview_menu[index].url);
-                    },
-                  );
-                },
-                //選擇分隔線的
-                separatorBuilder: (BuildContext context, int index) {
-                  return index % 3 == 0
-                      ? divider0
-                      : index % 3 == 1
-                          ? divider1
-                          : divider2;
-                },
-              ),
+                  ),
+                  onTap: () {
+                    launchURL(listview_menu[index].url);
+                  },
+                );
+              },
+              //選擇分隔線的
+              separatorBuilder: (BuildContext context, int index) {
+                return index % 3 == 0
+                    ? divider0
+                    : index % 3 == 1
+                        ? divider1
+                        : divider2;
+              },
             ),
           ),
         ),
@@ -2057,15 +1886,16 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
     personal_gender = widget.personal_gender;
     print("personal_gender:$personal_gender");
     DataMenu = widget.DataMenu;
-    PrintList("DrawerClass", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page="DrawerClassPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: DarkMode(
-          DataMenu[0].isdark, "background", Colors.grey.shade900, Colors.white),
+      backgroundColor: Colors.white,
       child: ListView(
         padding: EdgeInsets.zero,
         children: <Widget>[
@@ -2122,13 +1952,13 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
               ),
             ),
           ),
-          Padding(
+          const Padding(
             //label
-            padding: const EdgeInsets.all(15),
+            padding: EdgeInsets.all(15),
             child: Text(
               "功能列",
               style: TextStyle(
-                color: DarkMode(DataMenu[0].isdark, "Text"),
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
               ),
@@ -2141,9 +1971,9 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
           buildListTile(context, 0, Icons.list_sharp, "社群交流", DataMenu),
           buildListTile(context, 1, Icons.link, "相關連結", DataMenu),
           buildListTile(context, 2, Icons.receipt_long, "問卷系統", DataMenu),
-          if (DataMenu[0].Carer)
+          // if (DataMenu[0].Carer)
             buildListTile(context, 3, Icons.paste_outlined, "居家照護知識", DataMenu),
-          if (DataMenu[0].Carer)
+          // if (DataMenu[0].Carer)
             buildListTile(context, 4, Icons.library_music, "放鬆音樂", DataMenu),
           buildListTile(context, 5, Icons.home, "回首頁", DataMenu),
           const SizedBox(

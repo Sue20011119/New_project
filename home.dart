@@ -8,6 +8,8 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:date_format/date_format.dart';
 import 'package:my_topic_project/MysqlList.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 class MainPage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
@@ -38,7 +40,8 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     DataMenu = widget.DataMenu;
     _getMysqlData();
-    PrintList("MainPage", "AllPagesNeedData", DataMenu);
+    DataMenu[0].page = "MainPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     super.initState();
   }
 
@@ -57,7 +60,7 @@ class _MainPageState extends State<MainPage> {
     PersonalMenu.clear(); //初始化列表
     db.getConnection().then((conn) {
       String sql =
-          "SELECT * FROM patient_database WHERE id='${DataMenu[0].id}'";
+          "SELECT * FROM patient_database WHERE account='${DataMenu[0].account}'";
       conn.query(sql).then((results) {
         print("連線成功!");
         for (var row in results) {
@@ -105,8 +108,22 @@ class _MainPageState extends State<MainPage> {
           onTap: (int idx) {
             setState(() {
               currentIndex = idx;
-              PrintList(
-                  pages[currentIndex].toString(), "AllPagesNeedData", DataMenu);
+
+              //防止其他頁跟著跳回來，觀感不佳
+              idx == 0 &&
+                      DataMenu[0].page != "MainPage" &&
+                      DataMenu[0].page != "HomePage" &&
+                      DataMenu[0].page != "RecordPage" &&
+                      DataMenu[0].page != "NewMessagePage" &&
+                      DataMenu[0].page != "AboutUsPage"
+                  ? Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => MainPage(DataMenu),
+                      ),
+                    )
+                  : null;
+              DataMenu[0].page = pages[currentIndex].toString();
+              PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
             });
           },
           items: [
@@ -156,50 +173,43 @@ void showAlertDialog(BuildContext context, List<AllPagesNeedData> DataMenu) {
     ),
     actions: [
       Center(
-        child: Container(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                    DarkMode(DataMenu[0].isdark, "background", Colors.grey,
-                        Colors.white),
-                  ),
-                ),
-                child: Text(
-                  "取消",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.blue, Colors.white),
-                  ),
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
               ),
-              const SizedBox(
-                width: 30,
-              ),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.blue),
+              child: const Text(
+                "取消",
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.blue,
                 ),
-                child: const Text(
-                  "登出",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                  );
-                },
               ),
-            ],
-          ),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            const SizedBox(
+              width: 30,
+            ),
+            ElevatedButton(
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+              ),
+              child: const Text(
+                "登出",
+                style: TextStyle(fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginPage()),
+                );
+              },
+            ),
+          ],
         ),
       ),
     ],
@@ -291,6 +301,8 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false, //不顯示上方debug的物件
+      //調整全部字體大小
       builder: (BuildContext context, Widget? child) {
         final MediaQueryData data = MediaQuery.of(context);
         return MediaQuery(
@@ -300,7 +312,6 @@ class _HomePageState extends State<HomePage> {
           child: child!,
         );
       },
-      debugShowCheckedModeBanner: false,
       home: Scaffold(
         resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
         body: Column(
@@ -349,17 +360,14 @@ class _HomePageState extends State<HomePage> {
                     width: 10,
                   ),
                   Expanded(
-                    flex:1,
+                      flex: 1,
                       child: Image.asset(
-                    'lib/images/coin.png',
-                    width: 70,
-                    height: 70,
-                  )),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                        'lib/images/coin.png',
+                        width: 70,
+                        height: 70,
+                      )),
                   Expanded(
-                    flex:3,
+                    flex: 3,
                     child: Text(
                       "金幣數量：$coin",
                       style: const TextStyle(
@@ -554,98 +562,86 @@ class _RecordPageState extends State<RecordPage> {
                               : divider6;
     }
 
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.orange.shade50,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                right: 20.0,
+                left: 20.0,
+                bottom: 20.0),
           ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: Colors.orange.shade50,
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  right: 20.0,
-                  left: 20.0,
-                  bottom: 20.0),
+          const Center(
+            child: Text(
+              "復健訓練",
+              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
             ),
-            const Center(
-              child: Text(
-                "復健訓練",
-                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            Expanded(
-              //移除上面出現的白色部分
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView.separated(
-                  itemCount: MysqlMenu.length,
-                  itemBuilder: (context, index) {
-                    return Container(
-                      color: MysqlMenu[index].score > 90
-                          ? Colors.green.shade200
-                          : MysqlMenu[index].score >= 75
-                              ? Colors.yellow.shade400
-                              : MysqlMenu[index].score >= 60
-                                  ? Colors.orange.shade300
-                                  : Colors.red.shade200,
-                      child: ListTile(
-                        leading: const Icon(
-                          Icons.access_time,
-                          size: 50,
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Expanded(
+            //移除上面出現的白色部分
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: ListView.separated(
+                itemCount: MysqlMenu.length,
+                itemBuilder: (context, index) {
+                  return Container(
+                    // color: MysqlMenu[index].score > 90
+                    //     ? Colors.green.shade200
+                    //     : MysqlMenu[index].score >= 75
+                    //         ? Colors.yellow.shade400
+                    //         : MysqlMenu[index].score >= 60
+                    //             ? Colors.orange.shade300
+                    //             : Colors.red.shade200,
+                    child: ListTile(
+                      leading: const Icon(
+                        Icons.access_time,
+                        size: 50,
+                        color: Colors.black,
+                      ),
+                      title: Text(
+                        MysqlMenu[index].type,
+                        style: const TextStyle(
+                          fontSize: 23,
                           color: Colors.black,
                         ),
-                        title: Text(
-                          MysqlMenu[index].type,
-                          style: const TextStyle(
-                            fontSize: 23,
-                            color: Colors.black,
-                          ),
-                        ),
-                        subtitle: Text(
-                          //日期格式轉換
-                          formatDate(
-                              MysqlMenu[index].time, [yyyy, "-", mm, "-", dd]),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                        trailing: Text(
-                          MysqlMenu[index].score.toString(),
-                          style: const TextStyle(
-                            fontSize: 23,
-                            color: Colors.black,
-                          ),
-                        ),
-                        onTap: () {
-                          print(index);
-                        },
                       ),
-                    );
-                  },
-                  //選擇分隔線的
-                  separatorBuilder: (BuildContext context, int index) {
-                    return ChooseDivider(index);
-                  },
-                ),
+                      subtitle: Text(
+                        //日期格式轉換
+                        formatDate(
+                            MysqlMenu[index].time, [yyyy, "-", mm, "-", dd]),
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                      // trailing: Text(
+                      //   MysqlMenu[index].score.toString(),
+                      //   style: const TextStyle(
+                      //     fontSize: 23,
+                      //     color: Colors.black,
+                      //   ),
+                      // ),
+                      onTap: () {
+                        print(index);
+                      },
+                    ),
+                  );
+                },
+                //選擇分隔線的
+                separatorBuilder: (BuildContext context, int index) {
+                  return ChooseDivider(index);
+                },
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -665,6 +661,13 @@ class _NewMessagePageState extends State<NewMessagePage> {
   var db = new Mysql();
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+
+  int RehabilitationId = 1;
+
+  // int QuestionnaireId = 2;
+
+  // int alarmId = 1;
+  //ExpansionPanelListData(this.isread, this.detail, this.date, this.isopen);
   List<ExpansionPanelListData> expansionpanellist_menu = [
     ExpansionPanelListData(
         false,
@@ -761,6 +764,18 @@ class _NewMessagePageState extends State<NewMessagePage> {
   @override
   void initState() {
     DataMenu = widget.DataMenu;
+    var androidInitialize =
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
+    var iOSInitialize = const IOSInitializationSettings();
+    var initialzationSettings =
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+    //初始化復健訊息
+    RehabilitationNotification = FlutterLocalNotificationsPlugin();
+    RehabilitationNotification.initialize(initialzationSettings);
+    //初始化問卷訊息
+    // QuestionnaireNotification = FlutterLocalNotificationsPlugin();
+    // QuestionnaireNotification.initialize(initialzationSettings);
+
     super.initState();
   }
 
@@ -772,8 +787,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
         [bool all = false]) {
       // Init
       AlertDialog dialog = AlertDialog(
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-            Colors.grey.shade800, Colors.white),
+        backgroundColor: Colors.white,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
@@ -781,20 +795,18 @@ class _NewMessagePageState extends State<NewMessagePage> {
           child: RichText(
             text: TextSpan(
               children: [
-                WidgetSpan(
+                const WidgetSpan(
                   child: Icon(
                     Icons.delete,
                     size: 30,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.black, Colors.white),
+                    color: Colors.black,
                   ),
                 ),
                 TextSpan(
                   text: all ? "刪除全部?" : "刪除該訊息?",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 25,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.black, Colors.white),
+                    color: Colors.black,
                   ),
                 ),
               ],
@@ -809,16 +821,14 @@ class _NewMessagePageState extends State<NewMessagePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor: MaterialStateProperty.all<Color>(
-                      DarkMode(DataMenu[0].isdark, "background", Colors.grey,
-                          Colors.white),
+                      Colors.white,
                     ),
                   ),
-                  child: Text(
+                  child: const Text(
                     "取消",
                     style: TextStyle(
                       fontSize: 20,
-                      color: DarkMode(DataMenu[0].isdark, "Text", Colors.green,
-                          Colors.white),
+                      color: Colors.green,
                     ),
                   ),
                   onPressed: () {
@@ -881,301 +891,332 @@ class _NewMessagePageState extends State<NewMessagePage> {
       );
     }
 
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.white,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                right: 20.0,
+                left: 20.0,
+                bottom: 0.0),
           ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: DarkMode(DataMenu[0].isdark, "background"),
-        appBar: AppBar(
-          backgroundColor: DarkMode(DataMenu[0].isdark, "background",
-              Colors.grey.shade900, Colors.green.shade50),
-          toolbarHeight: 10,
-          flexibleSpace: Container(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "訊息通知",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: DarkMode(
-                        DataMenu[0].isdark, "Text", Colors.green, Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        body: RefreshIndicator(
-          onRefresh: _onRefresh,
-          child: Padding(
-            padding:
-                const EdgeInsets.only(top: 20, left: 10, right: 10, bottom: 0),
-            child: Column(
-              children: [
-                if (expansionpanellist_menu.isEmpty)
-                  Column(
+          Expanded(
+            //移除上面出現的白色部分
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: RefreshIndicator(
+                onRefresh: _onRefresh,
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                      top: 20, left: 10, right: 10, bottom: 0),
+                  child: Column(
                     children: [
-                      SwitchListTile(
-                          dense: true,
-                          activeColor: Colors.green,
-                          contentPadding: const EdgeInsets.all(10),
-                          value: DataMenu[0].RehabilitationNotice,
-                          title: Text(
-                            "復健通知",
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: DarkMode(DataMenu[0].isdark, "Text"),
-                            ),
-                          ),
-                          onChanged: (val) {
-                            setState(() {
-                              DataMenu[0].RehabilitationNotice =
-                                  !DataMenu[0].RehabilitationNotice;
-                            });
-                          }),
-                      Container(
-                        width: double.infinity,
-                        height: 2,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.green.shade500, Colors.white),
-                      ),
-                      SwitchListTile(
-                          dense: true,
-                          activeColor: Colors.green,
-                          contentPadding: const EdgeInsets.all(10),
-                          value: DataMenu[0].QuestionnaireNotice,
-                          title: Text(
-                            "問卷填寫通知",
-                            style: TextStyle(
-                              fontSize: 30,
-                              color: DarkMode(DataMenu[0].isdark, "Text"),
-                            ),
-                          ),
-                          onChanged: (val) {
-                            setState(() {
-                              DataMenu[0].QuestionnaireNotice =
-                                  !DataMenu[0].QuestionnaireNotice;
-                            });
-                          }),
-                      Container(
-                        width: double.infinity,
-                        height: 2,
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.green.shade500, Colors.white),
+                      const Center(
+                        child: Text(
+                          "訊息通知",
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold),
+                        ),
                       ),
                       const SizedBox(
-                        height: 20,
+                        height: 10,
                       ),
-                      Divider(
-                        color: DarkMode(DataMenu[0].isdark, "Text", Colors.grey,
-                            Colors.white),
-                        thickness: 2,
-                      )
-                    ],
-                  ),
-                Expanded(
-                  child: ListView.separated(
-                    itemCount: expansionpanellist_menu.length,
-                    itemBuilder: (context, index) {
-                      return Column(
-                        children: [
-                          if (index == 0)
-                            Column(
-                              children: [
-                                SwitchListTile(
-                                    dense: true,
-                                    activeColor: Colors.green,
-                                    contentPadding: const EdgeInsets.all(10),
-                                    value: DataMenu[0].RehabilitationNotice,
-                                    title: Text(
-                                      "復健通知",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        color: DarkMode(
-                                            DataMenu[0].isdark, "Text"),
-                                      ),
-                                    ),
-                                    onChanged: (val) {
-                                      setState(() {
-                                        DataMenu[0].RehabilitationNotice =
-                                            !DataMenu[0].RehabilitationNotice;
-                                      });
-                                    }),
-                                Container(
-                                  width: double.infinity,
-                                  height: 2,
-                                  color: DarkMode(DataMenu[0].isdark, "Text",
-                                      Colors.green.shade500, Colors.white),
-                                ),
-                                SwitchListTile(
-                                    dense: true,
-                                    activeColor: Colors.green,
-                                    contentPadding: const EdgeInsets.all(10),
-                                    value: DataMenu[0].QuestionnaireNotice,
-                                    title: Text(
-                                      "問卷填寫通知",
-                                      style: TextStyle(
-                                        fontSize: 30,
-                                        color: DarkMode(
-                                            DataMenu[0].isdark, "Text"),
-                                      ),
-                                    ),
-                                    onChanged: (val) {
-                                      setState(() {
-                                        DataMenu[0].QuestionnaireNotice =
-                                            !DataMenu[0].QuestionnaireNotice;
-                                      });
-                                    }),
-                                Container(
-                                  width: double.infinity,
-                                  height: 2,
-                                  color: DarkMode(DataMenu[0].isdark, "Text",
-                                      Colors.green.shade500, Colors.white),
-                                ),
-                                const SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          showDeleteAlertDialog(
-                                              expansionpanellist_menu,
-                                              index,
-                                              true); //顯示刪除全部的提示對話框
-                                        });
-                                      },
-                                      icon: Icon(
-                                        Icons.delete,
-                                        size: 30,
-                                        color: DarkMode(
-                                            DataMenu[0].isdark, "Text"),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Divider(
-                                  color: DarkMode(DataMenu[0].isdark, "Text",
-                                      Colors.grey, Colors.white),
-                                  thickness: 2,
-                                )
-                              ],
-                            ),
-                          ExpansionPanelList(
-                              animationDuration:
-                                  const Duration(milliseconds: 500),
-                              elevation: 0,
-                              expandedHeaderPadding: const EdgeInsets.all(8),
-                              children: [
-                                ExpansionPanel(
-                                  backgroundColor: DarkMode(
-                                      DataMenu[0].isdark,
-                                      "background",
-                                      Colors.grey.shade900,
-                                      Colors.white),
-                                  isExpanded:
-                                      expansionpanellist_menu[index].isopen,
-                                  canTapOnHeader: true,
-                                  //能按標題展開
-                                  headerBuilder:
-                                      (BuildContext context, bool isExpanded) {
-                                    return ListTile(
-                                      leading: !expansionpanellist_menu[index]
-                                              .isread
-                                          ? Icon(Icons.circle,
-                                              size: 16,
-                                              color:
-                                                  Colors.greenAccent.shade200)
-                                          : const Icon(Icons.circle_outlined,
-                                              size: 16, color: Colors.grey),
-                                      title: Text(
-                                        "${expansionpanellist_menu[index].date}復健通知",
-                                        style: TextStyle(
-                                            color: DarkMode(
-                                                DataMenu[0].isdark, "Text"),
-                                            fontSize: 25,
-                                            overflow: TextOverflow.ellipsis,
-                                            fontWeight:
-                                                //未讀嗎?未讀的話粗體，已讀的話復原
-                                                !expansionpanellist_menu[index]
-                                                        .isread
-                                                    ? FontWeight.bold
-                                                    : FontWeight.normal),
-                                      ),
-                                    );
-                                  },
-                                  body: Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      children: [
-                                        Text(
-                                          expansionpanellist_menu[index].detail,
-                                          style: TextStyle(
-                                            color: DarkMode(
-                                                DataMenu[0].isdark, "Text"),
-                                            fontSize: 25,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 15,
-                                        ),
-                                        IconButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              showDeleteAlertDialog(
-                                                  expansionpanellist_menu,
-                                                  index); //顯示刪除提示對話框
-                                            });
-                                          },
-                                          icon: Icon(
-                                            Icons.delete,
-                                            size: 30,
-                                            color: DarkMode(
-                                                DataMenu[0].isdark, "Text"),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                      if (expansionpanellist_menu.isEmpty)
+                        Column(
+                          children: [
+                            SwitchListTile(
+                                dense: true,
+                                activeColor: Colors.green,
+                                contentPadding: const EdgeInsets.all(10),
+                                value: DataMenu[0].RehabilitationNotice,
+                                title: const Text(
+                                  "復健通知",
+                                  style: TextStyle(
+                                    fontSize: 30,
+                                    color: Colors.black,
                                   ),
                                 ),
+                                onChanged: (val) {
+                                  setState(() {
+                                    DataMenu[0].RehabilitationNotice =
+                                        !DataMenu[0].RehabilitationNotice;
+                                  });
+                                  if (DataMenu[0].RehabilitationNotice) {
+                                    decideNotification(
+                                        DataMenu, RehabilitationId);
+                                  } else {
+                                    print("已取消, id=$RehabilitationId");
+                                    AndroidAlarmManager.cancel(
+                                        RehabilitationId);
+                                  }
+                                }),
+                            Container(
+                              width: double.infinity,
+                              height: 2,
+                              color: Colors.green.shade500,
+                            ),
+                            // SwitchListTile(
+                            //     dense: true,
+                            //     activeColor: Colors.green,
+                            //     contentPadding: const EdgeInsets.all(10),
+                            //     value: DataMenu[0].QuestionnaireNotice,
+                            //     title: const Text(
+                            //       "問卷填寫通知",
+                            //       style: TextStyle(
+                            //         fontSize: 30,
+                            //         color: Colors.black,
+                            //       ),
+                            //     ),
+                            //     onChanged: (val) {
+                            //       setState(() {
+                            //         DataMenu[0].QuestionnaireNotice =
+                            //             !DataMenu[0].QuestionnaireNotice;
+                            //       });
+                            //       if (DataMenu[0].QuestionnaireNotice) {
+                            //         decideNotification(
+                            //             DataMenu, QuestionnaireId);
+                            //       } else {
+                            //         print("已取消, id=$QuestionnaireId");
+                            //         AndroidAlarmManager.cancel(QuestionnaireId);
+                            //       }
+                            //     }),
+                            // Container(
+                            //   width: double.infinity,
+                            //   height: 2,
+                            //   color: Colors.green.shade500,
+                            // ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Divider(
+                              color: Colors.grey,
+                              thickness: 2,
+                            )
+                          ],
+                        ),
+                      Expanded(
+                        child: ListView.separated(
+                          itemCount: expansionpanellist_menu.length,
+                          itemBuilder: (context, index) {
+                            return Column(
+                              children: [
+                                if (index == 0)
+                                  Column(
+                                    children: [
+                                      SwitchListTile(
+                                          dense: true,
+                                          activeColor: Colors.green,
+                                          contentPadding:
+                                              const EdgeInsets.all(10),
+                                          value:
+                                              DataMenu[0].RehabilitationNotice,
+                                          title: const Text(
+                                            "復健通知",
+                                            style: TextStyle(
+                                              fontSize: 30,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                          onChanged: (val) {
+                                            setState(() {
+                                              DataMenu[0].RehabilitationNotice =
+                                                  !DataMenu[0]
+                                                      .RehabilitationNotice;
+                                            });
+                                            //開啟Switch
+                                            if (DataMenu[0]
+                                                .RehabilitationNotice) {
+                                              decideNotification(
+                                                  DataMenu, RehabilitationId);
+                                            } else {
+                                              print(
+                                                  "已取消, id=$RehabilitationId");
+                                              AndroidAlarmManager.cancel(
+                                                  RehabilitationId);
+                                            }
+                                          }),
+                                      Container(
+                                        width: double.infinity,
+                                        height: 2,
+                                        color: Colors.green.shade500,
+                                      ),
+                                      // SwitchListTile(
+                                      //     dense: true,
+                                      //     activeColor: Colors.green,
+                                      //     contentPadding:
+                                      //         const EdgeInsets.all(10),
+                                      //     value:
+                                      //         DataMenu[0].QuestionnaireNotice,
+                                      //     title: const Text(
+                                      //       "問卷填寫通知",
+                                      //       style: TextStyle(
+                                      //         fontSize: 30,
+                                      //         color: Colors.black,
+                                      //       ),
+                                      //     ),
+                                      //     onChanged: (val) {
+                                      //       setState(() {
+                                      //         DataMenu[0].QuestionnaireNotice =
+                                      //             !DataMenu[0]
+                                      //                 .QuestionnaireNotice;
+                                      //       });
+                                      //       if (DataMenu[0]
+                                      //           .QuestionnaireNotice) {
+                                      //         decideNotification(
+                                      //             DataMenu, QuestionnaireId);
+                                      //       } else {
+                                      //         print("已取消, id=$QuestionnaireId");
+                                      //         AndroidAlarmManager.cancel(
+                                      //             QuestionnaireId);
+                                      //       }
+                                      //     }),
+                                      // Container(
+                                      //   width: double.infinity,
+                                      //   height: 2,
+                                      //   color: Colors.green.shade500,
+                                      // ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          IconButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                showDeleteAlertDialog(
+                                                    expansionpanellist_menu,
+                                                    index,
+                                                    true); //顯示刪除全部的提示對話框
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.delete,
+                                              size: 30,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const Divider(
+                                        color: Colors.grey,
+                                        thickness: 2,
+                                      )
+                                    ],
+                                  ),
+                                ExpansionPanelList(
+                                    animationDuration:
+                                        const Duration(milliseconds: 500),
+                                    elevation: 0,
+                                    expandedHeaderPadding:
+                                        const EdgeInsets.all(8),
+                                    children: [
+                                      ExpansionPanel(
+                                        backgroundColor: Colors.white,
+                                        isExpanded:
+                                            expansionpanellist_menu[index]
+                                                .isopen,
+                                        canTapOnHeader: true,
+                                        //能按標題展開
+                                        headerBuilder: (BuildContext context,
+                                            bool isExpanded) {
+                                          return ListTile(
+                                            leading:
+                                                !expansionpanellist_menu[index]
+                                                        .isread
+                                                    ? Icon(
+                                                        Icons.circle,
+                                                        size: 16,
+                                                        color:
+                                                            Colors.greenAccent
+                                                                .shade200)
+                                                    : const Icon(
+                                                        Icons.circle_outlined,
+                                                        size: 16,
+                                                        color: Colors.grey),
+                                            title: Text(
+                                              "${expansionpanellist_menu[index].date}復健通知",
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 25,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  fontWeight:
+                                                      //未讀嗎?未讀的話粗體，已讀的話復原
+                                                      !expansionpanellist_menu[
+                                                                  index]
+                                                              .isread
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal),
+                                            ),
+                                          );
+                                        },
+                                        body: Padding(
+                                          padding: const EdgeInsets.all(10),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                expansionpanellist_menu[index]
+                                                    .detail,
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 25,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 15,
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  setState(() {
+                                                    showDeleteAlertDialog(
+                                                        expansionpanellist_menu,
+                                                        index); //顯示刪除單個的提示對話框
+                                                  });
+                                                },
+                                                icon: const Icon(
+                                                  Icons.delete,
+                                                  size: 30,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                    expansionCallback: (i, isExpanded) {
+                                      setState(() {
+                                        expansionpanellist_menu[index].isopen =
+                                            !isExpanded;
+                                        expansionpanellist_menu[index].isread =
+                                            true;
+                                      });
+                                    }),
                               ],
-                              expansionCallback: (i, isExpanded) {
-                                setState(() {
-                                  expansionpanellist_menu[index].isopen =
-                                      !isExpanded;
-                                  expansionpanellist_menu[index].isread = true;
-                                });
-                              }),
-                        ],
-                      );
-                    },
-                    //選擇分隔線的
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Divider(
-                        color: DarkMode(DataMenu[0].isdark, "Text",
-                            Colors.grey.shade200, Colors.white),
-                        thickness: 2,
-                      );
-                    },
+                            );
+                          },
+                          //選擇分隔線的
+                          separatorBuilder: (BuildContext context, int index) {
+                            return Divider(
+                              color: Colors.grey.shade200,
+                              thickness: 2,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -1190,6 +1231,96 @@ class ExpansionPanelListData {
   String detail;
   String date;
   bool isopen;
+}
+
+//復健訊息相關
+late FlutterLocalNotificationsPlugin RehabilitationNotification;
+
+Future<void> _showRehabilitationNotification() async {
+  var androidInitialize =
+      const AndroidInitializationSettings("@mipmap/ic_launcher");
+  var iOSInitialize = const IOSInitializationSettings();
+  var initialzationSettings =
+      InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+  RehabilitationNotification = FlutterLocalNotificationsPlugin();
+  RehabilitationNotification.initialize(initialzationSettings);
+
+  print("Rehabilitation：已在:${DateTime.now()} 寄出");
+  var androidDetails = const AndroidNotificationDetails(
+      "channelId", "channelName",
+      importance: Importance.max, priority: Priority.max);
+  var iosDetails = const IOSNotificationDetails();
+  var generalNotificationDetails =
+      NotificationDetails(android: androidDetails, iOS: iosDetails);
+  await RehabilitationNotification.show(
+      0, "復健提醒", "今天要記得復健喔", generalNotificationDetails);
+}
+
+//問卷訊息相關
+// late FlutterLocalNotificationsPlugin QuestionnaireNotification;
+//
+// Future<void> _showQuestionnaireNotification() async {
+//   var androidInitialize =
+//       const AndroidInitializationSettings("@mipmap/ic_launcher");
+//   var iOSInitialize = const IOSInitializationSettings();
+//   var initialzationSettings =
+//       InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+//   QuestionnaireNotification = FlutterLocalNotificationsPlugin();
+//   QuestionnaireNotification.initialize(initialzationSettings);
+//
+//   print("Questionnaire：已在:${DateTime.now()} 寄出");
+//   var androidDetails = const AndroidNotificationDetails(
+//       "channelId", "channelName",
+//       importance: Importance.max, priority: Priority.max);
+//   var iosDetails = const IOSNotificationDetails();
+//   var generalNotificationDetails =
+//       NotificationDetails(android: androidDetails, iOS: iosDetails);
+//   await QuestionnaireNotification.show(
+//       0, "Questionnaire", "Questionnaire", generalNotificationDetails);
+// }
+
+void decideNotification(List<AllPagesNeedData> DataMenu, int id) {
+  print("有動作, id=$id");
+  if (id == 1) {
+    //定期的
+    AndroidAlarmManager.periodic(
+      const Duration(seconds: 5),
+      id,
+      _showRehabilitationNotification,
+      // startAt: DateTime(
+      //   DateTime.now().year,
+      //   DateTime.now().month,
+      //   DateTime.now().day,
+      //   DateTime.now().hour,
+      //   6,
+      // ),
+    );
+
+    //固定一個時間
+    // AndroidAlarmManager.oneShotAt(
+    // DateTime(2023, 3, 18, 21, 50), alarmId, firmAlarm);
+  }
+  // else if (id == 2) {
+  //   //定期的
+  //   AndroidAlarmManager.periodic(
+  //     const Duration(seconds: 5),
+  //     id,
+  //     _showQuestionnaireNotification,
+  //     // startAt: DateTime(
+  //     //   DateTime.now().year,
+  //     //   DateTime.now().month,
+  //     //   DateTime.now().day,
+  //     //   DateTime.now().hour,
+  //     //   6,
+  //     // ),
+  //   );
+  //
+  //   //固定一個時間
+  //   // AndroidAlarmManager.oneShotAt(
+  //   // DateTime(2023, 3, 18, 21, 50), alarmId, firmAlarm);
+  // }
+  else
+    print("ERROR!，id = $id");
 }
 
 //關於我們頁面
@@ -1215,70 +1346,58 @@ class _AboutUsPageState extends State<AboutUsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      builder: (BuildContext context, Widget? child) {
-        final MediaQueryData data = MediaQuery.of(context);
-        return MediaQuery(
-          data: data.copyWith(
-            textScaleFactor: 1,
+    return Scaffold(
+      resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
+      backgroundColor: Colors.blue.shade50,
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: MediaQuery.of(context).padding.top,
+                right: 20.0,
+                left: 20.0,
+                bottom: 20.0),
           ),
-          child: child!,
-        );
-      },
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        resizeToAvoidBottomInset: false, //避免鍵盤出現而造成overflow
-        backgroundColor: Colors.blue.shade50,
-        body: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  right: 20.0,
-                  left: 20.0,
-                  bottom: 20.0),
+          const Center(
+            child: Text(
+              "關於我們",
+              style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
             ),
-            const Center(
-              child: Text(
-                "關於我們",
-                style: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            Expanded(
-              //移除上面出現的白色部分
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView(
-                  children: [
-                    Card(
-                      color: Colors.blue.shade50,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 2,
-                            color: Colors.black,
-                          ),
-                          buildAboutAs("發展單位及合作公司", "高科大/高醫"),
-                          buildAboutAs("APP使用", ""),
-                          buildAboutAs(
-                            "最後更新時間",
-                            "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
-                          ),
-                        ],
-                      ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+          Expanded(
+            //移除上面出現的白色部分
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: ListView(
+                children: [
+                  Card(
+                    color: Colors.blue.shade50,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          height: 2,
+                          color: Colors.black,
+                        ),
+                        buildAboutAs("發展單位及合作公司", "高科大/高醫"),
+                        buildAboutAs("APP使用", ""),
+                        buildAboutAs(
+                          "最後更新時間",
+                          "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1337,13 +1456,11 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
     leading: Icon(
       icon,
       size: 30,
-      color: DarkMode(
-          DataMenu[0].isdark, "Text", Colors.grey.shade800, Colors.white),
+      color: Colors.grey.shade800,
     ),
     title: Text(title,
         style: TextStyle(
-          color: DarkMode(
-              DataMenu[0].isdark, "Text", Colors.grey.shade800, Colors.white),
+          color: Colors.grey.shade800,
           fontSize: 20,
         )),
     onTap: () {
