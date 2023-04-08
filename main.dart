@@ -3,7 +3,9 @@ import "package:my_topic_project/login.dart";
 import "package:my_topic_project/MysqlInterface.dart";
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:async';
 
 //印出資料庫資料的入口
 // void main() => runApp(PrintInterface());
@@ -15,6 +17,8 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 void main() async{
   runApp(MyApp());
   await AndroidAlarmManager.initialize();
+  WidgetsFlutterBinding.ensureInitialized();
+  AndroidAlarmManager.cancel(1);
 }
 
 //通知測試的入口
@@ -26,12 +30,16 @@ void main() async{
 //   await AndroidAlarmManager.initialize();
 // }
 
-//測試入口
-// void main() => runApp(Testface());
+//影片測試入口
+// void main() => runApp(VideoPage());
 
+//SQLite測試入口
+// void main() {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   runApp(StartPage());
+// }
 
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

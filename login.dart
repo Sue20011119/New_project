@@ -116,13 +116,13 @@ class _LoginPageState extends State<LoginPage> {
   //初始化
   @override
   void initState() {
+    super.initState();
     MysqlMenu.clear();
     DataMenu.clear();
     //初始化DataMenu
     //  id, account, Carer, RehabilitationNotice, QuestionnaireNotice, isdark;
-    DataMenu.add(AllPagesNeedData("", "", false, false, "LoginPage"));
+    DataMenu.add(AllPagesNeedData("", "", "LoginPage"));
     //TextField的焦點
-    super.initState();
   }
 
   @override

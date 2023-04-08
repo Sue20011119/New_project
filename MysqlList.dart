@@ -4,13 +4,10 @@ import "package:flutter/cupertino.dart";
 // 設定所有頁面傳值的數據的格式
 //DataMenu
 class AllPagesNeedData {
-  AllPagesNeedData(this.id, this.account, this.RehabilitationNotice,
-      this.QuestionnaireNotice, this.page);
+  AllPagesNeedData(this.id, this.account, this.page);
 
   String id;
   String account;
-  bool RehabilitationNotice;
-  bool QuestionnaireNotice;
   String page;
 }
 
@@ -55,6 +52,7 @@ class MysqlDataOfPersonal {
   String name;
   String gender;
 }
+
 
 //設定轉跳網址的listview_menu的格式
 // listview_menu
@@ -106,8 +104,6 @@ PrintList(String page, String class_object, List list) {
     case "AllPagesNeedData":
       print("$page is id:${list[0].id}, "
           "account:${list[0].account}, "
-          "RehabilitationNotice:${list[0].RehabilitationNotice}, "
-          "QuestionnaireNotice:${list[0].QuestionnaireNotice}, "
           "page:${list[0].page}"
       );
       break;

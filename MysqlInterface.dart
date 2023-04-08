@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+
+//通知的
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mysql1/mysql1.dart';
 import 'package:my_topic_project/ConnectMysql.dart';
@@ -8,8 +12,18 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 import 'package:my_topic_project/MysqlList.dart';
 import 'package:settings_ui/settings_ui.dart';
+
+//音樂播放的
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+
+//計時器的
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+
+//SQLite的相關安裝包
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+import 'package:path_provider/path_provider.dart';
 
 class PrintInterface extends StatelessWidget {
   // This widget is the root of your application.
@@ -165,11 +179,11 @@ class WriteSQLdataState extends State<WriteSQLdata> {
   @override
   //初始化參數
   void initState() {
+    super.initState();
     error = false;
     sending = false;
     success = false;
     msg = "";
-    super.initState();
   }
 
   Future<void> sendData(int num) async {
@@ -365,29 +379,15 @@ class MysqlData {
   final int? score;
 }
 
-class Testface extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Test(),
-    );
-  }
-}
-
-class Test extends StatefulWidget {
-  // MyHomePage({Key key, this.title}) : super(key: key);
-  // final String title;
+//測試撥放影片
+class VideoPage extends StatefulWidget {
+  const VideoPage({Key? key}) : super(key: key);
 
   @override
-  _TestState createState() => _TestState();
+  _VideoPageState createState() => _VideoPageState();
 }
 
-class _TestState extends State<Test> {
+class _VideoPageState extends State<VideoPage> {
   late String videoTitle;
 
   //影片網址
@@ -447,59 +447,63 @@ class _TestState extends State<Test> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('放影片測試'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: _videoUrlList.length,
-          shrinkWrap: true,
-          itemBuilder: (context, index) {
-            YoutubePlayerController _ytController = lYTC[index];
-            return Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Stack(
-                alignment: Alignment.bottomCenter,
-                children: [
-                  Container(
-                    height: 220.0,
-                    decoration: const BoxDecoration(
-                      color: Color(0xfff5f5f5),
-                      borderRadius: BorderRadius.all(Radius.circular(12)),
-                    ),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.all(Radius.circular(12)),
-                      child: YoutubePlayer(
-                        controller: _ytController,
-                        showVideoProgressIndicator: true,
-                        progressIndicatorColor: Colors.lightBlueAccent,
-                        bottomActions: [
-                          CurrentPosition(),
-                          ProgressBar(isExpanded: true),
-                          FullScreenButton(),
-                        ],
-                        onReady: () {
-                          print('onReady for $index');
-                        },
-                        onEnded: (YoutubeMetaData _md) {
-                          _ytController.seekTo(const Duration(seconds: 0));
-                        },
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('放影片測試'),
+          centerTitle: true,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: ListView.builder(
+            itemCount: _videoUrlList.length,
+            shrinkWrap: true,
+            itemBuilder: (context, index) {
+              YoutubePlayerController _ytController = lYTC[index];
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    Container(
+                      height: 220.0,
+                      decoration: const BoxDecoration(
+                        color: Color(0xfff5f5f5),
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                      child: ClipRRect(
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(12)),
+                        child: YoutubePlayer(
+                          controller: _ytController,
+                          showVideoProgressIndicator: true,
+                          progressIndicatorColor: Colors.lightBlueAccent,
+                          bottomActions: [
+                            CurrentPosition(),
+                            ProgressBar(isExpanded: true),
+                            FullScreenButton(),
+                          ],
+                          onReady: () {
+                            print('onReady for $index');
+                          },
+                          onEnded: (YoutubeMetaData _md) {
+                            _ytController.seekTo(const Duration(seconds: 0));
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+              );
+            },
+          ),
         ),
       ),
     );
   }
 }
 
+//測試通知
 class NoticePage extends StatefulWidget {
   const NoticePage({Key? key}) : super(key: key);
 
@@ -562,6 +566,7 @@ class _NoticePageState extends State<NoticePage> {
   }
 }
 
+//測試計時器+通知
 class NotifyPage extends StatefulWidget {
   const NotifyPage({Key? key}) : super(key: key);
 
@@ -577,10 +582,10 @@ class _NotifyPageState extends State<NotifyPage> {
   void initState() {
     super.initState();
     var androidInitialize =
-    const AndroidInitializationSettings("@mipmap/ic_launcher");
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
     var iOSInitialize = const IOSInitializationSettings();
     var initialzationSettings =
-    InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     localNotification = FlutterLocalNotificationsPlugin();
     localNotification.initialize(initialzationSettings);
   }
@@ -602,43 +607,41 @@ class _NotifyPageState extends State<NotifyPage> {
           elevation: 0,
         ),
         body: Center(
-          child: Center(
-            child: Transform.scale(
-              scale: 2,
-              child: Switch(
-                value: isOn,
-                onChanged: (value) {
-                  setState(() {
-                    isOn = value;
-                    print("isOn:$isOn");
-                  });
-                  //開啟Switch
-                  if (isOn) {
-                    //定期的
-                    // print("time is:${DateTime.now()}");
-                    // print(
-                    //     "y/m/d/h=>${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().hour}");
-                    AndroidAlarmManager.periodic(
-                      const Duration(seconds: 30),
-                      alarmId,
-                      _showNotification,
-                      startAt: DateTime(
-                        DateTime.now().year,
-                        DateTime.now().month,
-                        DateTime.now().day,
-                        DateTime.now().hour,
-                        6,
-                      ),
-                    );
+          child: Transform.scale(
+            scale: 2,
+            child: Switch(
+              value: isOn,
+              onChanged: (value) {
+                setState(() {
+                  isOn = value;
+                  print("isOn:$isOn");
+                });
+                //開啟Switch
+                if (isOn) {
+                  //定期的
+                  // print("time is:${DateTime.now()}");
+                  // print(
+                  //     "y/m/d/h=>${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}/${DateTime.now().hour}");
+                  AndroidAlarmManager.periodic(
+                    const Duration(seconds: 30),
+                    alarmId,
+                    _showNotification,
+                    startAt: DateTime(
+                      DateTime.now().year,
+                      DateTime.now().month,
+                      DateTime.now().day,
+                      DateTime.now().hour,
+                      6,
+                    ),
+                  );
 
-                    //固定一個時間
-                    // AndroidAlarmManager.oneShotAt(
-                    // DateTime(2023, 3, 18, 21, 50), alarmId, firmAlarm);
-                  } else {
-                    AndroidAlarmManager.cancel(alarmId);
-                  }
-                },
-              ),
+                  //固定一個時間
+                  // AndroidAlarmManager.oneShotAt(
+                  // DateTime(2023, 3, 18, 21, 50), alarmId, firmAlarm);
+                } else {
+                  AndroidAlarmManager.cancel(alarmId);
+                }
+              },
             ),
           ),
         ),
@@ -648,25 +651,214 @@ class _NotifyPageState extends State<NotifyPage> {
 }
 
 late FlutterLocalNotificationsPlugin localNotification;
+
 Future<void> _showNotification() async {
   var androidInitialize =
-  const AndroidInitializationSettings("@mipmap/ic_launcher");
+      const AndroidInitializationSettings("@mipmap/ic_launcher");
   var iOSInitialize = const IOSInitializationSettings();
   var initialzationSettings =
-  InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+      InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
   localNotification = FlutterLocalNotificationsPlugin();
   localNotification.initialize(initialzationSettings);
 
-
   print("已在:${DateTime.now()} 寄出");
-  var androidDetails =
-  const AndroidNotificationDetails("channelId",
-      "channelName",
-      importance: Importance.max,
-      priority: Priority.max);
+  var androidDetails = const AndroidNotificationDetails(
+      "channelId", "channelName",
+      importance: Importance.max, priority: Priority.max);
   var iosDetails = const IOSNotificationDetails();
   var generalNotificationDetails =
-  NotificationDetails(android: androidDetails, iOS: iosDetails);
+      NotificationDetails(android: androidDetails, iOS: iosDetails);
   await localNotification.show(
       0, "測試測試，這是通知的標題", "測試測試，這是通知的內容", generalNotificationDetails);
+}
+
+class StartPage extends StatefulWidget {
+  const StartPage({Key? key}) : super(key: key);
+
+  @override
+  _StartPageState createState() => _StartPageState();
+}
+
+class _StartPageState extends State<StartPage> {
+  int? selectid;
+
+  final textController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: TextField(
+            controller: textController,
+          ),
+        ),
+        body: Center(
+          child: FutureBuilder<List<Grocery>>(
+            future: DatabaseHelper.instance.getGroceries(),
+            builder:
+                (BuildContext context, AsyncSnapshot<List<Grocery>> snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: Text("加載中..."),
+                );
+              }
+              return snapshot.data!.isEmpty
+                  ? Center(
+                      child: Text("沒資料"),
+                    )
+                  : ListView(
+                      children: snapshot.data!.map((grocery) {
+                        return Center(
+                          child: ListTile(
+                            title: Text("PersonalId:${grocery.PersonalId}/"
+                                "RehabilitationNotice:${grocery.RehabilitationNotice}/"
+                                "detail:${grocery.isread}/detail:${grocery.detail}/"),
+                            onTap: () {
+                              setState(() {
+                                // selectid = grocery.id;
+                                // PersonalId = "編號：${grocery.id}";
+                                // RehabilitationNotice = 1;
+                                // isread = 1;
+                                // textController.text = grocery.detail;
+                              });
+                            },
+                            onLongPress: () {
+                              setState(() {
+                                DatabaseHelper.instance.remove(grocery.id!);
+                              });
+                            },
+                          ),
+                        );
+                      }).toList(),
+                    );
+            },
+          ),
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.save),
+          onPressed: () async {
+            DatabaseHelper.instance.getGroceries().then((value) {
+              for (int i = 0; i < value.length; i++) print(value[i].detail);
+            });
+            selectid != null
+                ? await DatabaseHelper.instance.update(
+                    Grocery(
+                      id: selectid,
+                      PersonalId: "編號：${textController.text}",
+                      RehabilitationNotice: 1,
+                      isread: 1,
+                      detail: "細節：${textController.text}",
+                    ),
+                  )
+                : await DatabaseHelper.instance.add(
+                    Grocery(
+                      PersonalId: "編號：${textController.text}",
+                      RehabilitationNotice: 1,
+                      isread: 1,
+                      detail: "細節：${textController.text}",
+                    ),
+                  );
+            setState(() {
+              textController.clear();
+              selectid = null;
+            });
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class Grocery {
+  final int? id;
+  final String PersonalId;
+  final int RehabilitationNotice;
+  final int isread;
+  final String detail;
+
+  Grocery({
+    this.id,
+    required this.PersonalId,
+    required this.RehabilitationNotice,
+    required this.isread,
+    required this.detail,
+  });
+
+  factory Grocery.fromMap(Map<String, dynamic> json) => Grocery(
+        id: json['id'],
+        PersonalId: json['PersonalId'],
+        RehabilitationNotice: json['RehabilitationNotice'],
+        isread: json['isread'],
+        detail: json['detail'],
+      );
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'PersonalId': PersonalId,
+      'RehabilitationNotice': RehabilitationNotice,
+      'isread': isread,
+      'detail': detail,
+    };
+  }
+}
+
+class DatabaseHelper {
+  DatabaseHelper._privateConstructor();
+
+  static final DatabaseHelper instance = DatabaseHelper._privateConstructor();
+
+  static Database? _database;
+
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, "groceries.db");
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE groceries(
+      id INTEGER PRIMARY KEY,
+      PersonalId TEXT,
+      RehabilitationNotice INTEGER,
+      isread INTEGER,
+      detail TEXT
+      )
+    ''');
+  }
+
+  Future<List<Grocery>> getGroceries() async {
+    Database db = await instance.database;
+    var groceries = await db.query("groceries");
+    List<Grocery> groceryList = groceries.isNotEmpty
+        ? groceries.map((c) => Grocery.fromMap(c)).toList()
+        : [];
+    return groceryList;
+  }
+
+  Future<int> add(Grocery grocery) async {
+    Database db = await instance.database;
+    return await db.insert("groceries", grocery.toMap());
+  }
+
+  Future<int> remove(int id) async {
+    print("要刪的id是$id");
+    Database db = await instance.database;
+    return await db.delete("groceries", where: "id=?", whereArgs: [id]);
+  }
+
+  Future<int> update(Grocery grocery) async {
+    Database db = await instance.database;
+    return await db.update("groceries", grocery.toMap(),
+        where: "id=?", whereArgs: [grocery.id]);
+  }
 }

@@ -72,10 +72,10 @@ class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
   }
 
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="PhysiologicalPage1";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -227,10 +227,10 @@ class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
   }
 
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="PhysiologicalPage2";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -343,10 +343,10 @@ class _TrainPageState extends State<TrainPage> {
   late List<AllPagesNeedData> DataMenu;
 
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="TrainPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -402,10 +402,10 @@ class _CommunityCommunicationPageState
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="CommunityCommunicationPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -571,6 +571,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     _getMysqlData();
     // _delayText();
@@ -580,7 +581,6 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
     sending = false;
     success = false;
     msg = "";
-    super.initState();
   }
 
   _getMysqlData() {
@@ -1256,10 +1256,10 @@ class _RecognizePageState extends State<RecognizePage> {
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="RecognizePage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -1394,10 +1394,10 @@ class _RelateLinkPageState extends State<RelateLinkPage> {
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="RelateLinkPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -1509,11 +1509,10 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="QuestionnairePage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-
-    super.initState();
   }
 
   @override
@@ -1629,10 +1628,10 @@ class _HomeCarePageState extends State<HomeCarePage> {
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="HomeCarePage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-    super.initState();
   }
 
   @override
@@ -1752,11 +1751,10 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
 
   @override
   void initState() {
+    super.initState();
     DataMenu = widget.DataMenu;
     DataMenu[0].page="RelaxMusicPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-
-    super.initState();
   }
 
   @override
@@ -1881,6 +1879,7 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
 
   @override
   void initState() {
+    super.initState();
     personal_name = widget.personal_name;
     print("personal_name:$personal_name");
     personal_gender = widget.personal_gender;
@@ -1888,8 +1887,6 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
     DataMenu = widget.DataMenu;
     DataMenu[0].page="DrawerClassPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-
-    super.initState();
   }
 
   @override
