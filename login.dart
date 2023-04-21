@@ -7,6 +7,14 @@ import 'package:my_topic_project/MysqlList.dart';
 import 'package:flutter_progress_hud/flutter_progress_hud.dart';
 // import 'package:flutter/services.dart';
 
+//SQLite
+import 'dart:io';
+import 'package:path/path.dart' as Path;
+import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+import 'package:path_provider/path_provider.dart';
+
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -45,6 +53,19 @@ class _LoginPageState extends State<LoginPage> {
         }
       });
       conn.close();
+    });
+  }
+
+  Future _initList() async {
+    PersonalListHelper.instance.getData().then((value) async {
+      if (value.isNotEmpty) {
+        print("value[0].PersonalId：${value[0].PersonalId}");
+        print("value[0].RehabilitationNotice：${value[0].RehabilitationNotice}");
+        setState(() {
+          _accountcontroller.text = value[0].account;
+          _pwcontroller.text = value[0].password;
+        });
+      }
     });
   }
 
@@ -100,6 +121,31 @@ class _LoginPageState extends State<LoginPage> {
         setState(() {
           login_state = "";
         });
+
+        PersonalListHelper.instance.getData().then((value) async {
+          //不是空的就更新
+          if (value.isNotEmpty) {
+            await PersonalListHelper.instance.update(
+                PersonalList(id: 1,
+                    PersonalId: DataMenu[0].id,
+                    account: DataMenu[0].account,
+                    password: _pwcontroller.text,
+                    RehabilitationNotice: value[0].RehabilitationNotice),
+          );
+            //是空的就新增
+        } else{
+            await PersonalListHelper.instance.insert(
+              PersonalList(
+                  PersonalId: DataMenu[0].id,
+                  account: DataMenu[0].account,
+                  password: _pwcontroller.text,
+                  RehabilitationNotice: 1),
+            );
+
+          }
+        });
+
+
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => MainPage(DataMenu)));
       } else {
@@ -122,12 +168,15 @@ class _LoginPageState extends State<LoginPage> {
     //初始化DataMenu
     //  id, account, Carer, RehabilitationNotice, QuestionnaireNotice, isdark;
     DataMenu.add(AllPagesNeedData("", "", "LoginPage"));
-    //TextField的焦點
+    _initList();
   }
 
   @override
   Widget build(BuildContext context) {
-    var keyboardSize = MediaQuery.of(context).viewInsets.bottom;
+    var keyboardSize = MediaQuery
+        .of(context)
+        .viewInsets
+        .bottom;
     Future<bool> RequestPop() async {
       showAlertDialog(context);
       return Future.value(false);
@@ -145,79 +194,94 @@ class _LoginPageState extends State<LoginPage> {
             fontSize: 40,
           ),
           child: Builder(
-            builder: (context) => Container(
-              height: MediaQuery.of(context).size.height,
-              width: MediaQuery.of(context).size.width,
-              padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).padding.top,
-                  right: 20.0,
-                  left: 20.0,
-                  bottom: 20.0),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      height: keyboardSize==0? MediaQuery.of(context).size.height / 5:0,
-                    ),
-                    const Text(
-                      "歡迎使用",
-                      style: TextStyle(
-                          fontSize: 50,
-                          fontWeight: FontWeight.bold,
-                          decoration: TextDecoration.underline),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    const Text(
-                      "整合復健APP使用登入",
-                      textAlign: TextAlign.center,
-                      style:
+            builder: (context) =>
+                Container(
+                  height: MediaQuery
+                      .of(context)
+                      .size
+                      .height,
+                  width: MediaQuery
+                      .of(context)
+                      .size
+                      .width,
+                  padding: EdgeInsets.only(
+                      top: MediaQuery
+                          .of(context)
+                          .padding
+                          .top,
+                      right: 20.0,
+                      left: 20.0,
+                      bottom: 20.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox(
+                          height: keyboardSize == 0 ? MediaQuery
+                              .of(context)
+                              .size
+                              .height / 5 : 0,
+                        ),
+                        const Text(
+                          "歡迎使用",
+                          style: TextStyle(
+                              fontSize: 50,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.underline),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        const Text(
+                          "整合復健APP使用登入",
+                          textAlign: TextAlign.center,
+                          style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    const Text(
-                      "(高醫X花慈X高科大)",
-                      textAlign: TextAlign.center,
-                      style:
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const Text(
+                          "(高醫X花慈X高科大)",
+                          textAlign: TextAlign.center,
+                          style:
                           TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    buildTextField("帳號"),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    buildTextField("密碼"),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    Container(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          //錯誤文字
-                          Text(
-                            login_state,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 16,
-                            ),
+                        ),
+                        const SizedBox(
+                          height: 30,
+                        ),
+                        buildTextField("帳號"),
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+                        buildTextField("密碼"),
+                        const SizedBox(
+                          height: 20.0,
+                        ),
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              //錯誤文字
+                              Text(
+                                login_state,
+                                style: const TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 30),
+                        buildButtonContainer(context), //登入按鈕
+                        Padding(padding: MediaQuery
+                            .of(context)
+                            .viewInsets),
+                      ],
                     ),
-                    const SizedBox(height: 30),
-                    buildButtonContainer(context), //登入按鈕
-                    Padding(padding: MediaQuery.of(context).viewInsets),
-                  ],
+                  ),
                 ),
-              ),
-            ),
           ),
         ),
       ),
@@ -256,7 +320,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget buildButtonContainer(BuildContext context) {
     return SizedBox(
       //取得裝置的數據
-      width: MediaQuery.of(context).size.width * 0.9,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width * 0.9,
       height: 48.0,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
@@ -319,7 +386,7 @@ void showAlertDialog(BuildContext context) {
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.white),
+                  MaterialStateProperty.all<Color>(Colors.white),
                 ),
                 child: const Text(
                   "取消",
@@ -335,7 +402,7 @@ void showAlertDialog(BuildContext context) {
               ElevatedButton(
                 style: ButtonStyle(
                   backgroundColor:
-                      MaterialStateProperty.all<Color>(Colors.blue),
+                  MaterialStateProperty.all<Color>(Colors.blue),
                 ),
                 child: const Text(
                   "確認退出",
@@ -379,3 +446,100 @@ void showAlertDialog(BuildContext context) {
     transitionDuration: const Duration(milliseconds: 400),
   );
 }
+
+//個人的SQLite
+class PersonalList {
+  final int? id;
+  final String PersonalId;
+  final String account;
+  final String password;
+  final int RehabilitationNotice;
+
+  PersonalList({
+    this.id,
+    required this.PersonalId,
+    required this.account,
+    required this.password,
+    required this.RehabilitationNotice,
+  });
+
+  factory PersonalList.fromMap(Map<String, dynamic> json) =>
+      PersonalList(
+        id: json['id'],
+        PersonalId: json['PersonalId'],
+        account: json['account'],
+        password: json['password'],
+        RehabilitationNotice: json['RehabilitationNotice'],
+      );
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'PersonalId': PersonalId,
+      'account': account,
+      'password': password,
+      'RehabilitationNotice': RehabilitationNotice,
+    };
+  }
+}
+
+class PersonalListHelper {
+  PersonalListHelper._privateConstructor();
+
+  static final PersonalListHelper instance = PersonalListHelper
+      ._privateConstructor();
+  static Database? _database;
+
+  Future<Database> get database async => _database ??= await _initDatabase();
+
+  Future<Database> _initDatabase() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = Path.join(documentsDirectory.path, "PersonalData.db");
+    return await openDatabase(
+      path,
+      version: 1,
+      onCreate: _onCreate,
+    );
+  }
+
+  Future _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE PersonalData(
+      id INTEGER PRIMARY KEY,
+      PersonalId TEXT,
+      account TEXT,
+      password TEXT,
+      RehabilitationNotice INTEGER
+      )
+    ''');
+  }
+
+  //查詢
+  Future<List<PersonalList>> getData() async {
+    Database db = await instance.database;
+    var Data = await db.query("PersonalData");
+    List<PersonalList> personalList =
+    Data.isNotEmpty ? Data.map((c) => PersonalList.fromMap(c)).toList() : [];
+    return personalList;
+  }
+
+  //新增
+  Future<int> insert(PersonalList personalList) async {
+    Database db = await instance.database;
+    return await db.insert("PersonalData", personalList.toMap());
+  }
+
+  //刪除
+  Future<int> delete(int id) async {
+    Database db = await instance.database;
+    return await db.delete("PersonalData", where: "id=?", whereArgs: [id]);
+  }
+
+  //修改
+  Future<int> update(PersonalList personalList) async {
+    Database db = await instance.database;
+    return await db.update("PersonalData", personalList.toMap(),
+        where: "id=?", whereArgs: [personalList.id]);
+  }
+}
+

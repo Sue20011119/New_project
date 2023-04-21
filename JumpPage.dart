@@ -21,6 +21,11 @@ import 'package:dio/dio.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:audioplayers/audioplayers.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'dart:io';
 
 //需求表達1頁面
 class PhysiologicalPage1 extends StatefulWidget {
@@ -74,7 +79,7 @@ class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="PhysiologicalPage1";
+    DataMenu[0].page = "PhysiologicalPage1";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -145,7 +150,7 @@ class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
                     ],
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height / 12,
+                    height: MediaQuery.of(context).size.height / 14,
                     width: MediaQuery.of(context).size.width / 1.5,
                     decoration: BoxDecoration(
                         borderRadius:
@@ -229,7 +234,7 @@ class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="PhysiologicalPage2";
+    DataMenu[0].page = "PhysiologicalPage2";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -300,7 +305,7 @@ class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
                     ],
                   ),
                   Container(
-                    height: MediaQuery.of(context).size.height / 12,
+                    height: MediaQuery.of(context).size.height / 14,
                     width: MediaQuery.of(context).size.width / 1.5,
                     decoration: BoxDecoration(
                         borderRadius:
@@ -345,39 +350,892 @@ class _TrainPageState extends State<TrainPage> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="TrainPage";
+    DataMenu[0].page = "TrainPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 100,
-          ),
-          const Text(
-            "語言訓練頁面",
-            style: TextStyle(fontSize: 30),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(1000),
+    return Scaffold(
+      backgroundColor: Colors.orange.shade50,
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 14,
+            ),
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height * 5 / 6,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width / 10,
+                              height: MediaQuery.of(context).size.height / 10,
+                              child: IconButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                icon: const Icon(
+                                  Icons.arrow_back_rounded,
+                                  size: 50,
+                                ),
+                              ),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width / 4,
+                              height: MediaQuery.of(context).size.height / 10,
+                              child: const Icon(
+                                Icons.mic,
+                                size: 60,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            const Text(
+                              '復健訓練',
+                              style: TextStyle(
+                                  fontSize: 50, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+
+                        //命名練習
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        NameTrainPage(DataMenu)));
+                          },
+                          child: Container(
+                            height: MediaQuery.of(context).size.height / 5,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10.0)),
+                                color: Colors.yellowAccent.shade100,
+                                border: Border.all(color: Colors.black38)),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: Image.asset(
+                                    'lib/images/name.png',
+                                  ),
+                                ),
+                                const Text(
+                                  '命名練習',
+                                  style: TextStyle(fontSize: 40),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        //覆誦練習
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ReadTrainPage(DataMenu)));
+                          },
+                          child: Container(
+                            height: MediaQuery.of(context).size.height / 5,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10.0)),
+                                color: Colors.lightGreenAccent.shade100,
+                                border: Border.all(color: Colors.black38)),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: Image.asset(
+                                    'lib/images/read.png',
+                                  ),
+                                ),
+                                const Text(
+                                  '覆誦練習',
+                                  style: TextStyle(fontSize: 40),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        //自主言語
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        TalkTrainPage(DataMenu)));
+                          },
+                          child: Container(
+                            height: MediaQuery.of(context).size.height / 5,
+                            width: MediaQuery.of(context).size.width,
+                            decoration: BoxDecoration(
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(10.0)),
+                                color: Colors.orangeAccent.shade100,
+                                border: Border.all(color: Colors.black38)),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: MediaQuery.of(context).size.width / 4,
+                                  child: Image.asset(
+                                    'lib/images/talk.png',
+                                  ),
+                                ),
+                                const Text(
+                                  '自主言語',
+                                  style: TextStyle(fontSize: 40),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              primary: Colors.blueAccent, // background
-              onPrimary: Colors.white, // foreground
             ),
-            child: const Text(
-              "返回",
-              style: TextStyle(fontSize: 25),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//命名練習頁面
+class NameTrainPage extends StatefulWidget {
+  List<AllPagesNeedData> DataMenu = [];
+
+  NameTrainPage(this.DataMenu);
+
+  @override
+  _NameTrainPageState createState() => _NameTrainPageState();
+}
+
+class _NameTrainPageState extends State<NameTrainPage> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+  late List<AllPagesNeedData> DataMenu;
+  FlutterSoundRecorder? _recorder;
+  FlutterSoundPlayer? _player;
+  bool _isRecording = false;
+
+  Future initRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'Microphone permission not granted';
+    }
+  }
+
+  Future<String> _getFilePath() async {
+    final appDir = await getApplicationDocumentsDirectory(); //抓取手機路徑
+    final filePath = '${appDir.path}/audio.wav';
+    return filePath;
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      print('錯誤1');
+      final filePath = await _getFilePath();
+      print('錯誤2 ${filePath}');
+      await _recorder?.openRecorder();
+      print('錯誤3');
+      await _recorder?.startRecorder(
+        toFile: filePath, //錄製音檔的儲存位置
+        codec: Codec.pcm16WAV, //音檔的格式
+      );
+      print('錯誤4');
+      setState(() {
+        _isRecording = true;
+      });
+      print('錯誤5');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    try {
+      print('錯誤一');
+      await _recorder?.stopRecorder();
+      print('錯誤二');
+      await _recorder?.closeRecorder();
+      print('錯誤三');
+      _saveRecording();
+      print('錯誤四');
+      setState(() {
+        _isRecording = false;
+      });
+      print('錯誤五');
+    } catch (e) {
+      print('錯誤六');
+      print(e);
+    }
+  }
+
+  Future<void> _saveRecording() async {
+    final filePath = await _getFilePath();
+    print('${filePath}');
+    final file = File(filePath);
+    print("${file}");
+    final bytes = await file.readAsBytes();
+    final savedFile = File('/path/to/saved/file.wav'); //設定儲存的路徑
+    await file.writeAsBytes(bytes); //將設定的路徑，存入手機內
+  }
+
+  void initState() {
+    super.initState();
+    initRecorder();
+    _recorder = FlutterSoundRecorder();
+    _player = FlutterSoundPlayer();
+    DataMenu = widget.DataMenu;
+    DataMenu[0].page = "NameTrainPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+  }
+
+  @override
+  void dispose() {
+    _recorder?.closeRecorder();
+    _player?.closePlayer();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.orangeAccent.shade100,
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 14,
             ),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ],
+            Center(
+              child: Container(
+                height: MediaQuery.of(context).size.height * 5 / 6,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 10,
+                          height: MediaQuery.of(context).size.height / 10,
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_rounded,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          height: MediaQuery.of(context).size.height / 8,
+                          child: Image.asset(
+                            'lib/images/name.png',
+                          ),
+                        ),
+                        const Text(
+                          '命名練習',
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            color: Colors.redAccent,
+                            width: MediaQuery.of(context).size.width / 8,
+                            height: MediaQuery.of(context).size.height / 15,
+                            child: TextButton(
+                                onPressed: () {
+                                  final player = AudioCache();
+                                  player.play('cold.mp3');
+                                },
+                                child: const Icon(
+                                  Icons.volume_down_alt,
+                                  size: 40,
+                                  color: Colors.black87,
+                                )),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 20,
+                        ),
+                        const Text(
+                          '很冷',
+                          style: TextStyle(fontSize: 40),
+                        )
+                      ],
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 3 / 7,
+                      child: Image.asset(
+                        'lib/images/cold.png',
+                        height: MediaQuery.of(context).size.height * 2 / 5,
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    ClipOval(
+                      child: Container(
+                        color: Colors.redAccent,
+                        width: 80,
+                        height: 80,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (_isRecording) {
+                              _stopRecording();
+                            } else {
+                              _startRecording();
+                            }
+                          },
+                          child: Icon(
+                            _isRecording ? Icons.stop : Icons.mic,
+                            size: 50,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//覆誦練習頁面
+class ReadTrainPage extends StatefulWidget {
+  List<AllPagesNeedData> DataMenu = [];
+
+  ReadTrainPage(this.DataMenu);
+
+  @override
+  _ReadTrainPageState createState() => _ReadTrainPageState();
+}
+
+class _ReadTrainPageState extends State<ReadTrainPage> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+  late List<AllPagesNeedData> DataMenu;
+  FlutterSoundRecorder? _recorder;
+  FlutterSoundPlayer? _player;
+  bool _isRecording = false;
+
+  Future initRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'Microphone permission not granted';
+    }
+  }
+
+  Future<String> _getFilePath() async {
+    final appDir = await getApplicationDocumentsDirectory(); //抓取手機路徑
+    final filePath = '${appDir.path}/audio.wav';
+    return filePath;
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      print('錯誤1');
+      final filePath = await _getFilePath();
+      print('錯誤2 ${filePath}');
+      await _recorder?.openRecorder();
+      print('錯誤3');
+      await _recorder?.startRecorder(
+        toFile: filePath, //錄製音檔的儲存位置
+        codec: Codec.pcm16WAV, //音檔的格式
+      );
+      print('錯誤4');
+      setState(() {
+        _isRecording = true;
+      });
+      print('錯誤5');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> _stopRecording() async {
+    try {
+      print('錯誤一');
+      await _recorder?.stopRecorder();
+      print('錯誤二');
+      await _recorder?.closeRecorder();
+      print('錯誤三');
+      _saveRecording();
+      print('錯誤四');
+      setState(() {
+        _isRecording = false;
+      });
+      print('錯誤五');
+    } catch (e) {
+      print('錯誤六');
+      print(e);
+    }
+  }
+
+  Future<void> _saveRecording() async {
+    final filePath = await _getFilePath();
+    print('${filePath}');
+    final file = File(filePath);
+    print("${file}");
+    final bytes = await file.readAsBytes();
+    final savedFile = File('/path/to/saved/file.wav'); //設定儲存的路徑
+    await file.writeAsBytes(bytes); //將設定的路徑，存入手機內
+  }
+
+  void initState() {
+    super.initState();
+    initRecorder();
+    _recorder = FlutterSoundRecorder();
+    _player = FlutterSoundPlayer();
+    DataMenu = widget.DataMenu;
+    DataMenu[0].page = "ReadTrainPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+  }
+
+  @override
+  void dispose() {
+    _recorder?.closeRecorder();
+    _player?.closePlayer();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.orangeAccent.shade100,
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 14,
+            ),
+            Center(
+              child: Container(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 10,
+                          height: MediaQuery.of(context).size.height / 10,
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_rounded,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          height: MediaQuery.of(context).size.height / 8,
+                          child: Image.asset(
+                            'lib/images/read.png',
+                          ),
+                        ),
+                        const Text(
+                          '覆誦練習',
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            color: Colors.redAccent,
+                            width: MediaQuery.of(context).size.width / 8,
+                            height: MediaQuery.of(context).size.height / 15,
+                            child: TextButton(
+                                onPressed: () {
+                                  final player = AudioCache();
+                                  player.play('cold.mp3');
+                                },
+                                child: const Icon(
+                                  Icons.volume_down_alt,
+                                  size: 40,
+                                  color: Colors.black87,
+                                )),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 20,
+                        ),
+                        const Text(
+                          '很冷',
+                          style: TextStyle(fontSize: 40),
+                        )
+                      ],
+                    ),
+                    Container(
+                      height: 350,
+                      child: Stack(
+                        alignment: Alignment.topCenter,
+                        children: [
+                          Container(
+                            child: Image.asset(
+                              'lib/images/backread.png',
+                            ),
+                          ),
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height / 20,
+                              ),
+                              Container(
+                                height: MediaQuery.of(context).size.height / 4,
+                                width: MediaQuery.of(context).size.width,
+                                child: Image.asset(
+                                  'lib/images/cold.png',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    ClipOval(
+                      child: Container(
+                        color: Colors.redAccent,
+                        width: 80,
+                        height: 80,
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            if (_isRecording) {
+                              _stopRecording();
+                            } else {
+                              _startRecording();
+                            }
+                          },
+                          child: Icon(
+                            _isRecording ? Icons.stop : Icons.mic,
+                            size: 50,
+                            color: Colors.black87,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+//自主言語頁面
+class TalkTrainPage extends StatefulWidget {
+  List<AllPagesNeedData> DataMenu = [];
+
+  TalkTrainPage(this.DataMenu);
+
+  @override
+  _TalkTrainPageState createState() => _TalkTrainPageState();
+}
+
+class _TalkTrainPageState extends State<TalkTrainPage> {
+  var db = new Mysql();
+  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
+  late List<AllPagesNeedData> DataMenu;
+  FlutterSoundRecorder? _recorder;
+  FlutterSoundPlayer? _player;
+  bool _isRecording = false;
+
+  Future initRecorder() async {
+    final status = await Permission.microphone.request();
+    if (status != PermissionStatus.granted) {
+      throw 'Microphone permission not granted';
+    }
+  }
+
+  Future<String> _getFilePath() async {
+    final appDir = await getApplicationDocumentsDirectory(); //抓取手機路徑
+    final filePath = '${appDir.path}/audio.wav';
+    return filePath;
+  }
+
+  Future<void> _startRecording() async {
+    try {
+      print('錯誤1');
+      final filePath = await _getFilePath();
+      print('錯誤2 ${filePath}');
+      await _recorder?.openRecorder();
+      print('錯誤3');
+      await _recorder?.startRecorder(
+        toFile: filePath, //錄製音檔的儲存位置
+        codec: Codec.pcm16WAV, //音檔的格式
+      );
+      print('錯誤4');
+      setState(() {
+        _isRecording = true;
+      });
+      print('錯誤5');
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  //暫停錄音
+  Future<void> _stopRecording() async {
+    try {
+      print('錯誤一');
+      await _recorder?.stopRecorder();
+      print('錯誤二');
+      await _recorder?.closeRecorder();
+      print('錯誤三');
+      _saveRecording();
+      print('錯誤四');
+      setState(() {
+        _isRecording = false;
+      });
+      print('錯誤五');
+    } catch (e) {
+      print('錯誤六');
+      print(e);
+    }
+  }
+
+  // 儲存音檔
+  Future<void> _saveRecording() async {
+    final filePath = await _getFilePath();
+    print('${filePath}');
+    final file = File(filePath);
+    print("${file}");
+    final bytes = await file.readAsBytes();
+    final savedFile = File('/path/to/saved/file.wav'); //設定儲存的路徑
+    await file.writeAsBytes(bytes); //將設定的路徑，存入手機內
+  }
+
+  void initState() {
+    super.initState();
+    initRecorder();
+    _recorder = FlutterSoundRecorder();
+    _player = FlutterSoundPlayer();
+    DataMenu = widget.DataMenu;
+    DataMenu[0].page = "TalkTrainPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+  }
+
+  @override
+  void dispose() {
+    _recorder?.closeRecorder();
+    _player?.closePlayer();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.lightGreenAccent.shade100,
+      resizeToAvoidBottomInset: false,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height / 14,
+            ),
+            Center(
+              child: Container(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 10,
+                          height: MediaQuery.of(context).size.height / 10,
+                          child: IconButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            icon: const Icon(
+                              Icons.arrow_back_rounded,
+                              size: 50,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 4,
+                          height: MediaQuery.of(context).size.height / 8,
+                          child: Image.asset(
+                            'lib/images/talk.png',
+                          ),
+                        ),
+                        const Text(
+                          '自主言語',
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            color: Colors.redAccent,
+                            width: MediaQuery.of(context).size.width / 8,
+                            height: MediaQuery.of(context).size.height / 15,
+                            child: TextButton(
+                                onPressed: () {
+                                  final player = AudioCache();
+                                  player.play('cold.mp3');
+                                },
+                                child: const Icon(
+                                  Icons.volume_down_alt,
+                                  size: 40,
+                                  color: Colors.black87,
+                                )),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 20,
+                        ),
+                        const Text(
+                          '很冷',
+                          style: TextStyle(fontSize: 40),
+                        )
+                      ],
+                    ),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 350,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            child: Image.asset(
+                              'lib/images/backtalk.png',
+                              height: MediaQuery.of(context).size.height,
+                              width: MediaQuery.of(context).size.width,
+                            ),
+                          ),
+                          Container(
+                            child: Image.asset(
+                              'lib/images/cold.png',
+                              height: MediaQuery.of(context).size.height / 4,
+                              width: MediaQuery.of(context).size.width,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height / 100,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ClipOval(
+                          child: Container(
+                            color: Colors.redAccent,
+                            width: 80,
+                            height: 80,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (_isRecording) {
+                                  _stopRecording();
+                                } else {
+                                  _startRecording();
+                                }
+                              },
+                              child: Icon(
+                                _isRecording ? Icons.stop : Icons.mic,
+                                size: 50,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width / 100,
+                        ),
+                      ],
+                    ),
+                    // ClipOval(
+                    //   child: Container(
+                    //     color: Colors.redAccent,
+                    //     width: 80,
+                    //     height: 80,
+                    //     child: ElevatedButton(
+                    //       onPressed:() async{
+                    //         if(_isRecording){
+                    //           stop();
+                    //         }else{
+                    //           record();
+                    //         }
+                    //       },
+                    //       child:Icon(
+                    //         _isRecording? Icons.stop:Icons.mic,
+                    //         size: 50,
+                    //         color: Colors.black87,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -404,7 +1262,7 @@ class _CommunityCommunicationPageState
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="CommunityCommunicationPage";
+    DataMenu[0].page = "CommunityCommunicationPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -575,7 +1433,7 @@ class _BasicSettingsPageState extends State<BasicSettingsPage> {
     DataMenu = widget.DataMenu;
     _getMysqlData();
     // _delayText();
-    DataMenu[0].page="BasicSettingsPage";
+    DataMenu[0].page = "BasicSettingsPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
     error = false;
     sending = false;
@@ -1258,7 +2116,7 @@ class _RecognizePageState extends State<RecognizePage> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="RecognizePage";
+    DataMenu[0].page = "RecognizePage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -1396,7 +2254,7 @@ class _RelateLinkPageState extends State<RelateLinkPage> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="RelateLinkPage";
+    DataMenu[0].page = "RelateLinkPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -1511,7 +2369,7 @@ class _QuestionnairePageState extends State<QuestionnairePage> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="QuestionnairePage";
+    DataMenu[0].page = "QuestionnairePage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -1630,7 +2488,7 @@ class _HomeCarePageState extends State<HomeCarePage> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="HomeCarePage";
+    DataMenu[0].page = "HomeCarePage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -1753,7 +2611,7 @@ class _RelaxMusicPageState extends State<RelaxMusicPage> {
   void initState() {
     super.initState();
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="RelaxMusicPage";
+    DataMenu[0].page = "RelaxMusicPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -1885,7 +2743,7 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
     personal_gender = widget.personal_gender;
     print("personal_gender:$personal_gender");
     DataMenu = widget.DataMenu;
-    DataMenu[0].page="DrawerClassPage";
+    DataMenu[0].page = "DrawerClassPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
   }
 
@@ -1969,9 +2827,9 @@ class _DrawerClassPageState extends State<DrawerClassPage> {
           buildListTile(context, 1, Icons.link, "相關連結", DataMenu),
           buildListTile(context, 2, Icons.receipt_long, "問卷系統", DataMenu),
           // if (DataMenu[0].Carer)
-            buildListTile(context, 3, Icons.paste_outlined, "居家照護知識", DataMenu),
+          buildListTile(context, 3, Icons.paste_outlined, "居家照護知識", DataMenu),
           // if (DataMenu[0].Carer)
-            buildListTile(context, 4, Icons.library_music, "放鬆音樂", DataMenu),
+          buildListTile(context, 4, Icons.library_music, "放鬆音樂", DataMenu),
           buildListTile(context, 5, Icons.home, "回首頁", DataMenu),
           const SizedBox(
             height: 20,

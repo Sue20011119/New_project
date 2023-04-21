@@ -1,6 +1,7 @@
 import 'dart:ffi';
-// import 'dart:html';
 
+// import 'dart:html';
+import "package:my_topic_project/main.dart";
 import 'package:flutter/material.dart';
 import 'package:my_topic_project/login.dart';
 import 'package:my_topic_project/JumpPage.dart';
@@ -23,8 +24,6 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
-List<AllPagesNeedData> GlobalDataMenu = [];
-
 class MainPage extends StatefulWidget {
   List<AllPagesNeedData> DataMenu = [];
 
@@ -37,6 +36,7 @@ class MainPage extends StatefulWidget {
 //建構全畫面
 class _MainPageState extends State<MainPage> {
   int currentIndex = 0;
+  bool back = false;
   List<MysqlDataOfPersonal> PersonalMenu = []; //個人資料
   List<AllPagesNeedData> DataMenu = []; //頁面所需資料
   late List<Widget> pages = [
@@ -49,17 +49,6 @@ class _MainPageState extends State<MainPage> {
   var db = new Mysql();
   String personal_name = "";
   String personal_gender = "";
-
-  @override
-  void initState() {
-    super.initState();
-    DataMenu = widget.DataMenu;
-    GlobalDataMenu = widget.DataMenu;
-    print("GlobalDataMenu:${GlobalDataMenu[0].id}");
-    _getMysqlData();
-    DataMenu[0].page = "MainPage";
-    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
-  }
 
   //延遲取得資料庫資料，因為會有非同步的情況
   Future _delayText() async {
@@ -76,8 +65,7 @@ class _MainPageState extends State<MainPage> {
     PersonalMenu.clear(); //初始化列表
     db.getConnection().then((conn) {
       String sql =
-          "SELECT * FROM patient_database WHERE account='${DataMenu[0]
-          .account}'";
+          "SELECT * FROM patient_database WHERE account='${DataMenu[0].account}'";
       conn.query(sql).then((results) {
         print("連線成功!");
         for (var row in results) {
@@ -103,6 +91,15 @@ class _MainPageState extends State<MainPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    DataMenu = widget.DataMenu;
+    _getMysqlData();
+    DataMenu[0].page = "MainPage";
+    PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+  }
+
+  @override
   Widget build(BuildContext context) {
     //返回鍵
     return WillPopScope(
@@ -125,21 +122,21 @@ class _MainPageState extends State<MainPage> {
           onTap: (int idx) {
             setState(() {
               currentIndex = idx;
-
               //防止其他頁跟著跳回來，觀感不佳
               // idx == 0
               idx == 0 &&
-                  DataMenu[0].page != "MainPage" &&
-                  DataMenu[0].page != "HomePage" &&
-                  DataMenu[0].page != "RecordPage" &&
-                  DataMenu[0].page != "NewMessagePage" &&
-                  DataMenu[0].page != "AboutUsPage"
+                      DataMenu[0].page != "MainPage" &&
+                      DataMenu[0].page != "HomePage" &&
+                      DataMenu[0].page != "RecordPage" &&
+                      DataMenu[0].page != "NewMessagePage" &&
+                      DataMenu[0].page != "AboutUsPage"
                   ? Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => MainPage(DataMenu),
-                ),
-              )
+                        MaterialPageRoute(
+                          builder: (context) => MainPage(DataMenu),
+                        ),
+                      )
                   : null;
+
               DataMenu[0].page = pages[currentIndex].toString();
               PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
             });
@@ -308,7 +305,7 @@ class _HomePageState extends State<HomePage> {
       conn.close();
     });
   }
-
+  
   @override
   void initState() {
     super.initState();
@@ -316,8 +313,18 @@ class _HomePageState extends State<HomePage> {
     _getMysqlData();
   }
 
+
   @override
   Widget build(BuildContext context) {
+
+    void PushPage(){
+      Navigator.of(context).push(
+        MaterialPageRoute(
+            builder: (context) => TrainPage(DataMenu)),
+      );
+    }
+
+
     return MaterialApp(
       debugShowCheckedModeBanner: false, //不顯示上方debug的物件
       //調整全部字體大小
@@ -336,10 +343,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  top: MediaQuery
-                      .of(context)
-                      .padding
-                      .top,
+                  top: MediaQuery.of(context).padding.top,
                   right: 20.0,
                   left: 20.0,
                   bottom: 20.0),
@@ -422,7 +426,7 @@ class _HomePageState extends State<HomePage> {
                       onTap: () {
                         setState(() {});
                         switch (index) {
-                        //需求表達頁面
+                          //需求表達頁面
                           case 0:
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -431,15 +435,12 @@ class _HomePageState extends State<HomePage> {
                             );
                             break;
 
-                        //復健訓練頁面
+                          //復健訓練頁面
                           case 1:
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                  builder: (context) => TrainPage(DataMenu)),
-                            );
+                            PushPage();
                             break;
 
-                        //諮詢社群頁面
+                          //諮詢社群頁面
                           case 2:
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -448,7 +449,7 @@ class _HomePageState extends State<HomePage> {
                             );
                             break;
 
-                        //設定頁面
+                          //設定頁面
                           case 3:
                             Navigator.of(context).push(
                               MaterialPageRoute(
@@ -463,19 +464,13 @@ class _HomePageState extends State<HomePage> {
                         child: Row(
                           children: [
                             SizedBox(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width / 30,
+                              width: MediaQuery.of(context).size.width / 30,
                             ),
                             Image.asset(
                               menu[index].image,
                             ),
                             Container(
-                              width: MediaQuery
-                                  .of(context)
-                                  .size
-                                  .width - 120,
+                              width: MediaQuery.of(context).size.width - 120,
                               alignment: Alignment.center,
                               child: Text(
                                 menu[index].title,
@@ -525,10 +520,10 @@ class _RecordPageState extends State<RecordPage> {
         print("連線成功!");
         for (var row in results) {
           setState(() {
-            // if ((row['time'].difference(DateTime.now()).inDays).abs() <= 7) {
-            MysqlMenu.add(MysqlDataOfpatient_rehabilitation(
-                row['id'], row['time'], row['type'], row['score']));
-            // }
+            if ((row['time'].difference(DateTime.now()).inDays).abs() <= 7) {
+              MysqlMenu.add(MysqlDataOfpatient_rehabilitation(
+                  row['id'], row['time'], row['type'], row['score']));
+            }
           });
         }
       });
@@ -579,16 +574,16 @@ class _RecordPageState extends State<RecordPage> {
       return index % 7 == 0
           ? divider0
           : index % 7 == 1
-          ? divider1
-          : index % 7 == 2
-          ? divider2
-          : index % 7 == 3
-          ? divider3
-          : index % 7 == 4
-          ? divider4
-          : index % 7 == 5
-          ? divider5
-          : divider6;
+              ? divider1
+              : index % 7 == 2
+                  ? divider2
+                  : index % 7 == 3
+                      ? divider3
+                      : index % 7 == 4
+                          ? divider4
+                          : index % 7 == 5
+                              ? divider5
+                              : divider6;
     }
 
     return Scaffold(
@@ -598,10 +593,7 @@ class _RecordPageState extends State<RecordPage> {
         children: [
           Padding(
             padding: EdgeInsets.only(
-                top: MediaQuery
-                    .of(context)
-                    .padding
-                    .top,
+                top: MediaQuery.of(context).padding.top,
                 right: 20.0,
                 left: 20.0,
                 bottom: 20.0),
@@ -696,7 +688,16 @@ class _NewMessagePageState extends State<NewMessagePage> {
   late List<AllPagesNeedData> DataMenu;
   int alarmId = 1;
   bool RehabilitationNotice = false;
-  List<ExpansionPanelListData> expansionpanellist_menu = [];
+
+  // List<ExpansionPanelListData> expansionpanellist_menu = [];
+
+  //ExpansionPanelListData(this.FormId, this.isread, this.detail, this.date, this.isopen);
+  List<ExpansionPanelListData> expansionpanellist_menu = [
+    ExpansionPanelListData(1, true, "內容", DateTime.now().toString(), true),
+    //第一筆
+    ExpansionPanelListData(1, true, "內容", DateTime.now().toString(), true),
+    //第二筆
+  ];
 
   Future<Null> _onRefresh() async {
     await Future.delayed(const Duration(milliseconds: 500), () {
@@ -718,18 +719,34 @@ class _NewMessagePageState extends State<NewMessagePage> {
           //ExpansionPanelListData(this.isread, this.detail, this.date, this.isopen);
           value[i].PersonalId == DataMenu[0].id
               ? {
-            expansionpanellist_menu.add(
-              ExpansionPanelListData(
-                  value[i].id!,
-                  value[i].isread == 1 ? true : false,
-                  value[i].detail,
-                  (DateTime.now()).toString(),
-                  false),
-            )
-          }
+                  expansionpanellist_menu.add(
+                    ExpansionPanelListData(
+                        value[i].id!,
+                        value[i].isread == 1 ? true : false,
+                        value[i].detail,
+                        (DateTime.now()).toString(),
+                        false),
+                  )
+                }
               : null;
         });
       }
+    });
+    PersonalListHelper.instance.getData().then((value) {
+      setState(() {
+        RehabilitationNotice = value[0].RehabilitationNotice == 1;
+      });
+    });
+  }
+
+  Future updateRehabilitationNotice(bool RehabilitationNotice) async {
+    PersonalListHelper.instance.getData().then((value) async {
+      await PersonalListHelper.instance.update(PersonalList(
+          id: 1,
+          PersonalId: value[0].PersonalId,
+          account: value[0].account,
+          password: value[0].password,
+          RehabilitationNotice: RehabilitationNotice ? 1 : 0));
     });
   }
 
@@ -738,10 +755,10 @@ class _NewMessagePageState extends State<NewMessagePage> {
     super.initState();
     DataMenu = widget.DataMenu;
     var androidInitialize =
-    const AndroidInitializationSettings("@mipmap/ic_launcher");
+        const AndroidInitializationSettings("@mipmap/ic_launcher");
     var iOSInitialize = const IOSInitializationSettings();
     var initialzationSettings =
-    InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+        InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
     //初始化復健訊息
     RehabilitationNotification = FlutterLocalNotificationsPlugin();
     RehabilitationNotification.initialize(initialzationSettings);
@@ -814,7 +831,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                 ElevatedButton(
                   style: ButtonStyle(
                     backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.green),
+                        MaterialStateProperty.all<Color>(Colors.green),
                   ),
                   child: Text(
                     all ? "刪除全部訊息" : "刪除",
@@ -824,41 +841,40 @@ class _NewMessagePageState extends State<NewMessagePage> {
                     //刪除全部:刪除單一項
                     all
                         ? {
-                      await DatabaseHelper.instance
-                          .getForm()
-                          .then((value) {
-                        for (int i = 0;
-                        i < expansionpanellist_menu.length;
-                        i++) {
-                          DatabaseHelper.instance
-                              .delete(expansionpanellist_menu[i].FormId);
-                        }
-                      }),
-                      setState(() {
-                        expansionpanellist_menu.clear();
-                      }),
-                      print("刪除expansionpanellist_menu的index:全部"),
-                    }
+                            await DatabaseHelper.instance
+                                .getForm()
+                                .then((value) {
+                              for (int i = 0;
+                                  i < expansionpanellist_menu.length;
+                                  i++) {
+                                DatabaseHelper.instance
+                                    .delete(expansionpanellist_menu[i].FormId);
+                              }
+                            }),
+                            setState(() {
+                              expansionpanellist_menu.clear();
+                            }),
+                            print("刪除expansionpanellist_menu的index:全部"),
+                          }
                         : {
-                      await DatabaseHelper.instance
-                          .getForm()
-                          .then((value) {
-                        setState(() {
-                          DatabaseHelper.instance.delete(
-                              expansionpanellist_menu[reversedIndex]
-                                  .FormId);
-                        });
-                        print(
-                            "刪除FormId=${expansionpanellist_menu[reversedIndex]
-                                .FormId}");
-                        print(
-                            "刪除expansionpanellist_menu的index:$reversedIndex");
-                        setState(() {
-                          expansionpanellist_menu.removeAt(reversedIndex);
-                        });
-                        print("長度:${value.length - 1}");
-                      }),
-                    };
+                            await DatabaseHelper.instance
+                                .getForm()
+                                .then((value) {
+                              setState(() {
+                                DatabaseHelper.instance.delete(
+                                    expansionpanellist_menu[reversedIndex]
+                                        .FormId);
+                              });
+                              print(
+                                  "刪除FormId=${expansionpanellist_menu[reversedIndex].FormId}");
+                              print(
+                                  "刪除expansionpanellist_menu的index:$reversedIndex");
+                              setState(() {
+                                expansionpanellist_menu.removeAt(reversedIndex);
+                              });
+                              print("長度:${value.length - 1}");
+                            }),
+                          };
                     Navigator.of(context).pop();
                   },
                 ),
@@ -896,10 +912,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
         children: [
           Padding(
             padding: EdgeInsets.only(
-                top: MediaQuery
-                    .of(context)
-                    .padding
-                    .top,
+                top: MediaQuery.of(context).padding.top,
                 right: 20.0,
                 left: 20.0,
                 bottom: 0.0),
@@ -944,11 +957,13 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                 onChanged: (val) {
                                   setState(() {
                                     RehabilitationNotice =
-                                    !RehabilitationNotice;
+                                        !RehabilitationNotice;
+                                    updateRehabilitationNotice(
+                                        RehabilitationNotice);
                                   });
                                   if (RehabilitationNotice) {
                                     decideNotification(DataMenu, alarmId);
-                                    _initList();
+                                    // _initList();
                                   } else {
                                     print("已取消, alarmId=$alarmId");
                                     AndroidAlarmManager.cancel(alarmId);
@@ -1016,7 +1031,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                           dense: true,
                                           activeColor: Colors.green,
                                           contentPadding:
-                                          const EdgeInsets.all(10),
+                                              const EdgeInsets.all(10),
                                           value: RehabilitationNotice,
                                           title: const Text(
                                             "復健通知",
@@ -1028,13 +1043,15 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                           onChanged: (val) {
                                             setState(() {
                                               RehabilitationNotice =
-                                              !RehabilitationNotice;
+                                                  !RehabilitationNotice;
+                                              updateRehabilitationNotice(
+                                                  RehabilitationNotice);
                                             });
                                             //開啟Switch
                                             if (RehabilitationNotice) {
                                               decideNotification(
                                                   DataMenu, alarmId);
-                                              _initList();
+                                              // _initList();
                                             } else {
                                               print("已取消, alarmId=$alarmId");
                                               AndroidAlarmManager.cancel(
@@ -1087,7 +1104,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                       ),
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.end,
+                                            MainAxisAlignment.end,
                                         children: [
                                           IconButton(
                                             onPressed: () {
@@ -1114,15 +1131,15 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                   ),
                                 ExpansionPanelList(
                                     animationDuration:
-                                    const Duration(milliseconds: 500),
+                                        const Duration(milliseconds: 500),
                                     elevation: 0,
                                     expandedHeaderPadding:
-                                    const EdgeInsets.all(8),
+                                        const EdgeInsets.all(8),
                                     children: [
                                       ExpansionPanel(
                                         backgroundColor: Colors.white,
                                         isExpanded: expansionpanellist_menu[
-                                        reversedIndex]
+                                                reversedIndex]
                                             .isopen,
                                         canTapOnHeader: true,
                                         //能按標題展開
@@ -1130,31 +1147,30 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                             bool isExpanded) {
                                           return ListTile(
                                             leading: !expansionpanellist_menu[
-                                            reversedIndex]
-                                                .isread
+                                                        reversedIndex]
+                                                    .isread
                                                 ? Icon(Icons.circle,
-                                                size: 16,
-                                                color: Colors
-                                                    .greenAccent.shade200)
+                                                    size: 16,
+                                                    color: Colors
+                                                        .greenAccent.shade200)
                                                 : const Icon(
-                                                Icons.circle_outlined,
-                                                size: 16,
-                                                color: Colors.grey),
+                                                    Icons.circle_outlined,
+                                                    size: 16,
+                                                    color: Colors.grey),
                                             title: Text(
-                                              "${expansionpanellist_menu[reversedIndex]
-                                                  .date}復健通知",
+                                              "${expansionpanellist_menu[reversedIndex].date}復健通知",
                                               style: TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 25,
                                                   overflow:
-                                                  TextOverflow.ellipsis,
+                                                      TextOverflow.ellipsis,
                                                   fontWeight:
-                                                  //未讀嗎?未讀的話粗體，已讀的話復原
-                                                  !expansionpanellist_menu[
-                                                  reversedIndex]
-                                                      .isread
-                                                      ? FontWeight.bold
-                                                      : FontWeight.normal),
+                                                      //未讀嗎?未讀的話粗體，已讀的話復原
+                                                      !expansionpanellist_menu[
+                                                                  reversedIndex]
+                                                              .isread
+                                                          ? FontWeight.bold
+                                                          : FontWeight.normal),
                                             ),
                                           );
                                         },
@@ -1164,7 +1180,7 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                             children: [
                                               Text(
                                                 expansionpanellist_menu[
-                                                reversedIndex]
+                                                        reversedIndex]
                                                     .detail,
                                                 style: const TextStyle(
                                                   color: Colors.black,
@@ -1205,24 +1221,22 @@ class _NewMessagePageState extends State<NewMessagePage> {
                                           .then((value) {})
                                           .then((value) async {
                                         print(
-                                            "按的FormId是:${expansionpanellist_menu[reversedIndex]
-                                                .FormId}");
+                                            "按的FormId是:${expansionpanellist_menu[reversedIndex].FormId}");
                                         print(
                                             "按的expansionpanellist_menu的index是:$reversedIndex");
                                         await DatabaseHelper.instance.update(
                                           FormList(
                                             id: expansionpanellist_menu[
-                                            reversedIndex]
+                                                    reversedIndex]
                                                 .FormId,
                                             PersonalId: DataMenu[0].id,
-                                            RehabilitationNotice: 1,
                                             isread: expansionpanellist_menu[
-                                            reversedIndex]
-                                                .isread
+                                                        reversedIndex]
+                                                    .isread
                                                 ? 1
                                                 : 0,
                                             detail: expansionpanellist_menu[
-                                            reversedIndex]
+                                                    reversedIndex]
                                                 .detail,
                                           ),
                                         );
@@ -1257,7 +1271,6 @@ class _NewMessagePageState extends State<NewMessagePage> {
           await DatabaseHelper.instance.insert(
             FormList(
               PersonalId: DataMenu[0].id,
-              RehabilitationNotice: 1,
               isread: 0,
               detail: "細節：今天是${DateTime.now()}",
             ),
@@ -1269,11 +1282,11 @@ class _NewMessagePageState extends State<NewMessagePage> {
   }
 }
 
-//設定轉跳網址的expansionpanellist_menu的格式
+//設定expansionpanellist_menu的格式
 // expansionpanellist_menu
 class ExpansionPanelListData {
-  ExpansionPanelListData(this.FormId, this.isread, this.detail, this.date,
-      this.isopen);
+  ExpansionPanelListData(
+      this.FormId, this.isread, this.detail, this.date, this.isopen);
 
   int FormId;
   bool isread;
@@ -1286,12 +1299,13 @@ class ExpansionPanelListData {
 late FlutterLocalNotificationsPlugin RehabilitationNotification;
 
 Future<void> _showRehabilitationNotification() async {
+  String PersonalId = "初始化";
   String detail = "${DateTime.now()}今天要記得復健喔!!";
   var androidInitialize =
-  const AndroidInitializationSettings("@mipmap/ic_launcher");
+      const AndroidInitializationSettings("@mipmap/ic_launcher");
   var iOSInitialize = const IOSInitializationSettings();
   var initialzationSettings =
-  InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
+      InitializationSettings(android: androidInitialize, iOS: iOSInitialize);
   RehabilitationNotification = FlutterLocalNotificationsPlugin();
   RehabilitationNotification.initialize(initialzationSettings);
 
@@ -1301,18 +1315,23 @@ Future<void> _showRehabilitationNotification() async {
       importance: Importance.max, priority: Priority.max);
   var iosDetails = const IOSNotificationDetails();
   var generalNotificationDetails =
-  NotificationDetails(android: androidDetails, iOS: iosDetails);
+      NotificationDetails(android: androidDetails, iOS: iosDetails);
   await RehabilitationNotification.show(
       0, "復健提醒", detail, generalNotificationDetails);
 
-  await DatabaseHelper.instance.insert(
-    FormList(
-      PersonalId: "B00001",
-      RehabilitationNotice: 1,
-      isread: 0,
-      detail: detail,
-    ),
-  );
+  //讀取是誰的資料
+  PersonalListHelper.instance.getData().then((value) async {
+    PersonalId = value[0].PersonalId;
+  }).then((value) async {
+    print("PesonalId:$PersonalId");
+    await DatabaseHelper.instance.insert(
+      FormList(
+        PersonalId: PersonalId,
+        isread: 0,
+        detail: detail,
+      ),
+    );
+  });
 }
 
 void decideNotification(List<AllPagesNeedData> DataMenu, int alarmId) {
@@ -1330,6 +1349,7 @@ void decideNotification(List<AllPagesNeedData> DataMenu, int alarmId) {
       //   DateTime.now().hour,
       //   6,
       // ),
+      exact: true,
     );
 
     //固定一個時間
@@ -1385,23 +1405,19 @@ void decideNotification(List<AllPagesNeedData> DataMenu, int alarmId) {
 class FormList {
   final int? id;
   final String PersonalId;
-  final int RehabilitationNotice;
   final int isread;
   final String detail;
 
   FormList({
     this.id,
     required this.PersonalId,
-    required this.RehabilitationNotice,
     required this.isread,
     required this.detail,
   });
 
-  factory FormList.fromMap(Map<String, dynamic> json) =>
-      FormList(
+  factory FormList.fromMap(Map<String, dynamic> json) => FormList(
         id: json['id'],
         PersonalId: json['PersonalId'],
-        RehabilitationNotice: json['RehabilitationNotice'],
         isread: json['isread'],
         detail: json['detail'],
       );
@@ -1410,7 +1426,6 @@ class FormList {
     return {
       'id': id,
       'PersonalId': PersonalId,
-      'RehabilitationNotice': RehabilitationNotice,
       'isread': isread,
       'detail': detail,
     };
@@ -1452,7 +1467,7 @@ class DatabaseHelper {
     Database db = await instance.database;
     var Form = await db.query("Form");
     List<FormList> formList =
-    Form.isNotEmpty ? Form.map((c) => FormList.fromMap(c)).toList() : [];
+        Form.isNotEmpty ? Form.map((c) => FormList.fromMap(c)).toList() : [];
     return formList;
   }
 
@@ -1506,10 +1521,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
         children: [
           Padding(
             padding: EdgeInsets.only(
-                top: MediaQuery
-                    .of(context)
-                    .padding
-                    .top,
+                top: MediaQuery.of(context).padding.top,
                 right: 20.0,
                 left: 20.0,
                 bottom: 20.0),
@@ -1544,13 +1556,7 @@ class _AboutUsPageState extends State<AboutUsPage> {
                         buildAboutAs("APP使用", ""),
                         buildAboutAs(
                           "最後更新時間",
-                          "${DateTime
-                              .now()
-                              .year}/${DateTime
-                              .now()
-                              .month}/${DateTime
-                              .now()
-                              .day}",
+                          "${DateTime.now().year}/${DateTime.now().month}/${DateTime.now().day}",
                         ),
                       ],
                     ),
@@ -1603,8 +1609,8 @@ class GridViewMenuData {
 }
 
 //BottomNavigationBarItem模板
-BottomNavigationBarItem buildBottomNavigationBarView(String url, Color color,
-    String label, List<AllPagesNeedData> DataMenu) {
+BottomNavigationBarItem buildBottomNavigationBarView(
+    String url, Color color, String label, List<AllPagesNeedData> DataMenu) {
   return BottomNavigationBarItem(
     icon: Image.asset(url),
     label: label,
@@ -1627,43 +1633,43 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
         )),
     onTap: () {
       switch (index) {
-      //社區交流頁面
+        //社區交流頁面
         case 0:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => CommunityCommunicationPage(DataMenu)));
           break;
 
-      //相關連結頁面
+        //相關連結頁面
         case 1:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RelateLinkPage(DataMenu)));
           break;
 
-      //問卷系統頁面
+        //問卷系統頁面
         case 2:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => QuestionnairePage(DataMenu)));
           break;
 
-      //居家照護小知識頁面
+        //居家照護小知識頁面
         case 3:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => HomeCarePage(DataMenu)));
           break;
 
-      //放鬆音樂頁面
+        //放鬆音樂頁面
         case 4:
           Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => RelaxMusicPage(DataMenu)));
           break;
 
-      //回首頁
+        //回首頁
         case 5:
           Navigator.of(context).push(
               MaterialPageRoute(builder: (context) => MainPage(DataMenu)));
           break;
 
-      //登出
+        //登出
         case 6:
           showAlertDialog(context, DataMenu); //顯示登出提示對話框
           break;
@@ -1673,31 +1679,31 @@ ListTile buildListTile(BuildContext context, int index, IconData icon,
 }
 
 //跳轉首頁方格頁面
-void ChoosePage(BuildContext context, int index,
-    List<AllPagesNeedData> DataMenu) {
+void ChoosePage(
+    BuildContext context, int index, List<AllPagesNeedData> DataMenu) {
   switch (index) {
-  //訓練頁面
+    //訓練頁面
     case 0:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => TrainPage(DataMenu)),
       );
       break;
 
-  //生理需求頁面
+    //生理需求頁面
     case 1:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => PhysiologicalPage1(DataMenu)),
       );
       break;
 
-  //認識失語症頁面
+    //認識失語症頁面
     case 2:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => RecognizePage(DataMenu)),
       );
       break;
 
-  //基本設定頁面
+    //基本設定頁面
     case 3:
       Navigator.of(context).push(
         MaterialPageRoute(builder: (context) => BasicSettingsPage(DataMenu)),
