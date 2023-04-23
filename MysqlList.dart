@@ -53,6 +53,18 @@ class MysqlDataOfPersonal {
   String gender;
 }
 
+//設定復健題目的格式
+//TopicMenu
+class TopicData {
+  TopicData(this.title, this.topic, this.path, this.type);
+
+  String title;
+  String topic;
+  String path;
+  String type;
+}
+
+
 
 //設定轉跳網址的listview_menu的格式
 // listview_menu

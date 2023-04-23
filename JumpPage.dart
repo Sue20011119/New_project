@@ -26,6 +26,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'dart:io';
+import 'dart:math';
 
 //需求表達1頁面
 class PhysiologicalPage1 extends StatefulWidget {
@@ -399,10 +400,14 @@ class _TrainPageState extends State<TrainPage> {
                                 color: Colors.black87,
                               ),
                             ),
-                            const Text(
-                              '復健訓練',
-                              style: TextStyle(
-                                  fontSize: 50, fontWeight: FontWeight.bold),
+                            const Expanded(
+                              child: Text(
+                                '復 健 訓 練',
+                                style: TextStyle(
+                                    fontSize: 50,
+                                    fontWeight: FontWeight.bold,
+                                    overflow: TextOverflow.ellipsis),
+                              ),
                             ),
                           ],
                         ),
@@ -535,6 +540,31 @@ class _NameTrainPageState extends State<NameTrainPage> {
   var db = new Mysql();
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+  late int rand;
+  List<TopicData> TopicMenu = [
+    TopicData("", "電話", "assets/train/NameTrain/telephone.png", "日常"),
+    TopicData("", "鳳梨", "assets/train/NameTrain/pineapple.png", "日常"),
+    TopicData("", "鋼筆", "assets/train/NameTrain/pen.png", "日常"),
+    TopicData("", "鱷魚", "assets/train/NameTrain/crocodile.png", "日常"),
+    TopicData("", "筷子", "assets/train/NameTrain/chopsticks.png", "日常"),
+    TopicData("", "松鼠", "assets/train/NameTrain/squirrel.png", "日常"),
+    TopicData("", "衣櫃", "assets/train/NameTrain/wardrobe.png", "日常"),
+    TopicData("", "香菸", "assets/train/NameTrain/cigarette.png", "日常"),
+    TopicData("", "眼睛", "assets/train/NameTrain/eye.png", "日常"),
+    TopicData("", "衣架", "assets/train/NameTrain/hanger.png", "日常"),
+    TopicData("", "魚", "assets/train/NameTrain/fish.png", "日常"),
+    TopicData("", "蝴蝶", "assets/train/NameTrain/butterfly.png", "日常"),
+    TopicData("", "鉛筆", "assets/train/NameTrain/pencil.png", "日常"),
+    TopicData("", "電視", "assets/train/NameTrain/tv.png", "日常"),
+    TopicData("", "長頸鹿", "assets/train/NameTrain/giraffe.png", "日常"),
+    TopicData("", "叉子", "assets/train/NameTrain/fork.png", "日常"),
+    TopicData("", "報紙", "assets/train/NameTrain/newspaper.png", "日常"),
+    TopicData("", "水桶", "assets/train/NameTrain/bucket.png", "日常"),
+    TopicData("", "汽車", "assets/train/NameTrain/car.png", "日常"),
+    TopicData("", "皮球", "assets/train/NameTrain/ball.png", "日常"),
+    TopicData("", "機車", "assets/train/NameTrain/motorcycle.png", "日常"),
+    TopicData("", "番茄", "assets/train/NameTrain/tomato.png", "日常"), //
+  ];
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
   bool _isRecording = false;
@@ -610,6 +640,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
     DataMenu = widget.DataMenu;
     DataMenu[0].page = "NameTrainPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+    rand = Random().nextInt(TopicMenu.length);
   }
 
   @override
@@ -622,7 +653,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.orangeAccent.shade100,
+      backgroundColor: Colors.blue.shade50,
       resizeToAvoidBottomInset: false,
       body: SingleChildScrollView(
         child: Column(
@@ -679,7 +710,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
                             child: TextButton(
                                 onPressed: () {
                                   final player = AudioCache();
-                                  player.play('cold.mp3');
+                                  player.play('train/NameTrain/$rand.mp3');
                                 },
                                 child: const Icon(
                                   Icons.volume_down_alt,
@@ -691,8 +722,8 @@ class _NameTrainPageState extends State<NameTrainPage> {
                         SizedBox(
                           width: MediaQuery.of(context).size.width / 20,
                         ),
-                        const Text(
-                          '很冷',
+                        Text(
+                          TopicMenu[rand].topic,
                           style: TextStyle(fontSize: 40),
                         )
                       ],
@@ -701,7 +732,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 3 / 7,
                       child: Image.asset(
-                        'lib/images/cold.png',
+                        TopicMenu[rand].path,
                         height: MediaQuery.of(context).size.height * 2 / 5,
                       ),
                     ),
@@ -736,6 +767,16 @@ class _NameTrainPageState extends State<NameTrainPage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          onPressed: () {
+            setState(() {
+              rand = Random().nextInt(TopicMenu.length);
+            });
+          }),
     );
   }
 }
@@ -752,8 +793,19 @@ class ReadTrainPage extends StatefulWidget {
 
 class _ReadTrainPageState extends State<ReadTrainPage> {
   var db = new Mysql();
-  List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+  late int rand;
+  List<TopicData> TopicMenu = [
+    TopicData("", "數學科學", "", "學科"),
+    TopicData("", "老師拿了一本書給我的同學", "", "日常"),
+    TopicData("", "文學作品", "", "學科"),
+    TopicData("", "遊客喜歡吃草莓冰淇淋", "", "日常"),
+    TopicData("", "國語英文", "", "學科"),
+    TopicData("", "郵差送了一封信給我的鄰居", "", "日常"),
+    TopicData("", "古典音樂", "", "學科"),
+    TopicData("", "學生喜歡逛圖書館", "", "日常"),
+  ];
+
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
   bool _isRecording = false;
@@ -829,6 +881,7 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
     DataMenu = widget.DataMenu;
     DataMenu[0].page = "ReadTrainPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+    rand = Random().nextInt(TopicMenu.length);
   }
 
   @override
@@ -897,7 +950,7 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
                             child: TextButton(
                                 onPressed: () {
                                   final player = AudioCache();
-                                  player.play('cold.mp3');
+                                  player.play('train/ReadTrain/$rand.mp3');
                                 },
                                 child: const Icon(
                                   Icons.volume_down_alt,
@@ -906,38 +959,43 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
                                 )),
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 20,
-                        ),
-                        const Text(
-                          '很冷',
-                          style: TextStyle(fontSize: 40),
-                        )
                       ],
                     ),
-                    Container(
+                    SizedBox(height: MediaQuery.of(context).size.height / 100),
+                    SizedBox(
                       height: 350,
                       child: Stack(
-                        alignment: Alignment.topCenter,
                         children: [
-                          Container(
+                          Align(
+                            alignment: Alignment.center,
                             child: Image.asset(
                               'lib/images/backread.png',
                             ),
                           ),
-                          Column(
-                            children: [
-                              SizedBox(
-                                height: MediaQuery.of(context).size.height / 20,
-                              ),
-                              Container(
-                                height: MediaQuery.of(context).size.height / 4,
-                                width: MediaQuery.of(context).size.width,
-                                child: Image.asset(
-                                  'lib/images/cold.png',
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height / 50,
                                 ),
-                              ),
-                            ],
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.75,
+                                  child: Center(
+                                    child: Text(
+                                      TopicMenu[rand].topic,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 50,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -973,6 +1031,16 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          onPressed: () {
+            setState(() {
+              rand = Random().nextInt(TopicMenu.length);
+            });
+          }),
     );
   }
 }
@@ -991,6 +1059,14 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
   var db = new Mysql();
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+  late int rand;
+  List<TopicData> TopicMenu = [
+    TopicData("數字１－１０", "1, 2, 3, 4, 5,\n6, 7, 8, 9, 10", "", "數字"),
+    TopicData("", "星期一 星期二\n星期三 星期四\n星期五 星期六\n星期日", "", "日期"),
+    TopicData("十二生肖", "鼠牛虎兔龍蛇\n馬羊猴雞狗豬", "", "生肖"),
+    TopicData("", "甲乙丙丁戊\n己庚辛壬癸", "", "天干地支"),
+  ];
+
   FlutterSoundRecorder? _recorder;
   FlutterSoundPlayer? _player;
   bool _isRecording = false;
@@ -1068,6 +1144,7 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
     DataMenu = widget.DataMenu;
     DataMenu[0].page = "TalkTrainPage";
     PrintList(DataMenu[0].page, "AllPagesNeedData", DataMenu);
+    rand = Random().nextInt(TopicMenu.length);
   }
 
   @override
@@ -1134,44 +1211,65 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
                             width: MediaQuery.of(context).size.width / 8,
                             height: MediaQuery.of(context).size.height / 15,
                             child: TextButton(
-                                onPressed: () {
-                                  final player = AudioCache();
-                                  player.play('cold.mp3');
-                                },
-                                child: const Icon(
-                                  Icons.volume_down_alt,
-                                  size: 40,
-                                  color: Colors.black87,
-                                )),
-                          ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 20,
-                        ),
-                        const Text(
-                          '很冷',
-                          style: TextStyle(fontSize: 40),
-                        )
-                      ],
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 350,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            child: Image.asset(
-                              'lib/images/backtalk.png',
-                              height: MediaQuery.of(context).size.height,
-                              width: MediaQuery.of(context).size.width,
+                              onPressed: () {
+                                final player = AudioCache();
+                                player.play('train/TalkTrain/$rand.mp3');
+                              },
+                              child: const Icon(
+                                Icons.volume_down_alt,
+                                size: 40,
+                                color: Colors.black87,
+                              ),
                             ),
                           ),
-                          Container(
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.5,
+                      child: Stack(
+                        children: [
+                          Align(
+                            alignment: Alignment.center,
                             child: Image.asset(
-                              'lib/images/cold.png',
-                              height: MediaQuery.of(context).size.height / 4,
-                              width: MediaQuery.of(context).size.width,
+                              'lib/images/backtalk.png',
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height / 10,
+                                ),
+                                TopicMenu[rand].title != ""
+                                    ? Text(
+                                        TopicMenu[rand].title,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight.bold,
+                                            decoration:
+                                                TextDecoration.underline),
+                                      )
+                                    : Container(),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.75,
+                                  child: Center(
+                                    child: Text(
+                                      TopicMenu[rand].topic,
+                                      textAlign: TextAlign.center,
+                                      style: const TextStyle(
+                                        fontSize: 40,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
@@ -1209,27 +1307,6 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
                         ),
                       ],
                     ),
-                    // ClipOval(
-                    //   child: Container(
-                    //     color: Colors.redAccent,
-                    //     width: 80,
-                    //     height: 80,
-                    //     child: ElevatedButton(
-                    //       onPressed:() async{
-                    //         if(_isRecording){
-                    //           stop();
-                    //         }else{
-                    //           record();
-                    //         }
-                    //       },
-                    //       child:Icon(
-                    //         _isRecording? Icons.stop:Icons.mic,
-                    //         size: 50,
-                    //         color: Colors.black87,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),
@@ -1237,6 +1314,16 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(
+            Icons.add,
+            size: 40,
+          ),
+          onPressed: () {
+            setState(() {
+              rand = Random().nextInt(4);
+            });
+          }),
     );
   }
 }
