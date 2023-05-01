@@ -1339,16 +1339,16 @@ void decideNotification(List<AllPagesNeedData> DataMenu, int alarmId) {
   if (alarmId == 1) {
     //定期的
     AndroidAlarmManager.periodic(
-      const Duration(seconds: 5),
+      const Duration(minutes: 1440),
       alarmId,
       _showRehabilitationNotification,
-      // startAt: DateTime(
-      //   DateTime.now().year,
-      //   DateTime.now().month,
-      //   DateTime.now().day,
-      //   DateTime.now().hour,
-      //   6,
-      // ),
+      startAt: DateTime(
+        DateTime.now().year,
+        DateTime.now().month,
+        DateTime.now().day,
+        12,
+        0,
+      ),
       exact: true,
     );
 

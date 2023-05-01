@@ -42,6 +42,7 @@ class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
   var db = new Mysql();
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+  final player = AudioCache(fixedPlayer: AudioPlayer());
 
   Widget buildPhysiologicalPage(String audio, String image, String title) {
     return SizedBox(
@@ -49,7 +50,7 @@ class _PhysiologicalPage1State extends State<PhysiologicalPage1> {
       width: MediaQuery.of(context).size.width / 3,
       child: TextButton(
         onPressed: () {
-          final player = AudioCache();
+          player.fixedPlayer?.stop();
           player.play(audio);
         },
         child: Column(
@@ -197,6 +198,7 @@ class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
   var db = new Mysql();
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
+  final player = AudioCache(fixedPlayer: AudioPlayer());
 
   Widget buildPhysiologicalPage(String audio, String image, String title) {
     return SizedBox(
@@ -204,7 +206,7 @@ class _PhysiologicalPage2State extends State<PhysiologicalPage2> {
       width: MediaQuery.of(context).size.width / 3,
       child: TextButton(
         onPressed: () {
-          final player = AudioCache();
+          player.fixedPlayer?.stop();
           player.play(audio);
         },
         child: Column(
@@ -541,6 +543,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
   late int rand;
+  final player = AudioCache(fixedPlayer: AudioPlayer());
   List<TopicData> TopicMenu = [
     TopicData("", "電話", "assets/train/NameTrain/telephone.png", "日常"),
     TopicData("", "鳳梨", "assets/train/NameTrain/pineapple.png", "日常"),
@@ -662,7 +665,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
               height: MediaQuery.of(context).size.height / 14,
             ),
             Center(
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height * 5 / 6,
                 child: Column(
                   children: [
@@ -674,6 +677,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
                           height: MediaQuery.of(context).size.height / 10,
                           child: IconButton(
                             onPressed: () {
+                              player.fixedPlayer?.stop();
                               Navigator.of(context).pop();
                             },
                             icon: const Icon(
@@ -709,7 +713,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
                             height: MediaQuery.of(context).size.height / 15,
                             child: TextButton(
                                 onPressed: () {
-                                  final player = AudioCache();
+                                  player.fixedPlayer?.stop();
                                   player.play('train/NameTrain/$rand.mp3');
                                 },
                                 child: const Icon(
@@ -724,11 +728,11 @@ class _NameTrainPageState extends State<NameTrainPage> {
                         ),
                         Text(
                           TopicMenu[rand].topic,
-                          style: TextStyle(fontSize: 40),
+                          style: const TextStyle(fontSize: 40),
                         )
                       ],
                     ),
-                    Container(
+                    SizedBox(
                       width: MediaQuery.of(context).size.width,
                       height: MediaQuery.of(context).size.height * 3 / 7,
                       child: Image.asset(
@@ -774,6 +778,7 @@ class _NameTrainPageState extends State<NameTrainPage> {
           ),
           onPressed: () {
             setState(() {
+              player.fixedPlayer?.stop();
               rand = Random().nextInt(TopicMenu.length);
             });
           }),
@@ -795,6 +800,8 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
   var db = new Mysql();
   late List<AllPagesNeedData> DataMenu;
   late int rand;
+  final player = AudioCache(fixedPlayer: AudioPlayer());
+
   List<TopicData> TopicMenu = [
     TopicData("", "數學科學", "", "學科"),
     TopicData("", "老師拿了一本書給我的同學", "", "日常"),
@@ -903,129 +910,129 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
               height: MediaQuery.of(context).size.height / 14,
             ),
             Center(
-              child: Container(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 10,
-                          height: MediaQuery.of(context).size.height / 10,
-                          child: IconButton(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 10,
+                        height: MediaQuery.of(context).size.height / 10,
+                        child: IconButton(
+                          onPressed: () {
+                            player.fixedPlayer?.stop();
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(
+                            Icons.arrow_back_rounded,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 4,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Image.asset(
+                          'lib/images/read.png',
+                        ),
+                      ),
+                      const Text(
+                        '覆誦練習',
+                        style: TextStyle(
+                            fontSize: 50, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ClipOval(
+                        child: Container(
+                          color: Colors.redAccent,
+                          width: MediaQuery.of(context).size.width / 8,
+                          height: MediaQuery.of(context).size.height / 15,
+                          child: TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              player.fixedPlayer?.stop();
+                              player.play('train/ReadTrain/$rand.mp3');
                             },
-                            icon: const Icon(
-                              Icons.arrow_back_rounded,
-                              size: 50,
+                            child: const Icon(
+                              Icons.volume_down_alt,
+                              size: 40,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 4,
-                          height: MediaQuery.of(context).size.height / 8,
-                          child: Image.asset(
-                            'lib/images/read.png',
-                          ),
-                        ),
-                        const Text(
-                          '覆誦練習',
-                          style: TextStyle(
-                              fontSize: 50, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height / 100),
+                  SizedBox(
+                    height: 350,
+                    child: Stack(
                       children: [
-                        ClipOval(
-                          child: Container(
-                            color: Colors.redAccent,
-                            width: MediaQuery.of(context).size.width / 8,
-                            height: MediaQuery.of(context).size.height / 15,
-                            child: TextButton(
-                                onPressed: () {
-                                  final player = AudioCache();
-                                  player.play('train/ReadTrain/$rand.mp3');
-                                },
-                                child: const Icon(
-                                  Icons.volume_down_alt,
-                                  size: 40,
-                                  color: Colors.black87,
-                                )),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            'lib/images/backread.png',
                           ),
                         ),
-                      ],
-                    ),
-                    SizedBox(height: MediaQuery.of(context).size.height / 100),
-                    SizedBox(
-                      height: 350,
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Image.asset(
-                              'lib/images/backread.png',
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height / 50,
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.75,
-                                  child: Center(
-                                    child: Text(
-                                      TopicMenu[rand].topic,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(
-                                        fontSize: 50,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height / 50,
+                              ),
+                              SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.75,
+                                child: Center(
+                                  child: Text(
+                                    TopicMenu[rand].topic,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 50,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    ClipOval(
-                      child: Container(
-                        color: Colors.redAccent,
-                        width: 80,
-                        height: 80,
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            if (_isRecording) {
-                              _stopRecording();
-                            } else {
-                              _startRecording();
-                            }
-                          },
-                          child: Icon(
-                            _isRecording ? Icons.stop : Icons.mic,
-                            size: 50,
-                            color: Colors.black87,
-                          ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  ClipOval(
+                    child: Container(
+                      color: Colors.redAccent,
+                      width: 80,
+                      height: 80,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_isRecording) {
+                            _stopRecording();
+                          } else {
+                            _startRecording();
+                          }
+                        },
+                        child: Icon(
+                          _isRecording ? Icons.stop : Icons.mic,
+                          size: 50,
+                          color: Colors.black87,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -1038,6 +1045,7 @@ class _ReadTrainPageState extends State<ReadTrainPage> {
           ),
           onPressed: () {
             setState(() {
+              player.fixedPlayer?.stop();
               rand = Random().nextInt(TopicMenu.length);
             });
           }),
@@ -1060,6 +1068,7 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
   List<MysqlDataOfpatient_rehabilitation> MysqlMenu = [];
   late List<AllPagesNeedData> DataMenu;
   late int rand;
+  final player = AudioCache(fixedPlayer: AudioPlayer());
   List<TopicData> TopicMenu = [
     TopicData("數字１－１０", "1, 2, 3, 4, 5,\n6, 7, 8, 9, 10", "", "數字"),
     TopicData("", "星期一 星期二\n星期三 星期四\n星期五 星期六\n星期日", "", "日期"),
@@ -1166,149 +1175,148 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
               height: MediaQuery.of(context).size.height / 14,
             ),
             Center(
-              child: Container(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 10,
-                          height: MediaQuery.of(context).size.height / 10,
-                          child: IconButton(
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 10,
+                        height: MediaQuery.of(context).size.height / 10,
+                        child: IconButton(
+                          onPressed: () {
+                            player.fixedPlayer?.stop();
+                            Navigator.of(context).pop();
+                          },
+                          icon: const Icon(
+                            Icons.arrow_back_rounded,
+                            size: 50,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 4,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Image.asset(
+                          'lib/images/talk.png',
+                        ),
+                      ),
+                      const Text(
+                        '自主言語',
+                        style: TextStyle(
+                            fontSize: 50, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ClipOval(
+                        child: Container(
+                          color: Colors.redAccent,
+                          width: MediaQuery.of(context).size.width / 8,
+                          height: MediaQuery.of(context).size.height / 15,
+                          child: TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              player.fixedPlayer?.stop();
+                              player.play('train/TalkTrain/$rand.mp3');
                             },
-                            icon: const Icon(
-                              Icons.arrow_back_rounded,
-                              size: 50,
+                            child: const Icon(
+                              Icons.volume_down_alt,
+                              size: 40,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 4,
-                          height: MediaQuery.of(context).size.height / 8,
-                          child: Image.asset(
-                            'lib/images/talk.png',
-                          ),
-                        ),
-                        const Text(
-                          '自主言語',
-                          style: TextStyle(
-                              fontSize: 50, fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height * 0.5,
+                    child: Stack(
                       children: [
-                        ClipOval(
-                          child: Container(
-                            color: Colors.redAccent,
-                            width: MediaQuery.of(context).size.width / 8,
-                            height: MediaQuery.of(context).size.height / 15,
-                            child: TextButton(
-                              onPressed: () {
-                                final player = AudioCache();
-                                player.play('train/TalkTrain/$rand.mp3');
-                              },
-                              child: const Icon(
-                                Icons.volume_down_alt,
-                                size: 40,
-                                color: Colors.black87,
-                              ),
-                            ),
+                        Align(
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            'lib/images/backtalk.png',
                           ),
                         ),
-                      ],
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.5,
-                      child: Stack(
-                        children: [
-                          Align(
-                            alignment: Alignment.center,
-                            child: Image.asset(
-                              'lib/images/backtalk.png',
-                            ),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height / 10,
-                                ),
-                                TopicMenu[rand].title != ""
-                                    ? Text(
-                                        TopicMenu[rand].title,
-                                        textAlign: TextAlign.center,
-                                        style: const TextStyle(
-                                            fontSize: 40,
-                                            fontWeight: FontWeight.bold,
-                                            decoration:
-                                                TextDecoration.underline),
-                                      )
-                                    : Container(),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.75,
-                                  child: Center(
-                                    child: Text(
-                                      TopicMenu[rand].topic,
+                        Align(
+                          alignment: Alignment.bottomCenter,
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height / 10,
+                              ),
+                              TopicMenu[rand].title != ""
+                                  ? Text(
+                                      TopicMenu[rand].title,
                                       textAlign: TextAlign.center,
                                       style: const TextStyle(
-                                        fontSize: 40,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                          fontSize: 40,
+                                          fontWeight: FontWeight.bold,
+                                          decoration:
+                                              TextDecoration.underline),
+                                    )
+                                  : Container(),
+                              SizedBox(
+                                width:
+                                    MediaQuery.of(context).size.width * 0.75,
+                                child: Center(
+                                  child: Text(
+                                    TopicMenu[rand].topic,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 40,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height / 100,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ClipOval(
-                          child: Container(
-                            color: Colors.redAccent,
-                            width: 80,
-                            height: 80,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                if (_isRecording) {
-                                  _stopRecording();
-                                } else {
-                                  _startRecording();
-                                }
-                              },
-                              child: Icon(
-                                _isRecording ? Icons.stop : Icons.mic,
-                                size: 50,
-                                color: Colors.black87,
                               ),
-                            ),
+                            ],
                           ),
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 100,
                         ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height / 100,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ClipOval(
+                        child: Container(
+                          color: Colors.redAccent,
+                          width: 80,
+                          height: 80,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (_isRecording) {
+                                _stopRecording();
+                              } else {
+                                _startRecording();
+                              }
+                            },
+                            child: Icon(
+                              _isRecording ? Icons.stop : Icons.mic,
+                              size: 50,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 100,
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ],
@@ -1320,6 +1328,7 @@ class _TalkTrainPageState extends State<TalkTrainPage> {
             size: 40,
           ),
           onPressed: () {
+            player.fixedPlayer?.stop();
             setState(() {
               rand = Random().nextInt(4);
             });
